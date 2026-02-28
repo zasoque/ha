@@ -1,8 +1,13 @@
 export function formatCurrency(amount: string): string {
 	const formatted = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-	if (formatted.endsWith('.00')) {
-		return `금${formatted.slice(0, -3)}임정`;
+	if (formatted.startsWith('0.')) {
+		return `${parseInt(formatted.slice(2))}P̃`;
 	}
-	return `금${formatted.slice(0, -3)}임${formatted.slice(-2)}패`;
+
+	if (formatted.endsWith('.00')) {
+		return `${formatted.slice(0, -3)}Ñ`;
+	}
+
+	return `${formatted.slice(0, -3)}Ñ${formatted.slice(-2)}`;
 }
