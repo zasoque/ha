@@ -28,6 +28,8 @@ export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
 			console.error('Error fetching access token:', error);
 		});
 
+	console.log(data);
+
 	cookies.set('token', data.access_token, {
 		path: '/',
 		httpOnly: true,
