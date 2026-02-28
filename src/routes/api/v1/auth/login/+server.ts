@@ -1,4 +1,5 @@
 import { getMe } from '$lib/discord/users';
+import { ensureAccountExists } from '$lib/server/auth';
 import { json, redirect, type RequestHandler } from '@sveltejs/kit';
 import dotenv from 'dotenv';
 
