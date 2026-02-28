@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
 			return data;
 		})
 		.catch((error) => {
-			console.error('Error fetching access token:', error);
+			json({ error: 'Failed to exchange code for token', details: error }, { status: 500 });
 		});
 
 	console.log(data);
