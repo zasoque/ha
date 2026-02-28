@@ -4,7 +4,7 @@ import type { Load } from '@sveltejs/kit';
 export const load: Load = async ({ cookies }) => {
 	const token = cookies.get('token');
 	let me;
-	if (token) {
+	if (token !== 'undefined' && token !== 'null' && token !== null) {
 		me = await getMe(token);
 	}
 
