@@ -1,3 +1,4 @@
+import { getMe } from '$lib/discord/users';
 import { json, redirect, type RequestHandler } from '@sveltejs/kit';
 import dotenv from 'dotenv';
 
@@ -36,6 +37,9 @@ export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
 		secure: true,
 		sameSite: 'lax'
 	});
+
+	const me = await getMe(data.access_token);
+	await ensureAccountExists(me.id);
 
 	return redirect(308, '/');
 };

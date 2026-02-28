@@ -10,4 +10,13 @@ const pool = createPool({
 	database: process.env.DB_NAME || 'my_database'
 });
 
-export const db = pool;
+export async function query(sql: string, params?: any[]) {
+	const connection = await pool.getConnection();
+	try {
+		const result = await connection.query(sql, params);
+		await connection.commit();
+		return result;
+	} finally {
+		connection.release();
+	}
+}

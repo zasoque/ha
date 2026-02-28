@@ -14,6 +14,7 @@
 	<div class="navigation">
 		<a href="/">홈</a>
 		{#if me}
+			<a href="/accounts">계좌</a>
 			<a href="/logout">로그아웃</a>
 			{me.global_name}으로 로그인됨
 		{:else}
