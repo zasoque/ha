@@ -7,6 +7,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<title>하은행</title>
 </svelte:head>
 
 <div class="header">
