@@ -2,7 +2,7 @@ export function formatCurrency(amount: string): string {
 	const formatted = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 	if (formatted.startsWith('0.')) {
-		return `${parseInt(formatted.slice(2))}P̃`;
+		return `${parseInt(formatted.slice(2))}p̃`;
 	}
 
 	if (formatted.endsWith('.00')) {
