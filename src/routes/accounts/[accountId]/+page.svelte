@@ -27,15 +27,16 @@
 		<div class="row-value">{account.id}</div>
 	</div>
 	<div class="balance">
-		<div class="row-key">{formatCurrency(account.balance)}</div>
+		<div class="row-key">잔액</div>
+		<div class="row-value">{formatCurrency(account.balance)}</div>
 	</div>
 	<div class="created-at">
 		<div class="row-key">개설일자</div>
-		<div class="row-value">{new Date(account.created_at)}</div>
+		<div class="row-value">{new Date(account.created_at).toLocaleString()}</div>
 	</div>
 	<div class="updated-at">
 		<div class="row-key">갱신일자</div>
-		<div class="row-value">{new Date(account.updated_at)}</div>
+		<div class="row-value">{new Date(account.updated_at).toLocaleString()}</div>
 	</div>
 	<div class="transfer">
 		<a href="/accounts/{account.id}/transfer">송금</a>
@@ -54,6 +55,15 @@
 
 	.go-back {
 		margin-top: 2rem;
+	}
+
+	.go-back a {
+		text-decoration: none;
+		color: #3498db;
+	}
+
+	.go-back a:hover {
+		text-decoration: underline;
 	}
 
 	.title {

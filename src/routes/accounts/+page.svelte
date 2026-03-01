@@ -20,7 +20,7 @@
 	<div class="accounts">
 		{#each accounts as account}
 			<a href="/accounts/{account.id}" class="account">
-				<div class="account-id">{account.id}</div>
+				<div class="account-id">예금 {account.id}</div>
 				<div class="account-balance">{formatCurrency(account.balance)}</div>
 			</a>
 		{/each}
@@ -72,7 +72,7 @@
 		padding: 0.5rem 1rem;
 		font-size: 1rem;
 		color: #fff;
-		background-color: var(--primary-color);
+		background-color: #007bff;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
