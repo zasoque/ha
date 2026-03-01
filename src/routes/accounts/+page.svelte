@@ -1,5 +1,5 @@
 <script>
-  import { formatCurrency } from "$lib/util/economy.ts";
+	import { formatCurrency } from '$lib/util/economy.ts';
 
 	const { data } = $props();
 	const { accounts } = data;
@@ -20,7 +20,7 @@
 	<div>
 		{#each accounts as account}
 			<div>
-        {account.id} - {formatCurrency(account.balance)}
+				{account.id} - {formatCurrency(account.balance)}
 				<a href="/accounts/{account.id}">보기</a>
 			</div>
 		{/each}

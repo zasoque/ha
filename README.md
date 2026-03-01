@@ -41,10 +41,12 @@ CREATE TABLE accounts (
 ### 3. 거래 API
 
 - **`GET` /transactions**: 거래 내역 조회
-- **`POST` /transactions**: 새 거래 생성
+- **`POST` /transactions/transfer**: 계좌 간 이체 거래 생성
+  - `fromAccountId`: 출금 계좌 ID
+  - `toAccountId`: 입금 계좌 ID
+  - `amount`: 이체 금액
+  - `description`: 거래 설명 (선택 사항)
 - **`GET` /transactions/{transactionId}**: 특정 거래 상세 조회
-- **`PUT` /transactions/{transactionId}**: 거래 정보 업데이트
-- **`DELETE` /transactions/{transactionId}**: 거래 삭제
 
 ```mysql
 CREATE TABLE transactions (

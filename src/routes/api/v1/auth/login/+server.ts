@@ -30,8 +30,6 @@ export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
 			json({ error: 'Failed to exchange code for token', details: error }, { status: 500 });
 		});
 
-	console.log(data);
-
 	cookies.set('token', data.access_token, {
 		path: '/',
 		httpOnly: true,
