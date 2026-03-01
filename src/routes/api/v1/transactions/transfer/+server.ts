@@ -51,8 +51,12 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 	}
 
 	await query(
-		`INSERT INTO transactions (user_id, from_account_id, to_account_id, amount, description) VALUES (?, ?, ?, ?, ?)`,
-		[me.id, fromAccountId, toAccountId, amount, description || null]
+		`INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)`,
+		[fromAccountId, -amount, 'transfer', description || '']
+	);
+	await query(
+		`INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)`,
+		[toAccountId, amount, 'transfer', description || '']
 	);
 	await query(`UPDATE accounts SET balance = balance - ? WHERE id = ? AND user_id = ?`, [
 		amount,
