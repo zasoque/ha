@@ -32,6 +32,7 @@ export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
 
 	cookies.set('token', data.access_token, {
 		path: '/',
+		maxAge: 60 * 60 * 24 * 7, // 1 week
 		httpOnly: true,
 		secure: true,
 		sameSite: 'lax'
