@@ -1,6 +1,6 @@
 <script lang="ts">
 	const { data } = $props();
-	const { people } = data;
+	const { people, page, limit } = data;
 
 	function addPerson() {
 		const id = prompt('추가할 국민 ID를 입력해줘');
@@ -43,6 +43,16 @@
 			location.reload();
 		});
 	}
+
+	function previousPage() {
+		if (page > 1) {
+			location.href = `?page=${parseInt(page) - 1}&limit=${limit}`;
+		}
+	}
+
+	function nextPage() {
+		location.href = `?page=${parseInt(page) + 1}&limit=${limit}`;
+	}
 </script>
 
 <div class="container">
@@ -51,10 +61,15 @@
 		{#each people as person}
 			<li>
 				{person.name} ({person.id}): {person.residence}
-				<button onclick={editPerson(person.id)}>국민 변경</button>
+				<button onclick={editPerson(person.id)}>변경</button>
 			</li>
 		{/each}
 	</ul>
+	<div>
+		<button onclick={previousPage}>&lt;</button>
+		<span>{page}&times;{limit}</span>
+		<button onclick={nextPage}>&gt;</button>
+	</div>
 	<button onclick={addPerson}>국민 추가</button>
 </div>
 
@@ -72,6 +87,7 @@
 
 	button {
 		margin-left: 1rem;
+		margin-right: 1rem;
 		padding: 0.25rem 0.5rem;
 		background-color: #eee;
 		border: 1px solid #ccc;

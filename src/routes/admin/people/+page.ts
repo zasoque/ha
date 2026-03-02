@@ -8,5 +8,5 @@ export const load: Load = async ({ fetch, url }) => {
 		.then((res) => res.json())
 		.then((data) => data.people);
 
-	return { people };
+	return { people, page, limit };
 };

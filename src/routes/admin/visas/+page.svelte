@@ -1,6 +1,6 @@
 <script lang="ts">
 	const { data } = $props();
-	const { visas } = data;
+	const { visas, limit, page } = data;
 
 	function addVisa() {
 		const user_id = prompt('사증 발급 인원 디스코드 ID를 입력해줘');
@@ -42,6 +42,16 @@
 
 		return expiryDate; // YYYY-MM-DD 형식으로 반환
 	}
+
+	function previousPage() {
+		if (page > 1) {
+			window.location.href = `/admin/visas?page=${parseInt(page) - 1}&limit=${limit}`;
+		}
+	}
+
+	function nextPage() {
+		window.location.href = `/admin/visas?page=${parseInt(page) + 1}&limit=${limit}`;
+	}
 </script>
 
 <div class="container">
@@ -56,6 +66,11 @@
 			</li>
 		{/each}
 	</ul>
+	<div>
+		<button onclick={previousPage}>&lt;</button><span>{page}&times;{limit}</span><button
+			onclick={nextPage}>&gt;</button
+		>
+	</div>
 	<button onclick={addVisa}>사증 추가</button>
 </div>
 
@@ -69,5 +84,16 @@
 	.title {
 		font-size: 2rem;
 		font-weight: bold;
+	}
+
+	button {
+		margin-left: 1rem;
+		margin-right: 1rem;
+		border: 1px solid #ccc;
+		padding: 0.25rem 0.5rem;
+		background-color: #eee;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+		border-radius: 4px;
 	}
 </style>
