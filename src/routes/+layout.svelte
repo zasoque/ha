@@ -31,6 +31,7 @@
 		<a href="/">홈</a>
 		{#if me}
 			<a href="/accounts" class="navigation-item">계좌</a>
+			<a href="/products" class="navigation-item">시장</a>
 			<a href="/logout" class="navigation-item">로그아웃</a>
 			<span class="navigation-item">{me.global_name}으로 로그인됨</span>
 		{:else}

@@ -59,3 +59,30 @@ CREATE TABLE transactions (
     FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 ```
+
+### 4. 시장 API
+
+- **`GET` /products**: 시장 품목 조회
+  - URL 쿼리 매개변수:
+    - `page`: 페이지 번호 (기본값: 1)
+    - `limit`: 페이지당 품목 수 (기본값: 20)
+- **`POST` /products**: 새 시장 품목 생성
+  - `name`: 품목 이름
+  - `price`: 품목 가격
+  - `description`: 품목 설명 (선택 사항)
+- **`GET` /products/{marketId}**: 특정 시장 품목 상세 조회
+- **`PUT` /products/{marketId}**: 시장 품목 정보 업데이트
+- **`DELETE` /products/{marketId}**: 시장 품목 삭제
+
+```mysql
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    price DECIMAL(20, 2),
+    description TEXT,
+    owner_id VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id)
+);
+```
