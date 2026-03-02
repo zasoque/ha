@@ -38,7 +38,7 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ name, residence })
+			body: JSON.stringify({ name, residence, id: personId })
 		}).then((res) => {
 			location.reload();
 		});

@@ -40,13 +40,13 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, error: 'Forbidden' }, { status: 403 });
 	}
 
-	const { residence, name } = await request.json();
+	const { residence, name, id } = await request.json();
 
 	if (!residence || !name) {
 		return json({ success: false, error: 'Residence and name are required' }, { status: 400 });
 	}
 
-	await query('UPDATE people SET residence = ? WHERE name = ?', [residence, name]);
+	await query('UPDATE people SET residence = ?, name = ? WHERE id = ?', [residence, name, id]);
 
 	return json({ success: true });
 };
