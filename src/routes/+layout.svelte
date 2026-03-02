@@ -46,6 +46,7 @@
 <div class="footer">
 	<a href="https://w.halv.kr/하은행">하은행 쩌모위키</a>
 	<a href="https://github.com/zasoque/ha">하은행 레포지토리</a>
+	<a href="/policy">이용약관</a>
 </div>
 
 <style>
