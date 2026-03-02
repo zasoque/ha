@@ -3,7 +3,7 @@
 	const { me } = data;
 </script>
 
-<div class="container">하은행에 오신 것을 환영합니다.</div>
+<div class="container">하은행에 온 것을 환영해.</div>
 
 <style>
 	.container {
