@@ -51,10 +51,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		return json({ success: false, message: 'To account not found' }, { status: 404 });
 	}
 
-	description = description?.trim();
-	if (!description || description.length === 0) {
-		description = `${fromAccountId} > ${toAccountId}, ${formatCurrency(amount)}`;
-	}
+	description = description || `${fromAccount.id}>${toAccount[0].id},${formatCurrency(amount)}`;
 
 	await query(
 		`INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)`,
