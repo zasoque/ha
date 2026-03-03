@@ -1,4 +1,5 @@
 <script>
+	import Container from '$lib/components/Container.svelte';
 	import { createTwoFilesPatch } from 'diff';
 
 	let one = '';
@@ -9,19 +10,13 @@
 	}
 </script>
 
-<div class="container">
+<Container>
 	<textarea bind:value={one}></textarea>
 	<textarea bind:value={two}></textarea>
 	<textarea readonly value={diff()}></textarea>
-</div>
+</Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
 	textarea {
 		width: 100%;
 		display: block;

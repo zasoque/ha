@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
 
 	const { data } = $props();
@@ -31,8 +33,8 @@
 	}
 </script>
 
-<div class="container">
-	<div class="title">시장</div>
+<Container>
+	<Title>시장</Title>
 	<div class="description">
 		이 시장은 중개의 대상이 되고, 실제 거래는 본인과 직접 만나서 하기를 바라.
 	</div>
@@ -50,21 +52,9 @@
 		{/each}
 	</div>
 	<button class="new-product" onclick={newProduct}>새로운 상품 출품</button>
-</div>
+</Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	.title {
-		font-size: 2rem;
-		font-weight: bold;
-		margin-bottom: 1rem;
-	}
-
 	.description {
 		margin-bottom: 1rem;
 		color: #555;

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	const { data } = $props();
 	const { people, page, limit } = data;
 
@@ -55,9 +57,9 @@
 	}
 </script>
 
-<div class="container">
+<Container>
 	<div><a href="/admin">뒤로 가기</a></div>
-	<div class="title">국민 관리</div>
+	<Title>국민 관리</Title>
 	<table class="table">
 		<tbody>
 			<tr>
@@ -82,7 +84,7 @@
 		<button onclick={nextPage}>&gt;</button>
 	</div>
 	<button onclick={addPerson}>국민 추가</button>
-</div>
+</Container>
 
 <style>
 	.container {

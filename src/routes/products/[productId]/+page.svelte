@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
 
 	const { data } = $props();
@@ -37,9 +39,9 @@
 	}
 </script>
 
-<div class="container">
+<Container>
 	<div class="back"><a href="/products">뒤로 가기</a></div>
-	<div class="title">상품 상세</div>
+	<Title>상품 상세</Title>
 	<div class="name">{product.name}</div>
 	<div class="description">{product.description}</div>
 	<div class="price">{formatCurrency(product.price)}</div>
@@ -50,7 +52,7 @@
 			<button class="delete-product" onclick={deleteProduct}>상품 삭제</button>
 		{/if}
 	</div>
-</div>
+</Container>
 
 <style>
 	.container {

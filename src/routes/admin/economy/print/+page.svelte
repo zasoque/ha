@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	let { data } = $props();
 	let { token } = data;
 
@@ -37,9 +39,9 @@
 	}
 </script>
 
-<div class="container">
+<Container>
 	<div><a href="/admin/economy">뒤로 가기</a></div>
-	<div class="title">냥푼 발행</div>
+	<Title>냥푼 발행</Title>
 	<div class="description">
 		이 페이지에서 냥푼을 발행할 수 있어. 발행한 냥푼은 즉시 해당 계좌로 입금돼.
 	</div>
@@ -49,7 +51,7 @@
 	<input type="text" placeholder="계좌번호" bind:value={accountNumber} />
 	<input type="number" placeholder="발행할 냥푼 양" min="0" step="0.01" bind:value={amountStr} />
 	<button class="new-product" onclick={newCurrency}>냥푼 발행하기</button>
-</div>
+</Container>
 
 <style>
 	.container {

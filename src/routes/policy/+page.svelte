@@ -1,5 +1,10 @@
-<div class="container">
-	<div class="title">서비스 이용약관</div>
+<script lang="ts">
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
+</script>
+
+<Container>
+	<Title>서비스 이용약관</Title>
 	<div class="content">
 		<div class="jo">제1조 (목적 및 성격)</div>
 		<ol>
@@ -88,7 +93,7 @@
 			<li>이용자가 개정 후 계속 이용하는 경우 개정 약관에 동의한 것으로 본다.</li>
 		</ol>
 	</div>
-	<div class="title">개인정보 처리방침</div>
+	<Title>개인정보 처리방침</Title>
 	<div class="content">
 		<div class="jo">제1조 (개인정보의 처리 목적)</div>
 		<div class="sentence">
@@ -169,19 +174,4 @@
 		<div class="jo">제10조 (개정)</div>
 		<div class="sentence">본 방침은 개정될 수 있으며, 변경 사항은 공지 후 효력을 가진다.</div>
 	</div>
-</div>
-
-<style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	.title {
-		font-size: 1.5rem;
-		font-weight: bold;
-		margin-bottom: 1rem;
-		margin-top: 2rem;
-	}
-</style>
+</Container>

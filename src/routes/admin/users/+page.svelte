@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	const { data } = $props();
 	const { users } = data;
 
@@ -30,29 +32,18 @@
 	}
 </script>
 
-<div class="container">
+<Container>
 	<div><a href="/admin">뒤로 가기</a></div>
-	<div class="title">관리자 관리</div>
+	<Title>관리자 관리</Title>
 	<ul>
 		{#each users as user}
 			<li>{user.id} <button onclick={deleteAdmin(user.id)}>관리자 제거</button></li>
 		{/each}
 	</ul>
 	<button class="button" onclick={addAdmin}>관리자 추가</button>
-</div>
+</Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-
-	.title {
-		font-size: 2rem;
-		font-weight: bold;
-	}
-
 	button {
 		margin-left: 1rem;
 		padding: 0.25rem 0.5rem;

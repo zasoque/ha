@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	const { data } = $props();
 	const { visas, limit, page } = data;
 
@@ -54,9 +56,9 @@
 	}
 </script>
 
-<div class="container">
+<Container>
 	<div><a href="/admin">뒤로 가기</a></div>
-	<div class="title">사증 관리</div>
+	<Title>사증 관리</Title>
 	<table class="table">
 		<thead>
 			<tr>
@@ -83,18 +85,16 @@
 		>
 	</div>
 	<button onclick={addVisa}>사증 추가</button>
-</div>
+</Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 0 2rem;
+	a {
+		color: black;
+		text-decoration: none;
 	}
 
-	.title {
-		font-size: 2rem;
-		font-weight: bold;
+	a:hover {
+		text-decoration: underline;
 	}
 
 	.table {
