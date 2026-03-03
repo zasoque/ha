@@ -57,14 +57,24 @@
 
 <div class="container">
 	<div class="title">국민 관리</div>
-	<ul>
-		{#each people as person}
-			<li>
-				{person.name} ({person.id}): {person.residence}
-				<button onclick={editPerson(person.id)}>변경</button>
-			</li>
-		{/each}
-	</ul>
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>본명</th>
+				<th>예명</th>
+				<th>거주지</th>
+				<th>동작</th>
+			</tr>
+			{#each people as person}
+				<tr>
+					<td>{person.id}</td>
+					<td>{person.name}</td>
+					<td>{person.residence}</td>
+					<td><button onclick={editPerson(person.id)}>변경</button></td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 	<div>
 		<button onclick={previousPage}>&lt;</button>
 		<span>{page}&times;{limit}</span>
@@ -83,6 +93,21 @@
 	.title {
 		font-size: 2rem;
 		font-weight: bold;
+	}
+
+	.table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.table th,
+	.table td {
+		padding: 0.5rem;
+		border: 1px solid #ccc;
+	}
+
+	.table th {
+		background-color: #f5f5f5;
 	}
 
 	button {

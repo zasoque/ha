@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
 		path: '/',
 		maxAge: 60 * 60 * 24 * 7, // 1 week
 		httpOnly: true,
-		secure: true,
+		secure: request.url.startsWith('https://'),
 		sameSite: 'lax'
 	});
 

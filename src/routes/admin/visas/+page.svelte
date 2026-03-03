@@ -56,6 +56,7 @@
 
 <div class="container">
 	<div class="title">사증 관리</div>
+	<!--
 	<ul>
 		{#each visas as visa}
 			<li>
@@ -66,6 +67,27 @@
 			</li>
 		{/each}
 	</ul>
+  -->
+	<table class="table">
+		<thead>
+			<tr>
+				<th>인원 디스코드 ID</th>
+				<th>사증 종류</th>
+				<th>발급 날짜</th>
+				<th>만료 날짜</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each visas as visa}
+				<tr>
+					<td>{visa.user_id}</td>
+					<td>{visa.type}</td>
+					<td>{new Date(visa.date_issued).toLocaleDateString()}</td>
+					<td>{getExpiry(visa.date_issued, visa.type).toLocaleDateString()}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 	<div>
 		<button onclick={previousPage}>&lt;</button><span>{page}&times;{limit}</span><button
 			onclick={nextPage}>&gt;</button
@@ -84,6 +106,22 @@
 	.title {
 		font-size: 2rem;
 		font-weight: bold;
+	}
+
+	.table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.table th,
+	.table td {
+		border: 1px solid #ccc;
+		padding: 0.5rem;
+		text-align: left;
+	}
+
+	.table th {
+		background-color: #f5f5f5;
 	}
 
 	button {
