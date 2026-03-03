@@ -30,9 +30,11 @@
 	</div>
 	<div class="navigation">
 		<a href="/">홈</a>
+		<a href="/items">아이템 목록</a>
 		{#if me()}
 			<a href="/accounts" class="navigation-item">계좌</a>
 			<a href="/products" class="navigation-item">시장</a>
+			<a href="/inventory" class="navigation-item">인벤토리</a>
 			{#if isAdmin()}
 				<a href="/admin" class="navigation-item">관리자</a>
 			{/if}

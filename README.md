@@ -151,3 +151,53 @@ CREATE TABLE visas (
 - **`POST` /admin/economy/print**: 화폐 발행 (관리자 권한 필요)
   - `amount`: 발행할 화폐 양
   - `account`: 화폐를 입금할 계좌 ID
+
+### 6. 아이템 API `/items`
+
+- **`GET` /items**: 아이템 목록 조회
+  - URL 쿼리 매개변수:
+    - `page`: 페이지 번호 (기본값: 1)
+    - `limit`: 페이지당 아이템 수 (기본값: 50)
+- **`POST` /items**: 새 아이템 생성
+  - `name`: 아이템 이름
+  - `description`: 아이템 설명 (선택 사항)
+- **`GET` /items/{itemId}**: 특정 아이템 상세 조회
+- **`PUT` /items/{itemId}**: 아이템 정보 업데이트
+- **`DELETE` /items/{itemId}**: 아이템 삭제
+
+```mysql
+CREATE TABLE items (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    description TEXT,
+    maker VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (maker) REFERENCES users(id)
+);
+```
+
+#### 인벤토리 API `/inventory`
+
+- **`GET` /inventory**: 사용자 인벤토리 조회
+- **`POST` /inventory/users/{userId}**: 인벤토리에 아이템 추가 (관리자 권한 필요)
+  - `item_id`: 추가할 아이템 ID
+  - `quantity`: 추가할 아이템 수량
+- **`DELETE` /inventory/users/{userId}**: 인벤토리에서 아이템 제거 (관리자 권한 필요)
+  - `item_id`: 제거할 아이템 ID
+  - `quantity`: 제거할 아이템 수량
+- **`POST` /inventory/transfer**: 아이템 주기
+  - `to_user_id`: 도착 사용자 ID
+  - `item_id`: 이체할 아이템 ID
+  - `quantity`: 이체할 아이템 수량
+
+```mysql
+CREATE TABLE inventory (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    user_id VARCHAR(255),
+    item_id INTEGER,
+    quantity INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);
+```
