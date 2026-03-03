@@ -1,8 +1,8 @@
 import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
-import type { Load } from '@sveltejs/kit';
+import type { LayoutServerLoad } from './$types';
 
-export const load: Load = async ({ cookies }) => {
+export const load: LayoutServerLoad = async ({ cookies }) => {
 	const token = cookies.get('token');
 
 	let me;
