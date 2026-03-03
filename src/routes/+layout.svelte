@@ -45,7 +45,7 @@
 </div>
 {@render children()}
 <div class="footer">
-	<a href="https://w.halv.kr/하은행">하은행 쩌모위키</a>
+	<a href="https://w.halv.kr/하">하 쩌모위키</a>
 	<a href="https://github.com/zasoque/ha">하은행 레포지토리</a>
 	<a href="/diff">변경사항 추적기</a>
 	<a href="/policy">이용약관</a>
