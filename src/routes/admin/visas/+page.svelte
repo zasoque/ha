@@ -25,7 +25,7 @@
 		});
 	}
 
-	function getExpiry(dateIssued: string, type: string): string {
+	function getExpiry(dateIssued: string, type: string): Date {
 		const issuedDate = new Date(dateIssued);
 		let expiryDate: Date;
 
@@ -39,7 +39,7 @@
 				expiryDate.setDate(expiryDate.getDate() - 1); // 한 달 후의 전날로 설정
 				break;
 			default:
-				return '알 수 없는 사증 종류';
+				return new Date(issuedDate); // 기본적으로 발급 날짜를 반환
 		}
 
 		return expiryDate; // YYYY-MM-DD 형식으로 반환

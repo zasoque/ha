@@ -55,12 +55,6 @@
 </Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
 	.back {
 		color: #007bff;
 		cursor: pointer;
@@ -70,12 +64,6 @@
 	.back a {
 		text-decoration: none;
 		color: inherit;
-	}
-
-	.title {
-		font-size: 1.5rem;
-		font-weight: bold;
-		margin-bottom: 1rem;
 	}
 
 	.name {
