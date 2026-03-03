@@ -47,6 +47,7 @@ CREATE TABLE accounts (
   - `amount`: 이체 금액
   - `description`: 거래 설명 (선택 사항)
 - **`GET` /transactions/{transactionId}**: 특정 거래 상세 조회
+- **`GET` /transactions/accounts/{accountId}**: 특정 계좌 거래 내역 조회
 
 ```mysql
 CREATE TABLE transactions (

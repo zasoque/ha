@@ -1,5 +1,6 @@
 import { getMe } from '$lib/discord/users';
 import { query } from '$lib/server/db';
+import { formatCurrency } from '$lib/util/economy';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ cookies, request }) => {
@@ -9,7 +10,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		return json({ success: false, message: 'No token found' }, { status: 401 });
 	}
 
-	const { fromAccountId, toAccountId, amount, description } = await request.json();
+	let { fromAccountId, toAccountId, amount, description } = await request.json();
 
 	if (!fromAccountId || !toAccountId || !amount) {
 		return json({ success: false, message: 'Missing required parameters' }, { status: 400 });
@@ -48,6 +49,11 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 
 	if (toAccount.length === 0) {
 		return json({ success: false, message: 'To account not found' }, { status: 404 });
+	}
+
+	description = description?.trim();
+	if (!description || description.length === 0) {
+		description = `${fromAccountId} > ${toAccountId}, ${formatCurrency(amount)}`;
 	}
 
 	await query(

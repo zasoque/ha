@@ -3,9 +3,11 @@
 
 	const { data } = $props();
 	const account = $derived(() => data.account);
+	const me = $derived(() => data.me);
 
 	let amount = $state(0);
 	let toAccountId = $state('');
+	let description = $state('');
 
 	async function transfer() {
 		await fetch(`/api/v1/transactions/transfer`, {
@@ -16,7 +18,8 @@
 			body: JSON.stringify({
 				fromAccountId: account().id,
 				toAccountId,
-				amount
+				amount,
+				description
 			})
 		})
 			.then((response) => response.json())
@@ -42,6 +45,7 @@
 	<div>
 		<input type="number" min="0" step="0.01" bind:value={amount} placeholder="송금할 금액" />
 	</div>
+	<div><input type="text" placeholder="송금 설명" bind:value={description} /></div>
 	<div><button onclick={transfer}>송금하기</button></div>
 </div>
 

@@ -3,6 +3,7 @@
 
 	const { data } = $props();
 	const account = $derived(() => data.account);
+	const transactions = $derived(() => data.transactions);
 
 	function deleteAccount() {
 		fetch(`/api/v1/accounts/${account().id}`, {
@@ -37,6 +38,22 @@
 	<div class="updated-at">
 		<div class="row-key">갱신일자</div>
 		<div class="row-value">{new Date(account().updated_at).toLocaleString()}</div>
+	</div>
+	<div class="transactions">
+		{#each transactions() as transaction}
+			<div class="transaction">
+				<div class="row-key">거래 ID</div>
+				<div class="row-value">{transaction.id}</div>
+				<div class="row-key">금액</div>
+				<div class="row-value">{formatCurrency(transaction.amount)}</div>
+				<div class="row-key">타입</div>
+				<div class="row-value">{transaction.type}</div>
+				<div class="row-key">설명</div>
+				<div class="row-value">{transaction.description}</div>
+				<div class="row-key">날짜</div>
+				<div class="row-value">{new Date(transaction.created_at).toLocaleString()}</div>
+			</div>
+		{/each}
 	</div>
 	<div class="transfer">
 		<a href="/accounts/{account().id}/transfer">송금</a>
@@ -113,5 +130,14 @@
 
 	.delete button:hover {
 		background-color: #c0392b;
+	}
+
+	.transaction {
+		border: 1px solid #ddd;
+		padding: 1rem;
+		margin-bottom: 1rem;
+		border-radius: 4px;
+		display: grid;
+		grid-template-columns: 1fr 2fr;
 	}
 </style>
