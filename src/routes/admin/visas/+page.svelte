@@ -2,7 +2,9 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	const { data } = $props();
-	const { visas, limit, page } = data;
+	const visas = $derived(() => data.visas);
+	const limit = $derived(() => data.limit);
+	const page = $derived(() => data.page);
 
 	function addVisa() {
 		const user_id = prompt('사증 발급 인원 디스코드 ID를 입력해줘');
@@ -46,13 +48,13 @@
 	}
 
 	function previousPage() {
-		if (page > 1) {
-			window.location.href = `/admin/visas?page=${parseInt(page) - 1}&limit=${limit}`;
+		if (parseInt(page()) > 1) {
+			window.location.href = `/admin/visas?page=${parseInt(page()) - 1}&limit=${limit()}`;
 		}
 	}
 
 	function nextPage() {
-		window.location.href = `/admin/visas?page=${parseInt(page) + 1}&limit=${limit}`;
+		window.location.href = `/admin/visas?page=${parseInt(page()) + 1}&limit=${limit()}`;
 	}
 </script>
 
@@ -69,7 +71,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each visas as visa}
+			{#each visas() as visa}
 				<tr>
 					<td>{visa.user_id}</td>
 					<td>{visa.type}</td>
@@ -80,7 +82,7 @@
 		</tbody>
 	</table>
 	<div>
-		<button onclick={previousPage}>&lt;</button><span>{page}&times;{limit}</span><button
+		<button onclick={previousPage}>&lt;</button><span>{page()}&times;{limit()}</span><button
 			onclick={nextPage}>&gt;</button
 		>
 	</div>

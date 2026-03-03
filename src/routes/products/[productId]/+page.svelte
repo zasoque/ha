@@ -4,14 +4,15 @@
 	import { formatCurrency } from '$lib/util/economy';
 
 	const { data } = $props();
-	const { product, me } = data;
+	const product = $derived(() => data.product);
+	const me = $derived(() => data.me);
 
 	function editProduct() {
-		let name = prompt('바꿀 상품 이름이 뭐야?', product.name);
+		let name = prompt('바꿀 상품 이름이 뭐야?', product().name);
 		if (name === null) return;
-		let description = prompt('바꿀 상품 설명을 입력해줘.', product.description);
+		let description = prompt('바꿀 상품 설명을 입력해줘.', product().description);
 		if (description === null) return;
-		let priceStr = prompt('바꿀 상품 가격을 냥 단위로 입력해줘.', product.price.toString());
+		let priceStr = prompt('바꿀 상품 가격을 냥 단위로 입력해줘.', product().price.toString());
 		if (priceStr === null) return;
 
 		const price = parseFloat(priceStr);
@@ -21,7 +22,7 @@
 			return;
 		}
 
-		fetch(`/api/v1/products/${product.id}`, {
+		fetch(`/api/v1/products/${product().id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
@@ -33,7 +34,7 @@
 	function deleteProduct() {
 		if (!confirm('정말 이 상품을 삭제할래?')) return;
 
-		fetch(`/api/v1/products/${product.id}`, {
+		fetch(`/api/v1/products/${product().id}`, {
 			method: 'DELETE'
 		}).then(() => (location.href = '/products'));
 	}
@@ -42,12 +43,12 @@
 <Container>
 	<div class="back"><a href="/products">뒤로 가기</a></div>
 	<Title>상품 상세</Title>
-	<div class="name">{product.name}</div>
-	<div class="description">{product.description}</div>
-	<div class="price">{formatCurrency(product.price)}</div>
-	<div class="owner">판매자: {product.owner_name}</div>
+	<div class="name">{product().name}</div>
+	<div class="description">{product().description}</div>
+	<div class="price">{formatCurrency(product().price)}</div>
+	<div class="owner">판매자: {product().owner_name}</div>
 	<div class="buttons">
-		{#if me.id === product.owner_id}
+		{#if me().id === product().owner_id}
 			<button class="edit-product" onclick={editProduct}>상품 수정</button>
 			<button class="delete-product" onclick={deleteProduct}>상품 삭제</button>
 		{/if}

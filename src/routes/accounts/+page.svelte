@@ -1,10 +1,10 @@
 <script>
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
-	import { formatCurrency } from '$lib/util/economy.ts';
+	import { formatCurrency } from '$lib/util/economy';
 
 	const { data } = $props();
-	const { accounts } = data;
+	const accounts = $derived(() => data.accounts);
 
 	function createAccount() {
 		fetch('/api/v1/accounts', {
@@ -20,7 +20,7 @@
 <Container>
 	<Title>계좌</Title>
 	<div class="accounts">
-		{#each accounts as account}
+		{#each accounts() as account}
 			<a href="/accounts/{account.id}" class="account">
 				<div class="account-id">예금 {account.id}</div>
 				<div class="account-balance">{formatCurrency(account.balance)}</div>

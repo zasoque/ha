@@ -2,7 +2,9 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	const { data } = $props();
-	const { people, page, limit } = data;
+	const people = $derived(() => data.people);
+	const page = $derived(() => parseInt(data.page));
+	const limit = $derived(() => parseInt(data.limit));
 
 	function addPerson() {
 		const id = prompt('추가할 국민 ID를 입력해줘');
@@ -25,35 +27,37 @@
 		});
 	}
 
-	function editPerson(personId) {
-		const person = people.find((p) => p.id === personId);
-		if (!person) return;
+	function editPerson(personId: string): () => void {
+		const person = people().find((p: any) => p.id === personId);
+		if (!person) return () => {};
 
 		const name = prompt('국민 이름을 입력해줘', person.name);
-		if (!name) return;
+		if (!name) return () => {};
 
 		const residence = prompt('국민 거주지를 입력해줘', person.residence);
-		if (!residence) return;
+		if (!residence) return () => {};
 
-		fetch(`/api/v1/admin/people/${personId}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ name, residence, id: personId })
-		}).then((res) => {
-			location.reload();
-		});
+		return () => {
+			fetch(`/api/v1/admin/people/${personId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ name, residence, id: personId })
+			}).then((res) => {
+				location.reload();
+			});
+		};
 	}
 
 	function previousPage() {
-		if (page > 1) {
-			location.href = `?page=${parseInt(page) - 1}&limit=${limit}`;
+		if (page() > 1) {
+			location.href = `?page=${page() - 1}&limit=${limit()}`;
 		}
 	}
 
 	function nextPage() {
-		location.href = `?page=${parseInt(page) + 1}&limit=${limit}`;
+		location.href = `?page=${page() + 1}&limit=${limit()}`;
 	}
 </script>
 
@@ -68,7 +72,7 @@
 				<th>거주지</th>
 				<th>동작</th>
 			</tr>
-			{#each people as person}
+			{#each people() as person}
 				<tr>
 					<td>{person.id}</td>
 					<td>{person.name}</td>
@@ -80,24 +84,13 @@
 	</table>
 	<div>
 		<button onclick={previousPage}>&lt;</button>
-		<span>{page}&times;{limit}</span>
+		<span>{page()}&times;{limit()}</span>
 		<button onclick={nextPage}>&gt;</button>
 	</div>
 	<button onclick={addPerson}>국민 추가</button>
 </Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-
-	.title {
-		font-size: 2rem;
-		font-weight: bold;
-	}
-
 	.table {
 		width: 100%;
 		border-collapse: collapse;

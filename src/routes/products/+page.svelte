@@ -4,7 +4,7 @@
 	import { formatCurrency } from '$lib/util/economy';
 
 	const { data } = $props();
-	const { products } = data;
+	const products = $derived(() => data.products);
 
 	async function newProduct() {
 		const name = prompt('상품 이름이 뭐야?');
@@ -42,7 +42,7 @@
 		이 거래에서 발생하는 일련의 피해에 대해서는 하은행에서 책임지지 않으니 주의해!
 	</div>
 	<div class="products">
-		{#each products as product}
+		{#each products() as product}
 			<a class="product" href="/products/{product.id}">
 				<div class="product-name">{product.name}</div>
 				<div class="product-description">{product.description}</div>

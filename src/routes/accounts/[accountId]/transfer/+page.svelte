@@ -2,10 +2,10 @@
 	import { formatCurrency } from '$lib/util/economy';
 
 	const { data } = $props();
-	const { account } = data;
+	const account = $derived(() => data.account);
 
-	let amount = 0;
-	let toAccountId;
+	let amount = $state(0);
+	let toAccountId = $state('');
 
 	async function transfer() {
 		await fetch(`/api/v1/transactions/transfer`, {
@@ -14,7 +14,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				fromAccountId: account.id,
+				fromAccountId: account().id,
 				toAccountId,
 				amount
 			})
@@ -35,9 +35,9 @@
 </script>
 
 <div class="container">
-	<div class="subtitle">{account.id} 계좌에서 송금합니다.</div>
+	<div class="subtitle">{account().id} 계좌에서 송금합니다.</div>
 	<div class="title">송금</div>
-	<div>현재 잔액: {formatCurrency(account.balance)}</div>
+	<div>현재 잔액: {formatCurrency(account().balance)}</div>
 	<div><input type="text" placeholder="송금할 계좌번호" bind:value={toAccountId} /></div>
 	<div>
 		<input type="number" min="0" step="0.01" bind:value={amount} placeholder="송금할 금액" />

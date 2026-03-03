@@ -2,10 +2,10 @@
 	import { formatCurrency } from '$lib/util/economy';
 
 	const { data } = $props();
-	const { account } = data;
+	const account = $derived(() => data.account);
 
 	function deleteAccount() {
-		fetch(`/api/v1/accounts/${account.id}`, {
+		fetch(`/api/v1/accounts/${account().id}`, {
 			method: 'DELETE'
 		}).then((response) => {
 			if (response.ok) {
@@ -24,22 +24,22 @@
 	<div class="title">계좌 상세</div>
 	<div class="account-id">
 		<div class="row-key">계좌번호</div>
-		<div class="row-value">{account.id}</div>
+		<div class="row-value">{account().id}</div>
 	</div>
 	<div class="balance">
 		<div class="row-key">잔액</div>
-		<div class="row-value">{formatCurrency(account.balance)}</div>
+		<div class="row-value">{formatCurrency(account().balance)}</div>
 	</div>
 	<div class="created-at">
 		<div class="row-key">개설일자</div>
-		<div class="row-value">{new Date(account.created_at).toLocaleString()}</div>
+		<div class="row-value">{new Date(account().created_at).toLocaleString()}</div>
 	</div>
 	<div class="updated-at">
 		<div class="row-key">갱신일자</div>
-		<div class="row-value">{new Date(account.updated_at).toLocaleString()}</div>
+		<div class="row-value">{new Date(account().updated_at).toLocaleString()}</div>
 	</div>
 	<div class="transfer">
-		<a href="/accounts/{account.id}/transfer">송금</a>
+		<a href="/accounts/{account().id}/transfer">송금</a>
 	</div>
 	<div class="delete">
 		<button onclick={deleteAccount}>계좌 삭제하기</button>

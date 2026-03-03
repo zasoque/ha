@@ -1,8 +1,6 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
-	let { data } = $props();
-	let { token } = data;
 
 	let accountNumber = '';
 	let amountStr = '';
@@ -17,8 +15,7 @@
 		await fetch('/api/v1/admin/economy/print', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({ account: accountNumber, amount })
 		})
@@ -54,17 +51,6 @@
 </Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	.title {
-		font-size: 2rem;
-		font-weight: bold;
-	}
-
 	.description {
 		margin-bottom: 1rem;
 		color: #555;

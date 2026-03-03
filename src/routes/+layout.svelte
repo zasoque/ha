@@ -2,7 +2,8 @@
 	import favicon from '$lib/assets/favicon.svg';
 
 	const { children, data } = $props();
-	const { me, isAdmin } = data;
+	const me = $derived(() => data.me);
+	const isAdmin = $derived(() => data.isAdmin);
 </script>
 
 <svelte:head>
@@ -29,14 +30,14 @@
 	</div>
 	<div class="navigation">
 		<a href="/">홈</a>
-		{#if me}
+		{#if me()}
 			<a href="/accounts" class="navigation-item">계좌</a>
 			<a href="/products" class="navigation-item">시장</a>
-			{#if isAdmin}
+			{#if isAdmin()}
 				<a href="/admin" class="navigation-item">관리자</a>
 			{/if}
 			<a href="/logout" class="navigation-item">로그아웃</a>
-			<span class="navigation-item">{me.global_name}으로 로그인됨</span>
+			<span class="navigation-item">{me().global_name}으로 로그인됨</span>
 		{:else}
 			<a href="/login">로그인</a>
 		{/if}

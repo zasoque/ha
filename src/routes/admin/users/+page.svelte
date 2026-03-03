@@ -2,7 +2,7 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	const { data } = $props();
-	const { users } = data;
+	const users = $derived(() => data.users);
 
 	async function addAdmin() {
 		const id = prompt('추가할 관리자 ID를 입력해줘');
@@ -36,7 +36,7 @@
 	<div><a href="/admin">뒤로 가기</a></div>
 	<Title>관리자 관리</Title>
 	<ul>
-		{#each users as user}
+		{#each users() as user}
 			<li>{user.id} <button onclick={deleteAdmin(user.id)}>관리자 제거</button></li>
 		{/each}
 	</ul>
