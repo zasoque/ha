@@ -42,7 +42,7 @@
 	<ul>
 		{#each inventory() as stock}
 			<li>
-				{stock.item.name} &times; {stock.quantity}<br />
+				{stock.item.name} #{stock.item_id} &times; {stock.quantity}<br />
 				{stock.item.description}<br />
 				<button onclick={give(stock.item_id)}>주기</button>
 			</li>
