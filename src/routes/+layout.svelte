@@ -106,4 +106,31 @@
 	.footer a:hover {
 		text-decoration: underline;
 	}
+
+	@media (max-width: 600px) {
+		.header {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.navigation {
+			margin-top: 0.5rem;
+			display: flex;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.navigation a {
+			margin-left: 0;
+			margin-right: 1rem;
+		}
+
+		.footer {
+			flex-direction: column;
+		}
+
+		.footer a {
+			margin: 0.5rem 0;
+		}
+	}
 </style>
