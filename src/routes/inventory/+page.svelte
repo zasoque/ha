@@ -16,10 +16,14 @@
 				return;
 			}
 
-			fetch(`/api/v1/inventory/users/${userId}`, {
+			fetch(`/api/v1/inventory/transfer`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ item_id: itemId, quantity })
+				body: JSON.stringify({
+					to_user_id: userId,
+					item_id: itemId,
+					quantity: quantity
+				})
 			}).then((res) => {
 				if (res.ok) {
 					alert('아이템이 성공적으로 지급되었습니다!');
