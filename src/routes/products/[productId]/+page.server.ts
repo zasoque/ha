@@ -1,3 +1,4 @@
+import { getUserName } from '$lib/server/people';
 import type { Load } from '@sveltejs/kit';
 
 export const load: Load = async ({ parent, fetch, params }) => {
@@ -10,6 +11,8 @@ export const load: Load = async ({ parent, fetch, params }) => {
 	}
 
 	const mine = (await parent()).me === product.product.owner_id;
+
+	product.product.owner_name = await getUserName(product.product.owner_id);
 
 	return { product: product.product, mine };
 };

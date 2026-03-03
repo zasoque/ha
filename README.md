@@ -144,3 +144,9 @@ CREATE TABLE visas (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 ```
+
+#### 경제 API `/admin/economy`
+
+- **`POST` /admin/economy/print**: 화폐 발행 (관리자 권한 필요)
+  - `amount`: 발행할 화폐 양
+  - `account`: 화폐를 입금할 계좌 ID

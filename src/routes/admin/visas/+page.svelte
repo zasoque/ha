@@ -55,19 +55,8 @@
 </script>
 
 <div class="container">
+	<div><a href="/admin">뒤로 가기</a></div>
 	<div class="title">사증 관리</div>
-	<!--
-	<ul>
-		{#each visas as visa}
-			<li>
-				{visa.user_id} ({visa.type}), {new Date(visa.date_issued).toLocaleDateString()} 발행 ({getExpiry(
-					visa.date_issued,
-					visa.type
-				).toLocaleDateString()} 만료)
-			</li>
-		{/each}
-	</ul>
-  -->
 	<table class="table">
 		<thead>
 			<tr>

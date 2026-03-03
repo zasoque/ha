@@ -1,10 +1,9 @@
 <div class="container">
-	<div class="title">관리자</div>
+	<div><a href="/admin">뒤로 가기</a></div>
+	<div class="title">경제 관리</div>
 	<ul>
-		<li><a href="/admin/users">관리자 관리</a></li>
-		<li><a href="/admin/people">국민 관리</a></li>
-		<li><a href="/admin/visas">사증 관리</a></li>
-		<li><a href="/admin/economy">경제 관리</a></li>
+		<li><a href="/admin/economy/transactions">거래 내역</a></li>
+		<li><a href="/admin/economy/print">냥푼 발행</a></li>
 	</ul>
 </div>
 

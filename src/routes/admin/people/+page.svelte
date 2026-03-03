@@ -56,6 +56,7 @@
 </script>
 
 <div class="container">
+	<div><a href="/admin">뒤로 가기</a></div>
 	<div class="title">국민 관리</div>
 	<table class="table">
 		<tbody>

@@ -31,6 +31,7 @@
 </script>
 
 <div class="container">
+	<div><a href="/admin">뒤로 가기</a></div>
 	<div class="title">관리자 관리</div>
 	<ul>
 		{#each users as user}

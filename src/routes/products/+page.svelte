@@ -45,7 +45,7 @@
 				<div class="product-name">{product.name}</div>
 				<div class="product-description">{product.description}</div>
 				<div class="product-price">{formatCurrency(product.price)}</div>
-				<div class="product-owner">{product.owner_id}</div>
+				<div class="product-owner">{product.owner_name}</div>
 			</a>
 		{/each}
 	</div>

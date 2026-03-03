@@ -43,7 +43,7 @@
 	<div class="name">{product.name}</div>
 	<div class="description">{product.description}</div>
 	<div class="price">{formatCurrency(product.price)}</div>
-	<div class="owner">판매자: {product.owner_id}</div>
+	<div class="owner">판매자: {product.owner_name}</div>
 	<div class="buttons">
 		{#if me.id === product.owner_id}
 			<button class="edit-product" onclick={editProduct}>상품 수정</button>
