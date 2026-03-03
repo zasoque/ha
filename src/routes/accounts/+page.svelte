@@ -1,4 +1,6 @@
 <script>
+	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy.ts';
 
 	const { data } = $props();
@@ -15,8 +17,8 @@
 	}
 </script>
 
-<div class="container">
-	<div class="title">계좌</div>
+<Container>
+	<Title>계좌</Title>
 	<div class="accounts">
 		{#each accounts as account}
 			<a href="/accounts/{account.id}" class="account">
@@ -26,21 +28,9 @@
 		{/each}
 	</div>
 	<div><button onclick={createAccount} class="create-account">계좌 개설하기</button></div>
-</div>
+</Container>
 
 <style>
-	.container {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-
-	.title {
-		font-size: 2rem;
-		font-weight: bold;
-		margin-bottom: 1rem;
-	}
-
 	.accounts {
 		display: flex;
 		flex-direction: column;
