@@ -53,9 +53,10 @@
 		>
 	</div>
 	<div class="navigation">
-		<a href="/">홈</a>
-		<a href="/items">아이템 목록</a>
+		<a href="/" class="navigation-item">홈</a>
+		<a href="/items" class="navigation-item">아이템</a>
 		{#if me()}
+			<a href="/notifications" class="navigation-item">알림</a>
 			<a href="/accounts" class="navigation-item">계좌</a>
 			<a href="/products" class="navigation-item">시장</a>
 			<a href="/inventory" class="navigation-item">인벤토리</a>

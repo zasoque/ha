@@ -201,3 +201,18 @@ CREATE TABLE inventory (
     FOREIGN KEY (item_id) REFERENCES items(id)
 );
 ```
+
+### 7. 알림 API `/notifications`
+
+- **`GET` /notifications**: 사용자 알림 목록 조회
+
+```mysql
+CREATE TABLE notifications (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    user_id VARCHAR(255),
+    message TEXT,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+```
