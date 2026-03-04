@@ -217,3 +217,114 @@ CREATE TABLE notifications (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 ```
+
+### 8. 지도 API `/maps`
+
+#### 토지 API `/maps/lands`
+
+- **`GET` /maps/lands**: 토지 목록 조회
+- **`POST` /maps/lands**: 새 토지 생성
+  - `name`: 토지 이름
+  - `owner_id`: 토지 소유자 ID (Discord ID)
+  - `x`: 토지 X 좌표
+  - `y`: 토지 Y 좌표
+  - `color`: 토지 색상 (예: `#FF0000`)
+  - `account_id`: 토지 개발 비용을 지불할 계좌 ID
+- **`GET` /maps/lands/{landId}**: 특정 토지 상세 조회
+- **`PUT` /maps/lands/{landId}**: 토지 정보 업데이트 (지주)
+- **`DELETE` /maps/lands/{landId}**: 토지 삭제 (관리자 권한 필요)
+
+```mysql
+CREATE TABLE lands (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    owner_id VARCHAR(255),
+    position POINT NOT NULL,
+    color VARCHAR(6),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    SPATIAL INDEX(position)
+);
+```
+
+#### 건물 API `/maps/lands/{landId}/buildings`
+
+- **`GET` /maps/lands/{landId}/buildings**: 건물 목록 조회
+- **`POST` /maps/lands/{landId}/buildings**: 새 건물 생성
+  - `name`: 건물 이름
+  - `owner_id`: 건물 소유자 ID (Discord ID)
+  - `land_id`: 건물이 위치한 토지 ID
+  - `type`: 건물 유형 (예: `'주거'`, `'사무'`, `'시장'`, `'농장'`)
+  - `account_id`: 건물 건설 비용을 지불할 계좌 ID
+- **`GET` /maps/buildings/{buildingId}**: 특정 건물 상세 조회
+- **`PUT` /maps/buildings/{buildingId}**: 건물 정보 업데이트 (건물주)
+- **`DELETE` /maps/buildings/{buildingId}**: 건물 삭제 (관리자 권한 필요)
+
+```mysql
+CREATE TABLE buildings (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    owner_id VARCHAR(255),
+    land_id INTEGER,
+    type VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    FOREIGN KEY (land_id) REFERENCES lands(id)
+);
+```
+
+#### 도로 API `/maps/roads`
+
+- **`GET` /maps/roads**: 도로 목록 조회
+- **`POST` /maps/roads**: 새 도로 생성
+  - `name`: 도로 이름
+  - `land_a_id`: 도로가 연결하는 토지 A ID
+  - `land_b_id`: 도로가 연결하는 토지 B ID
+- **`GET` /maps/roads/{roadId}**: 특정 도로 상세 조회
+- **`PUT` /maps/roads/{roadId}**: 도로 정보 업데이트 (도로주)
+- **`DELETE` /maps/roads/{roadId}**: 도로 삭제 (관리자 권한 필요)
+
+```mysql
+CREATE TABLE roads (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    owner_id VARCHAR(255),
+    land_a_id INTEGER,
+    land_b_id INTEGER,
+    line LINESTRING NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    FOREIGN KEY (land_a_id) REFERENCES lands(id),
+    FOREIGN KEY (land_b_id) REFERENCES lands(id),
+    SPATIAL INDEX(line)
+);
+```
+
+#### 철도 API `/maps/rails`
+
+- **`GET` /maps/rails**: 철도 목록 조회
+- **`POST` /maps/rails**: 새 철도 생성
+  - `name`: 철도 이름
+  - `land_a_id`: 철도가 연결하는 토지 A ID
+  - `land_b_id`: 철도가 연결하는 토지 B ID
+- **`GET` /maps/rails/{railId}**: 특정 철도 상세
+- **`PUT` /maps/rails/{railId}**: 철도 정보 업데이트 (철도주)
+- **`DELETE` /maps/rails/{railId}**: 철도 삭제 (관리자 권한 필요)
+
+```mysql
+CREATE TABLE rails (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    owner_id VARCHAR(255),
+    land_a_id INTEGER,
+    land_b_id INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    FOREIGN KEY (land_a_id) REFERENCES lands(id),
+    FOREIGN KEY (land_b_id) REFERENCES lands(id)
+);
+```
