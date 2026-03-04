@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
+	import Stock from '$lib/components/Stock.svelte';
 
 	let { data } = $props();
 	let inventory = $derived(() => data.inventory);
@@ -39,20 +40,22 @@
 
 <Container>
 	<Title>인벤토리</Title>
-	<ul>
+	<div class="inventory">
 		{#each inventory() as stock}
-			<li>
-				{stock.item.name} #{stock.item_id} &times; {stock.quantity}<br />
-				{stock.item.description}<br />
-				<button onclick={give(stock.item_id)}>주기</button>
-			</li>
+			<Stock {stock} ongive={give(stock.item_id)} />
 		{/each}
-	</ul>
+	</div>
 </Container>
 
 <style>
 	button {
 		padding: 0.25rem 0.5rem;
 		font-size: 0.875rem;
+	}
+
+	.inventory {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
 	}
 </style>
