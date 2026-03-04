@@ -172,9 +172,6 @@
 </script>
 
 <canvas class="canvas" bind:this={canvas}></canvas>
-<div>
-	<pre>{JSON.stringify(data, null, 2)}</pre>
-</div>
 
 <style>
 	.canvas {
