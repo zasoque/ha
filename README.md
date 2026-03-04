@@ -248,8 +248,9 @@ CREATE TABLE lands (
 );
 ```
 
-#### 건물 API `/maps/lands/{landId}/buildings`
+#### 건물 API `/maps/buildings`
 
+- **`GET` /maps/buildings**: 건물 목록 조회
 - **`GET` /maps/lands/{landId}/buildings**: 건물 목록 조회
 - **`POST` /maps/lands/{landId}/buildings**: 새 건물 생성
   - `name`: 건물 이름

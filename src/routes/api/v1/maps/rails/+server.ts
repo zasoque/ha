@@ -4,8 +4,8 @@ import { TAINT_ITEM_ID } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async () => {
-	const buildings = await query('SELECT * FROM buildings');
-	return json({ success: true, buildings });
+	const rails = await query('SELECT * FROM rails');
+	return json({ success: true, rails });
 };
 
 export const POST: RequestHandler = async ({ request, cookies }) => {

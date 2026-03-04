@@ -1,5 +1,9 @@
 <script>
 	import { onMount } from 'svelte';
+
+	let { data } = $props();
+	let { lands, buildings, roads, rails } = data;
+
 	let canvas;
 	let ctx;
 
@@ -42,8 +46,6 @@
 		canvas.width = window.innerWidth * window.devicePixelRatio;
 		canvas.height = (window.innerHeight - 200) * window.devicePixelRatio;
 
-		ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
 		renderObjects();
 	}
 
@@ -80,11 +82,65 @@
 			const deltaX = event.clientX - lastMousePos.x;
 			const deltaY = event.clientY - lastMousePos.y;
 
-			camera.x -= deltaX / camera.zoom;
-			camera.y -= deltaY / camera.zoom;
+			camera.x -= (deltaX * window.devicePixelRatio) / camera.zoom;
+			camera.y -= (deltaY * window.devicePixelRatio) / camera.zoom;
 
 			lastMousePos = { x: event.clientX, y: event.clientY };
 			renderObjects();
+		}
+	}
+
+	let isZooming = false;
+	let lastTouchDistance = 0;
+	function touchStart(event) {
+		if (event.touches.length === 1) {
+			isDragging = true;
+			lastMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+		}
+
+		if (event.touches.length === 2) {
+			event.preventDefault();
+			isZooming = true;
+			const dx = event.touches[0].clientX - event.touches[1].clientX;
+			const dy = event.touches[0].clientY - event.touches[1].clientY;
+			lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+		}
+	}
+
+	function touchMove(event) {
+		if (isDragging && event.touches.length >= 1) {
+			const deltaX = event.touches[0].clientX - lastMousePos.x;
+			const deltaY = event.touches[0].clientY - lastMousePos.y;
+
+			camera.x -= (deltaX * window.devicePixelRatio) / camera.zoom;
+			camera.y -= (deltaY * window.devicePixelRatio) / camera.zoom;
+
+			lastMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+			renderObjects();
+		}
+
+		if (isZooming && event.touches.length === 2) {
+			const dx = event.touches[0].clientX - event.touches[1].clientX;
+			const dy = event.touches[0].clientY - event.touches[1].clientY;
+			const currentDistance = Math.sqrt(dx * dx + dy * dy);
+			const zoomFactor = currentDistance / lastTouchDistance;
+
+			camera.zoom *= zoomFactor;
+			if (camera.zoom < 10) camera.zoom = 10;
+			if (camera.zoom > 1000) camera.zoom = 1000;
+
+			lastTouchDistance = currentDistance;
+			renderObjects();
+		}
+	}
+
+	function touchEnd(event) {
+		if (event.touches.length === 0) {
+			isDragging = false;
+		}
+
+		if (event.touches.length < 2) {
+			isZooming = false;
 		}
 	}
 
@@ -96,6 +152,9 @@
 		canvas.addEventListener('mousedown', mouseDown);
 		canvas.addEventListener('mouseup', mouseUp);
 		canvas.addEventListener('mousemove', mouseMove);
+		canvas.addEventListener('touchstart', touchStart);
+		canvas.addEventListener('touchmove', touchMove);
+		canvas.addEventListener('touchend', touchEnd);
 
 		resizeCanvas();
 
@@ -105,11 +164,17 @@
 			canvas.removeEventListener('mousedown', mouseDown);
 			canvas.removeEventListener('mouseup', mouseUp);
 			canvas.removeEventListener('mousemove', mouseMove);
+			canvas.removeEventListener('touchstart', touchStart);
+			canvas.removeEventListener('touchmove', touchMove);
+			canvas.removeEventListener('touchend', touchEnd);
 		};
 	});
 </script>
 
 <canvas class="canvas" bind:this={canvas}></canvas>
+<div>
+	<pre>{JSON.stringify(data, null, 2)}</pre>
+</div>
 
 <style>
 	.canvas {
