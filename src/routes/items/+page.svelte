@@ -4,8 +4,8 @@
 
 	let { data } = $props();
 	let items = $derived(() => data.items);
-	let page = $derived(() => data.page);
-	let limit = $derived(() => data.limit);
+	let page = $derived(() => data.page!);
+	let limit = $derived(() => data.limit!);
 
 	function createItem() {
 		const name = prompt('아이템 이름을 입력해.');

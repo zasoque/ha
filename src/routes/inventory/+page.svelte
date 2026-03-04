@@ -48,11 +48,6 @@
 </Container>
 
 <style>
-	button {
-		padding: 0.25rem 0.5rem;
-		font-size: 0.875rem;
-	}
-
 	.inventory {
 		display: flex;
 		flex-wrap: wrap;
