@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 	await query(`UPDATE accounts SET balance = balance + ? WHERE id = ?`, [amount, toAccountId]);
 	await sendNotification(
 		toAccount[0].user_id,
-		`계좌번호 ${toAccount[0].account_number}번으로 ${formatCurrency(amount)}원이 입금됐어. 현재 잔액은 ${formatCurrency(toAccount[0].balance + amount)}원이야.`
+		`계좌번호 ${toAccount[0].id}번으로 ${formatCurrency(amount)}원이 입금됐어. 현재 잔액은 ${formatCurrency(parseFloat(toAccount[0].balance) + parseFloat(amount))}원이야.`
 	);
 
 	return json({ success: true, message: 'Transaction created successfully' });
