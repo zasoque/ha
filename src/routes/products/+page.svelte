@@ -63,6 +63,7 @@
 	.products {
 		gap: 2rem;
 		column-count: 3;
+		margin-bottom: 2rem;
 	}
 
 	.product {
@@ -95,20 +96,6 @@
 		margin-top: 0.5rem;
 		font-size: 0.9rem;
 		color: #888;
-	}
-
-	button {
-		margin-top: 2rem;
-		padding: 0.5rem 1rem;
-		background-color: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-	}
-
-	button:hover {
-		background-color: #0056b3;
 	}
 
 	@media (max-width: 768px) {

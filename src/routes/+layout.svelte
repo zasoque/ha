@@ -18,6 +18,21 @@
 
 			--max-width: 960px;
 		}
+
+		button {
+			font-family: 'SUIT Variable', sans-serif;
+			background-color: #0070f3;
+			color: white;
+			border: none;
+			padding: 0.5rem 1rem;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: background-color 0.2s ease;
+		}
+
+		button:hover {
+			background-color: #005bb5;
+		}
 	</style>
 	<link rel="icon" href={favicon} />
 	<title>하은행</title>

@@ -51,9 +51,4 @@
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 1rem;
 	}
-	button {
-		margin-top: 1rem;
-		padding: 0.5rem 1rem;
-		font-size: 1rem;
-	}
 </style>

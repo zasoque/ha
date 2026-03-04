@@ -90,6 +90,7 @@
 	.table {
 		width: 100%;
 		border-collapse: collapse;
+		margin-bottom: 1rem;
 	}
 
 	.table th,
@@ -101,16 +102,5 @@
 
 	.table th {
 		background-color: #f5f5f5;
-	}
-
-	button {
-		margin-left: 1rem;
-		margin-right: 1rem;
-		border: 1px solid #ccc;
-		padding: 0.25rem 0.5rem;
-		background-color: #eee;
-		cursor: pointer;
-		transition: background-color 0.2s ease;
-		border-radius: 4px;
 	}
 </style>

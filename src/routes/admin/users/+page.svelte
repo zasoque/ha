@@ -35,21 +35,30 @@
 <Container>
 	<div><a href="/admin">뒤로 가기</a></div>
 	<Title>관리자 관리</Title>
-	<ul>
+	<div class="admins">
 		{#each users() as user}
-			<li>{user.id} <button onclick={deleteAdmin(user.id)}>관리자 제거</button></li>
+			<div class="admin">
+				<div>{user.id}</div>
+				<div><button onclick={deleteAdmin(user.id)}>관리자 제거</button></div>
+			</div>
 		{/each}
-	</ul>
+	</div>
 	<button class="button" onclick={addAdmin}>관리자 추가</button>
 </Container>
 
 <style>
-	button {
-		margin-left: 1rem;
-		padding: 0.25rem 0.5rem;
-		background-color: #eee;
+	.admins {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.admin {
+		display: flex;
+		justify-content: space-between;
+		flex-direction: column;
+		padding: 0.5rem;
 		border: 1px solid #ccc;
 		border-radius: 4px;
-		cursor: pointer;
 	}
 </style>
