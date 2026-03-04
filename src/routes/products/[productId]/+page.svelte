@@ -2,20 +2,19 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
 	const { data } = $props();
 	const product = $derived(() => data.product);
 	const me = $derived(() => data.me);
 
-	function editProduct() {
-		let name = prompt('바꿀 상품 이름이 뭐야?', product().name);
-		if (name === null) return;
-		let description = prompt('바꿀 상품 설명을 입력해줘.', product().description);
-		if (description === null) return;
-		let priceStr = prompt('바꿀 상품 가격을 냥 단위로 입력해줘.', product().price.toString());
-		if (priceStr === null) return;
+	let editProductPrompt;
+	let editName = $state('');
+	let editDescription = $state('');
+	let editPrice = $state('');
 
-		const price = parseFloat(priceStr);
+	function editProduct() {
+		const price = parseFloat(editPrice);
 
 		if (isNaN(price)) {
 			alert('유효한 가격을 입력해줘!');
@@ -27,7 +26,7 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ name, description, price })
+			body: JSON.stringify({ name: editName, description: editDescription, price })
 		}).then(() => location.reload());
 	}
 
@@ -37,6 +36,13 @@
 		fetch(`/api/v1/products/${product().id}`, {
 			method: 'DELETE'
 		}).then(() => (location.href = '/products'));
+	}
+
+	function openEditProductPrompt() {
+		editName = product().name;
+		editDescription = product().description;
+		editPrice = product().price.toString();
+		editProductPrompt.open();
 	}
 </script>
 
@@ -49,11 +55,20 @@
 	<div class="owner">판매자: {product().owner_name}</div>
 	<div class="buttons">
 		{#if me().id === product().owner_id}
-			<button class="edit-product" onclick={editProduct}>상품 수정</button>
+			<button class="edit-product" onclick={openEditProductPrompt}>상품 수정</button>
 			<button class="delete-product" onclick={deleteProduct}>상품 삭제</button>
 		{/if}
 	</div>
 </Container>
+<PromptFloat bind:this={editProductPrompt}>
+	<div>상품 이름</div>
+	<input type="text" bind:value={editName} placeholder="상품 이름을 입력하세요" />
+	<div>상품 설명</div>
+	<input type="text" bind:value={editDescription} placeholder="상품 설명을 입력하세요" />
+	<div>상품 가격</div>
+	<input type="text" bind:value={editPrice} placeholder="상품 가격을 입력하세요" />
+	<button onclick={editProduct}>수정하기</button>
+</PromptFloat>
 
 <style>
 	.back {

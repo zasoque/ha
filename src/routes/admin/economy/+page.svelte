@@ -7,7 +7,6 @@
 	<div><a href="/admin">뒤로 가기</a></div>
 	<Title>경제 관리</Title>
 	<ul>
-		<li><a href="/admin/economy/transactions">거래 내역</a></li>
 		<li><a href="/admin/economy/print">냥푼 발행</a></li>
 	</ul>
 </Container>

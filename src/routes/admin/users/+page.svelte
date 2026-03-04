@@ -1,19 +1,21 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
+
 	const { data } = $props();
 	const users = $derived(() => data.users);
 
-	async function addAdmin() {
-		const id = prompt('추가할 관리자 ID를 입력해줘');
-		if (!id) return;
+	let addAdminPrompt;
+	let addAdminId = $state('');
 
+	async function addAdmin() {
 		await fetch('/api/v1/admin/users', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ id })
+			body: JSON.stringify({ id: addAdminId })
 		}).then((res) => {
 			location.reload();
 		});
@@ -43,8 +45,13 @@
 			</div>
 		{/each}
 	</div>
-	<button class="button" onclick={addAdmin}>관리자 추가</button>
+	<button class="button" onclick={addAdminPrompt.open}>관리자 추가</button>
 </Container>
+<PromptFloat bind:this={addAdminPrompt}>
+	<div>관리자 ID</div>
+	<input id="admin-id" type="text" bind:value={addAdminId} />
+	<button class="button" onclick={addAdmin}>추가</button>
+</PromptFloat>
 
 <style>
 	.admins {

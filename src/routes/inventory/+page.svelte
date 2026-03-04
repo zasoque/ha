@@ -2,38 +2,52 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Stock from '$lib/components/Stock.svelte';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
 	let { data } = $props();
 	let inventory = $derived(() => data.inventory);
 
-	function give(itemId: number): () => void {
-		return () => {
-			const userId = prompt('아이템을 지급할 이용자 ID를 입력해.');
-			const quantityStr = prompt('지급할 수량을 입력해.');
-			const quantity = parseInt(quantityStr || '0', 10);
+	let giveItemId = $state(0);
+	let giveUserId = $state('');
+	let giveQuantity = $state('');
+	let givePrompt = $state({});
 
-			if (!userId || isNaN(quantity) || quantity <= 0) {
-				alert('모든 필드를 올바르게 입력해주세요!');
-				return;
-			}
+	function give(): () => void {
+		const quantity = parseInt(giveQuantity || '0', 10);
 
-			fetch(`/api/v1/inventory/transfer`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					to_user_id: userId,
-					item_id: itemId,
-					quantity: quantity
-				})
-			}).then((res) => {
-				if (res.ok) {
+		if (!giveUserId || isNaN(quantity) || quantity <= 0) {
+			alert('모든 필드를 올바르게 입력해주세요!');
+			return;
+		}
+
+		fetch(`/api/v1/inventory/transfer`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				to_user_id: giveUserId,
+				item_id: giveItemId,
+				quantity
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
 					alert('아이템이 성공적으로 지급되었습니다!');
+					location.reload();
 				} else {
-					res.json().then((data) => {
-						alert(`아이템 지급 실패: ${data.error}`);
-					});
+					alert(`아이템 지급 실패: ${data.message}`);
 				}
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+				alert('아이템 지급 중 오류가 발생했습니다.');
 			});
+	}
+
+	function openGive(itemId: number): () => void {
+		return () => {
+			giveItemId = itemId;
+			givePrompt.open();
 		};
 	}
 </script>
@@ -42,10 +56,19 @@
 	<Title>인벤토리</Title>
 	<div class="inventory">
 		{#each inventory() as stock}
-			<Stock {stock} ongive={give(stock.item_id)} />
+			<Stock {stock} ongive={openGive(stock.item.id)} />
 		{/each}
 	</div>
 </Container>
+<PromptFloat bind:this={givePrompt}>
+	<div>아이템 ID</div>
+	<input id="item-id" type="number" bind:value={giveItemId} disabled />
+	<div>아이템을 지급할 이용자 ID</div>
+	<input id="user-id" type="text" bind:value={giveUserId} />
+	<div>지급할 수량</div>
+	<input id="quantity" type="number" bind:value={giveQuantity} />
+	<button class="button" onclick={give}>지급</button>
+</PromptFloat>
 
 <style>
 	.inventory {

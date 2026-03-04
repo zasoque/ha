@@ -2,20 +2,18 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
 	const { data } = $props();
 	const products = $derived(() => data.products);
 
+	let newProductPrompt;
+	let newName = $state('');
+	let newDescription = $state('');
+	let newPrice = $state('');
+
 	async function newProduct() {
-		const name = prompt('상품 이름이 뭐야?');
-		if (!name) return;
-
-		const description = prompt('상품 설명을 입력해줘.');
-		if (!description) return;
-
-		const priceStr = prompt('상품 가격을 냥 단위로 입력해줘.');
-		if (!priceStr) return;
-		const price = parseInt(priceStr);
+		const price = parseInt(newPrice, 10);
 		if (isNaN(price)) {
 			alert('유효한 가격을 입력해줘!');
 			return;
@@ -26,7 +24,7 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ name, description, price })
+			body: JSON.stringify({ name: newName, description: newDescription, price })
 		});
 
 		location.reload();
@@ -51,8 +49,17 @@
 			</a>
 		{/each}
 	</div>
-	<button class="new-product" onclick={newProduct}>새로운 상품 출품</button>
+	<button class="new-product" onclick={newProductPrompt.open}>새로운 상품 출품</button>
 </Container>
+<PromptFloat bind:this={newProductPrompt}>
+	<div>상품 이름</div>
+	<input type="text" bind:value={newName} placeholder="상품 이름을 입력하세요" />
+	<div>상품 설명</div>
+	<input type="text" bind:value={newDescription} placeholder="상품 설명을 입력하세요" />
+	<div>상품 가격</div>
+	<input type="text" bind:value={newPrice} placeholder="상품 가격을 입력하세요" />
+	<button onclick={newProduct}>출품하기</button>
+</PromptFloat>
 
 <style>
 	.description {

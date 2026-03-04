@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
-	let accountNumber = '';
-	let amountStr = '';
+	let accountNumber = $state('');
+	let amountStr = $state('');
 
 	async function newCurrency() {
 		const amount = parseFloat(amountStr);
@@ -25,6 +26,7 @@
 					alert('냥푼이 성공적으로 발행됐어!');
 					accountNumber = '';
 					amountStr = '';
+					transferPrompt.close();
 				} else {
 					alert(`냥푼 발행에 실패했어: ${data.message}`);
 				}
@@ -34,6 +36,8 @@
 				alert('냥푼 발행 중 오류가 발생했어!');
 			});
 	}
+
+	let transferPrompt;
 </script>
 
 <Container>
@@ -45,10 +49,15 @@
 	<div class="description">
 		냥푼을 발행할 때는 신중하게 생각해줘. 과도한 발행은 인플레이션을 초래할 수 있어!
 	</div>
-	<input type="text" placeholder="계좌번호" bind:value={accountNumber} />
-	<input type="number" placeholder="발행할 냥푼 양" min="0" step="0.01" bind:value={amountStr} />
-	<button class="new-product" onclick={newCurrency}>냥푼 발행하기</button>
+	<button class="new-product" onclick={transferPrompt.open}>냥푼 발행하기</button>
 </Container>
+<PromptFloat bind:this={transferPrompt}>
+	<div>발행할 냥푼 양</div>
+	<input type="number" placeholder="발행할 냥푼 양" min="0" step="0.01" bind:value={amountStr} />
+	<div>입금 계좌번호</div>
+	<input type="text" placeholder="계좌번호" bind:value={accountNumber} />
+	<button class="new-product" onclick={newCurrency}>발행하기</button>
+</PromptFloat>
 
 <style>
 	.description {

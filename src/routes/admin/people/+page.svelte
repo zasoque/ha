@@ -2,42 +2,50 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
 	const { data } = $props();
 	const people = $derived(() => data.people);
 	const page = $derived(() => data.page);
 	const limit = $derived(() => data.limit);
 
+	let newId = $state('');
+	let newName = $state('');
+	let newResidence = $state('');
+	let addPersonPrompt;
+
 	function addPerson() {
-		const id = prompt('추가할 국민 ID를 입력해줘');
-		if (!id) return;
-
-		const name = prompt('추가할 국민 이름을 입력해줘');
-		if (!name) return;
-
-		const residence = prompt('추가할 국민 거주지를 입력해줘');
-		if (!residence) return;
-
 		fetch('/api/v1/admin/people', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ id, name, residence })
+			body: JSON.stringify({ id: newId, name: newName, residence: newResidence })
 		}).then((res) => {
 			location.reload();
 		});
 	}
 
+	let editId = $state('');
+	let editName = $state('');
+	let editResidence = $state('');
+	let editPersonPrompt;
+
+	function openEditPersonPrompt(personId: string) {
+		const person = people().find((p: any) => p.id === personId);
+		if (!person) return;
+
+		return () => {
+			editId = person.id;
+			editName = person.name;
+			editResidence = person.residence;
+			editPersonPrompt.open();
+		};
+	}
+
 	function editPerson(personId: string): () => void {
 		const person = people().find((p: any) => p.id === personId);
 		if (!person) return () => {};
-
-		const name = prompt('국민 이름을 입력해줘', person.name);
-		if (!name) return () => {};
-
-		const residence = prompt('국민 거주지를 입력해줘', person.residence);
-		if (!residence) return () => {};
 
 		return () => {
 			fetch(`/api/v1/admin/people/${personId}`, {
@@ -45,10 +53,16 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ name, residence, id: personId })
-			}).then((res) => {
-				location.reload();
-			});
+				body: JSON.stringify({ name: editName, residence: editResidence })
+			})
+				.then((res) => res.json())
+				.then((data) => {
+					if (data.success) {
+						location.reload();
+					} else {
+						alert('국민 정보 변경에 실패했습니다: ' + data.message);
+					}
+				});
 		};
 	}
 </script>
@@ -69,14 +83,32 @@
 					<td>{person.id}</td>
 					<td>{person.name}</td>
 					<td>{person.residence}</td>
-					<td><button onclick={editPerson(person.id)}>변경</button></td>
+					<td><button onclick={openEditPersonPrompt(person.id)}>변경</button></td>
 				</tr>
 			{/each}
 		</tbody>
 	</table>
 	<Pagination page={page()} limit={limit()} />
-	<button onclick={addPerson}>국민 추가</button>
+	<button onclick={addPersonPrompt.open}>국민 추가</button>
 </Container>
+<PromptFloat bind:this={addPersonPrompt}>
+	<div>국민 본명</div>
+	<input type="text" placeholder="본명" bind:value={newId} />
+	<div>국민 예명</div>
+	<input type="text" placeholder="예명" bind:value={newName} />
+	<div>국민 거주지</div>
+	<input type="text" placeholder="거주지" bind:value={newResidence} />
+	<button onclick={addPerson}>추가하기</button>
+</PromptFloat>
+<PromptFloat bind:this={editPersonPrompt}>
+	<div>국민 본명</div>
+	<input type="text" placeholder="본명" bind:value={editId} />
+	<div>국민 예명</div>
+	<input type="text" placeholder="예명" bind:value={editName} />
+	<div>국민 거주지</div>
+	<input type="text" placeholder="거주지" bind:value={editResidence} />
+	<button onclick={editPerson(editId)}>변경하기</button>
+</PromptFloat>
 
 <style>
 	.table {

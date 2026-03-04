@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatCurrency } from '$lib/util/economy';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
 	const { data } = $props();
 	const account = $derived(() => data.account);
@@ -15,6 +16,48 @@
 				alert('계좌 삭제에 실패했습니다.');
 			}
 		});
+	}
+
+	let transferPrompt;
+
+	async function transferButton() {
+		const toAccountId = parseInt(document.getElementById('toAccountId').value);
+		const amount = parseFloat(document.getElementById('amount').value);
+		const description = document.getElementById('description').value;
+
+		if (isNaN(toAccountId) || isNaN(amount)) {
+			alert('모든 필드를 올바르게 입력해주세요.');
+			return;
+		}
+
+		await transfer(toAccountId, amount, description.length === 0 ? null : description);
+	}
+
+	async function transfer(toAccountId: number, amount: number, description: string | null) {
+		await fetch(`/api/v1/transactions/transfer`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				fromAccountId: account().id,
+				toAccountId,
+				amount,
+				description
+			})
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.success) {
+					alert('송금이 완료되었습니다.');
+					window.location.href = '/accounts';
+				} else {
+					alert('송금에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((error) => {
+				alert('송금 중 오류가 발생했습니다: ' + error.message);
+			});
 	}
 </script>
 
@@ -39,6 +82,9 @@
 		<div class="row-key">갱신일자</div>
 		<div class="row-value">{new Date(account().updated_at).toLocaleString()}</div>
 	</div>
+	<div class="transfer">
+		<button onclick={transferPrompt.open}>송금</button>
+	</div>
 	<div class="transactions">
 		{#each transactions() as transaction}
 			<div class="transaction">
@@ -55,13 +101,19 @@
 			</div>
 		{/each}
 	</div>
-	<div class="transfer">
-		<a href="/accounts/{account().id}/transfer">송금</a>
-	</div>
 	<div class="delete">
 		<button onclick={deleteAccount}>계좌 삭제하기</button>
 	</div>
 </div>
+<PromptFloat bind:this={transferPrompt}>
+	<div>계좌번호</div>
+	<input type="text" id="toAccountId" />
+	<div>금액</div>
+	<input type="number" id="amount" min="0" step="0.01" />
+	<div>설명</div>
+	<input type="text" id="description" />
+	<button onclick={transferButton}>송금하기</button>
+</PromptFloat>
 
 <style>
 	.container {
@@ -91,19 +143,7 @@
 	}
 
 	.transfer {
-		margin-top: 2rem;
-	}
-
-	.transfer a {
-		text-decoration: none;
-		background-color: #3498db;
-		color: white;
-		padding: 0.5rem 1rem;
-		border-radius: 4px;
-	}
-
-	.transfer a:hover {
-		background-color: #2980b9;
+		margin-bottom: 2rem;
 	}
 
 	.delete {

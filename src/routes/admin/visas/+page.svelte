@@ -2,28 +2,29 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
+	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
 	const { data } = $props();
 	const visas = $derived(() => data.visas);
 	const limit = $derived(() => data.limit);
 	const page = $derived(() => data.page);
 
+	let addVisaPrompt;
+	let addVisaUserId = $state('');
+	let addVisaType = $state('');
+	let addVisaDateIssued = $state('');
+
 	function addVisa() {
-		const user_id = prompt('사증 발급 인원 디스코드 ID를 입력해줘');
-		if (!user_id) return;
-
-		const type = prompt('사증 종류를 입력해줘 (예: 단기, 체험, 사업)');
-		if (!type) return;
-
-		const date_issued = prompt('사증 발급 날짜를 입력해줘 (YYYY-MM-DD)');
-		if (!date_issued) return;
-
 		fetch('/api/v1/admin/visas', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ user_id, type, date_issued })
+			body: JSON.stringify({
+				user_id: addVisaUserId,
+				type: addVisaType,
+				date_issued: addVisaDateIssued
+			})
 		}).then((res) => {
 			location.reload();
 		});
@@ -74,8 +75,22 @@
 		</tbody>
 	</table>
 	<Pagination page={page()} limit={limit()}></Pagination>
-	<button onclick={addVisa}>사증 추가</button>
+	<button onclick={addVisaPrompt.open}>사증 추가</button>
 </Container>
+<PromptFloat bind:this={addVisaPrompt}>
+	<div>인원 디스코드 ID</div>
+	<input id="visa-user-id" type="text" bind:value={addVisaUserId} />
+	<div>사증 종류</div>
+	<select id="visa-type" bind:value={addVisaType}>
+		<option value="">선택하세요</option>
+		<option value="단기">단기</option>
+		<option value="체험">체험</option>
+		<option value="사업">사업</option>
+	</select>
+	<div>발급 날짜</div>
+	<input id="visa-date-issued" type="date" bind:value={addVisaDateIssued} />
+	<button class="button" onclick={addVisa}>추가</button>
+</PromptFloat>
 
 <style>
 	.table {
