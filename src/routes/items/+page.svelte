@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
 
 	let { data } = $props();
 	let items = $derived(() => data.items);
@@ -24,16 +25,6 @@
 			location.reload();
 		});
 	}
-
-	function previousPage() {
-		if (page() > 1) {
-			location.href = `/items?page=${page() - 1}&limit=${limit()}`;
-		}
-	}
-
-	function nextPage() {
-		location.href = `/items?page=${page() + 1}&limit=${limit()}`;
-	}
 </script>
 
 <Container>
@@ -43,12 +34,8 @@
 			<li>{item.name} ({item.maker_name}) #{item.id}<br />{item.description}</li>
 		{/each}
 	</ul>
-	<button onclick={createItem}>아이템 만들기</button>
-	<div>
-		<button onclick={previousPage}>&lt;</button>
-		<span>{page()}&times;{limit()}</span>
-		<button onclick={nextPage}>&gt;</button>
-	</div>
+	<button onclick={createItem}>아이템 제작하기</button>
+	<Pagination page={page()} limit={limit()} />
 </Container>
 
 <style>

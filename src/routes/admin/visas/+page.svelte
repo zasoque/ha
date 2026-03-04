@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
+
 	const { data } = $props();
 	const visas = $derived(() => data.visas);
 	const limit = $derived(() => data.limit);
@@ -46,16 +48,6 @@
 
 		return expiryDate; // YYYY-MM-DD 형식으로 반환
 	}
-
-	function previousPage() {
-		if (parseInt(page()) > 1) {
-			window.location.href = `/admin/visas?page=${parseInt(page()) - 1}&limit=${limit()}`;
-		}
-	}
-
-	function nextPage() {
-		window.location.href = `/admin/visas?page=${parseInt(page()) + 1}&limit=${limit()}`;
-	}
 </script>
 
 <Container>
@@ -81,11 +73,7 @@
 			{/each}
 		</tbody>
 	</table>
-	<div>
-		<button onclick={previousPage}>&lt;</button><span>{page()}&times;{limit()}</span><button
-			onclick={nextPage}>&gt;</button
-		>
-	</div>
+	<Pagination page={page()} limit={limit()}></Pagination>
 	<button onclick={addVisa}>사증 추가</button>
 </Container>
 

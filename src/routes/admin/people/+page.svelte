@@ -1,10 +1,12 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
+
 	const { data } = $props();
 	const people = $derived(() => data.people);
-	const page = $derived(() => parseInt(data.page));
-	const limit = $derived(() => parseInt(data.limit));
+	const page = $derived(() => data.page);
+	const limit = $derived(() => data.limit);
 
 	function addPerson() {
 		const id = prompt('추가할 국민 ID를 입력해줘');
@@ -49,16 +51,6 @@
 			});
 		};
 	}
-
-	function previousPage() {
-		if (page() > 1) {
-			location.href = `?page=${page() - 1}&limit=${limit()}`;
-		}
-	}
-
-	function nextPage() {
-		location.href = `?page=${page() + 1}&limit=${limit()}`;
-	}
 </script>
 
 <Container>
@@ -82,11 +74,7 @@
 			{/each}
 		</tbody>
 	</table>
-	<div>
-		<button onclick={previousPage}>&lt;</button>
-		<span>{page()}&times;{limit()}</span>
-		<button onclick={nextPage}>&gt;</button>
-	</div>
+	<Pagination page={page()} limit={limit()} />
 	<button onclick={addPerson}>국민 추가</button>
 </Container>
 
