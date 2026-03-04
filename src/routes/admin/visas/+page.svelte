@@ -78,15 +78,6 @@
 </Container>
 
 <style>
-	a {
-		color: black;
-		text-decoration: none;
-	}
-
-	a:hover {
-		text-decoration: underline;
-	}
-
 	.table {
 		width: 100%;
 		border-collapse: collapse;

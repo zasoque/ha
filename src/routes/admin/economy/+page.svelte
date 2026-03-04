@@ -11,14 +11,3 @@
 		<li><a href="/admin/economy/print">냥푼 발행</a></li>
 	</ul>
 </Container>
-
-<style>
-	a {
-		color: black;
-		text-decoration: none;
-	}
-
-	a:hover {
-		text-decoration: underline;
-	}
-</style>

@@ -74,15 +74,6 @@
 		margin-top: 2rem;
 	}
 
-	.go-back a {
-		text-decoration: none;
-		color: #3498db;
-	}
-
-	.go-back a:hover {
-		text-decoration: underline;
-	}
-
 	.title {
 		font-size: 2rem;
 		font-weight: bold;

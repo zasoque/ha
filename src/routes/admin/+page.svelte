@@ -13,14 +13,3 @@
 		<li><a href="/admin/inventory">인벤토리 관리</a></li>
 	</ul>
 </Container>
-
-<style>
-	a {
-		color: black;
-		text-decoration: none;
-	}
-
-	a:hover {
-		text-decoration: underline;
-	}
-</style>

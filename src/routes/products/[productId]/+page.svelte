@@ -62,11 +62,6 @@
 		margin-bottom: 1rem;
 	}
 
-	.back a {
-		text-decoration: none;
-		color: inherit;
-	}
-
 	.name {
 		font-size: 1.2rem;
 		font-weight: bold;

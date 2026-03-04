@@ -33,6 +33,15 @@
 		button:hover {
 			background-color: #005bb5;
 		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
 	</style>
 	<link rel="icon" href={favicon} />
 	<title>하은행</title>
