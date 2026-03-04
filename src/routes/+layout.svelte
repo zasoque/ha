@@ -55,6 +55,7 @@
 	<div class="navigation">
 		<a href="/" class="navigation-item">홈</a>
 		<a href="/items" class="navigation-item">아이템</a>
+		<a href="/maps" class="navigation-item">지도</a>
 		{#if me()}
 			<a href="/notifications" class="navigation-item">알림</a>
 			<a href="/accounts" class="navigation-item">계좌</a>
@@ -66,7 +67,7 @@
 			<a href="/logout" class="navigation-item">로그아웃</a>
 			<span class="navigation-item">{me().global_name}으로 로그인됨</span>
 		{:else}
-			<a href="/login">로그인</a>
+			<a href="/login" class="navigation-item">로그인</a>
 		{/if}
 	</div>
 </div>
