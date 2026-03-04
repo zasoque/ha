@@ -18,10 +18,10 @@ export const GET: RequestHandler = async ({ params }) => {
 	return json({ success: true, land: land[0], buildings });
 };
 
-export const TYPE_FARM = '농장';
-export const TYPE_RESIDENTIAL = '주거';
-export const TYPE_OFFICE = '사무';
-export const TYPE_MARKET = '시장';
+const TYPE_FARM = '농장';
+const TYPE_RESIDENTIAL = '주거';
+const TYPE_OFFICE = '사무';
+const TYPE_MARKET = '시장';
 
 function taintCost(type: string): number {
 	if (type === TYPE_RESIDENTIAL) {
