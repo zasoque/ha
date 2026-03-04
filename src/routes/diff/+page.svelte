@@ -6,7 +6,11 @@
 	let two = '';
 
 	function diff() {
-		return createTwoFilesPatch('이전', '이후', one, two);
+		return createTwoFilesPatch('현행', '개정', one.trim(), two.trim(), '', '', {
+			headerOptions: {
+				includeUnderline: false
+			}
+		}).replace(/\\ No newline at end of file/g, '\\ EOF');
 	}
 </script>
 
