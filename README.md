@@ -205,6 +205,7 @@ CREATE TABLE inventory (
 ### 7. 알림 API `/notifications`
 
 - **`GET` /notifications**: 사용자 알림 목록 조회
+- **`POST` /notifications/{notificationId}/read**: 알림 읽음 처리
 
 ```mysql
 CREATE TABLE notifications (
