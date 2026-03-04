@@ -1,6 +1,7 @@
 import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
+import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const DELETE: RequestHandler = async ({ params, cookies }) => {
@@ -22,7 +23,8 @@ export const DELETE: RequestHandler = async ({ params, cookies }) => {
 		return json({ success: false, error: 'User ID is required' }, { status: 400 });
 	}
 
-	await query('DELETE FROM admin_users WHERE id = ?', [id]);
+	await query('DELETE FROM people WHERE id = ?', [id]);
+	await sendNotification(id, `관리자가 너를 등록부에서 삭제했어. 더 이상 서비스를 이용할 수 없어.`);
 
 	return json({ success: true });
 };
@@ -46,9 +48,13 @@ export const PUT: RequestHandler = async ({ request, params, cookies }) => {
 		return json({ success: false, error: 'Residence and name are required' }, { status: 400 });
 	}
 
-	const id = params.personId;
+	const id = params.personId!;
 
 	await query('UPDATE people SET residence = ?, name = ? WHERE id = ?', [residence, name, id]);
+	await sendNotification(
+		id,
+		`관리자가 너를 ${residence}에 거주하는 ${name}으로 수정했어. 변경된 정보로 서비스를 이용할 수 있어.`
+	);
 
 	return json({ success: true });
 };

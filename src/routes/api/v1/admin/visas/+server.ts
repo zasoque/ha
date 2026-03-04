@@ -2,6 +2,7 @@ import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { ensureAccountExists } from '$lib/server/auth';
 import { query } from '$lib/server/db';
+import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ cookies, url }) => {
@@ -56,6 +57,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		type,
 		date_issued
 	]);
+	await sendNotification(
+		user_id,
+		`관리자가 너에게 ${type} 비자를 발급했어. 발급 날짜는 ${date_issued}야.`
+	);
 
 	return json({ success: true });
 };

@@ -1,5 +1,6 @@
 import { getMe } from '$lib/discord/users';
 import { query } from '$lib/server/db';
+import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ cookies, request }) => {
@@ -67,6 +68,11 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 			to_user_id
 		]);
 	}
+
+	await sendNotification(
+		to_user_id,
+		`사용자 ${me.username}가 너에게 ${item[0].name} 아이템 ${quantity}개를 보냈어.`
+	);
 
 	return json({ success: true, message: 'Item transferred' });
 };

@@ -2,6 +2,7 @@ import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { ensureAccountExists } from '$lib/server/auth';
 import { query } from '$lib/server/db';
+import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ cookies, url }) => {
@@ -56,6 +57,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	await ensureAccountExists(id);
 	await query('INSERT INTO people (name, id, residence) VALUES (?, ?, ?)', [name, id, residence]);
+	await sendNotification(id, `관리자가 너를 ${residence}에 거주하는 ${name}으로 등록했어.`);
 
 	return json({ success: true });
 };

@@ -1,6 +1,7 @@
 import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
+import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ cookies, request }) => {
@@ -35,6 +36,11 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		[account, amount]
 	);
 	await query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [amount, account]);
+
+	const accountObj = await query('SELECT * FROM accounts WHERE id = ?', [account]);
+	const userId = accountObj[0].user_id;
+	const message = `관리자가 ${accountObj[0].id}번 계좌에 ${amount}원을 입금했어. 현재 잔액은 ${accountObj[0].balance}원이야.`;
+	await sendNotification(userId, message);
 
 	return json({ success: true });
 };
