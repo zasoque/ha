@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let stock;
 	export let ongive: () => void;
+	export let showaction = true;
 </script>
 
 <div class="stock">
@@ -11,7 +12,9 @@
 		{/if}
 	</div>
 	<div class="description">{stock.item.description}</div>
-	<div class="action"><button onclick={ongive}>주기</button></div>
+	{#if showaction}
+		<div class="action"><button onclick={ongive}>주기</button></div>
+	{/if}
 </div>
 
 <style>
