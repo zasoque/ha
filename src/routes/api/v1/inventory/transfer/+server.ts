@@ -39,11 +39,15 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		return json({ success: false, message: 'Not enough stock' }, { status: 400 });
 	}
 
-	await query('UPDATE inventory SET quantity = quantity - ? WHERE item_id = ? AND user_id = ?', [
-		quantity,
-		item_id,
-		me.id
-	]);
+	if (existingStock[0].quantity === quantity) {
+		await query('DELETE FROM inventory WHERE item_id = ? AND user_id = ?', [item_id, me.id]);
+	} else {
+		await query('UPDATE inventory SET quantity = quantity - ? WHERE item_id = ? AND user_id = ?', [
+			quantity,
+			item_id,
+			me.id
+		]);
+	}
 
 	const recipientStock = await query('SELECT * FROM inventory WHERE item_id = ? AND user_id = ?', [
 		item_id,
