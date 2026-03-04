@@ -2,6 +2,7 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
+	import Stock from '$lib/components/Stock.svelte';
 
 	let { data } = $props();
 	let items = $derived(() => data.items);
@@ -29,16 +30,27 @@
 
 <Container>
 	<Title>아이템 목록</Title>
-	<ul>
+	<div class="inventory">
 		{#each items() as item}
-			<li>{item.name} ({item.maker_name}) #{item.id}<br />{item.description}</li>
+			<Stock
+				stock={{
+					quantity: 0,
+					item,
+					item_id: item.id
+				}}
+			/>
 		{/each}
-	</ul>
+	</div>
 	<button onclick={createItem}>아이템 제작하기</button>
 	<Pagination page={page()} limit={limit()} />
 </Container>
 
 <style>
+	.inventory {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		gap: 1rem;
+	}
 	button {
 		margin-top: 1rem;
 		padding: 0.5rem 1rem;

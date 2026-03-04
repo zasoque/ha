@@ -5,8 +5,10 @@
 
 <div class="stock">
 	<div class="name">
-		{stock.item.name} <span class="item-id">#{stock.item_id}</span> &times;
-		<span class="quantity">{stock.quantity}</span>
+		{stock.item.name} <span class="item-id">#{stock.item_id}</span>
+		{#if stock.quantity}
+			&times; <span class="quantity">{stock.quantity}</span>
+		{/if}
 	</div>
 	<div class="description">{stock.item.description}</div>
 	<div class="action"><button onclick={ongive}>주기</button></div>
