@@ -9,6 +9,7 @@ export const load: Load = async ({ fetch }) => {
 
 	for (const land of lands.lands) {
 		land.owner = await getUserName(land.owner_id);
+		land.buildings = buildings.buildings.filter((building: any) => building.land_id === land.id);
 	}
 
 	for (const road of roads.roads) {

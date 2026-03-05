@@ -212,6 +212,18 @@
 			{landPromptLand.owner}
 		</div>
 	</div>
+	<div class="info-row">
+		<div class="info-key">건물</div>
+		<div class="info-value">
+			{#if landPromptLand.buildings.length === 0}
+				(건물이 없어.)
+			{:else}
+				{#each landPromptLand.buildings as building}
+					<div>{building.name} (ID: {building.id}, 종류: {building.type})</div>
+				{/each}
+			{/if}
+		</div>
+	</div>
 </PromptFloat>
 <PromptFloat bind:this={roadPrompt}>
 	<div>도로 정보</div>
