@@ -3,6 +3,7 @@ import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
 import { TAINT_ITEM_ID } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
+import { TYPE_FARM } from '../../../lands/[landId]/buildings/+server';
 
 export const POST: RequestHandler = async ({ params, cookies }) => {
 	const token = cookies.get('token');
@@ -27,6 +28,10 @@ export const POST: RequestHandler = async ({ params, cookies }) => {
 
 	if (building[0].owner_id !== me.id && !isAdmin(me.id)) {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+	}
+
+	if (building.type !== TYPE_FARM) {
+		return json({ success: false, message: 'Building is not a farm' }, { status: 400 });
 	}
 
 	const land = await query('SELECT * FROM lands WHERE id = ?', [building[0].land_id]);

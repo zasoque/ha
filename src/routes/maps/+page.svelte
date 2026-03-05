@@ -143,6 +143,29 @@
 			});
 	}
 
+	let harvestPrompt;
+	let harvestPromptBuilding = $state(0);
+
+	async function harvest() {
+		await fetch(`/api/v1/buildings/${harvestPromptBuilding}/harvest`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					alert(`테인트 ${data.quantity}개를를 획득했어!`);
+				} else {
+					alert('수확에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('수확 실패:', err);
+			});
+	}
+
 	onMount(() => {
 		init(
 			canvas,
@@ -264,6 +287,12 @@
 	<input type="number" bind:value={addRoadLandBId} placeholder="토지 B ID" />
 	<button onclick={addRoad}>추가</button>
 </PromptFloat>
+<PromptFloat bind:this={harvestPrompt}>
+	<div>수확</div>
+	<div>건물 ID</div>
+	<input type="number" bind:value={harvestPromptBuilding} placeholder="건물 ID" />
+	<button onclick={harvest}>수확</button>
+</PromptFloat>
 
 <Container>
 	<Title>하 지도</Title>
@@ -272,6 +301,7 @@
 	<button onclick={addBuildingPrompt.open}>건물 추가</button>
 	<button onclick={addRoadPrompt.open}>도로 추가</button>
 	<button onclick={addRailPrompt.open}>철도 추가</button>
+	<button onclick={harvestPrompt.open}>수확</button>
 </Container>
 
 <style>
