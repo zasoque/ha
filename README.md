@@ -279,6 +279,21 @@ CREATE TABLE buildings (
 );
 ```
 
+##### 추수 API `/maps/buildings/{buildingId}/harvest`
+
+- **`GET` /maps/buildings/{buildingId}/harvest**: 건물 수확 정보 조회
+- **`POST` /maps/buildings/{buildingId}/harvest**: 건물 수확 처리
+
+```mysql
+CREATE TABLE harvests (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    building_id INTEGER,
+    quantity INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (building_id) REFERENCES buildings(id)
+);
+```
+
 #### 도로 API `/maps/roads`
 
 - **`GET` /maps/roads**: 도로 목록 조회
