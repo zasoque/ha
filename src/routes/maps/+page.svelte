@@ -55,6 +55,36 @@
 			});
 	}
 
+	let addRoadPrompt;
+	let addRoadName = $state('');
+	let addRoadLandAId = $state(0);
+	let addRoadLandBId = $state(0);
+
+	async function addRoad() {
+		await fetch('/api/v1/maps/roads', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: addRoadName,
+				land_a_id: addRoadLandAId,
+				land_b_id: addRoadLandBId
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('도로 추가에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('도로 추가 실패:', err);
+			});
+	}
+
 	onMount(() => {
 		init(
 			canvas,
@@ -108,11 +138,22 @@
 	<input type="number" bind:value={addLandAccountId} placeholder="계좌번호" />
 	<button onclick={addLand}>추가</button>
 </PromptFloat>
+<PromptFloat bind:this={addRoadPrompt}>
+	<div>도로 추가</div>
+	<div>이름</div>
+	<input type="text" bind:value={addRoadName} />
+	<div>토지 A ID</div>
+	<input type="number" bind:value={addRoadLandAId} placeholder="토지 A ID" />
+	<div>토지 B ID</div>
+	<input type="number" bind:value={addRoadLandBId} placeholder="토지 B ID" />
+	<button onclick={addRoad}>추가</button>
+</PromptFloat>
 
 <Container>
 	<Title>하 지도</Title>
 	<canvas class="canvas" bind:this={canvas}></canvas>
 	<button onclick={addLandPrompt.open}>토지 추가</button>
+	<button onclick={addRoadPrompt.open}>도로 추가</button>
 </Container>
 
 <style>
