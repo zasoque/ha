@@ -11,5 +11,6 @@
 		<li><a href="/admin/visas">사증 관리</a></li>
 		<li><a href="/admin/economy">경제 관리</a></li>
 		<li><a href="/admin/inventory">인벤토리 관리</a></li>
+		<li><a href="/admin/maps">지도 관리</a></li>
 	</ul>
 </Container>

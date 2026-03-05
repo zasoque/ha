@@ -230,6 +230,7 @@ CREATE TABLE notifications (
   - `y`: 토지 Y 좌표
   - `color`: 토지 색상 (예: `#FF0000`)
   - `account_id`: 토지 개발 비용을 지불할 계좌 ID
+  - `free`: 토지 개발 무료 여부 (관리자 권한 필요)
 - **`GET` /maps/lands/{landId}**: 특정 토지 상세 조회
 - **`PUT` /maps/lands/{landId}**: 토지 정보 업데이트 (지주)
 - **`DELETE` /maps/lands/{landId}**: 토지 삭제 (관리자 권한 필요)
@@ -241,6 +242,8 @@ CREATE TABLE lands (
     owner_id VARCHAR(255),
     position POINT NOT NULL,
     color VARCHAR(6),
+    fertility FLOAT DEFAULT RAND(),
+    solidity FLOAT DEFAULT RAND(),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (owner_id) REFERENCES users(id),

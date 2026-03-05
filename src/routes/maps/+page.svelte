@@ -1,9 +1,12 @@
 <script>
 	import Container from '$lib/components/Container.svelte';
+	import Title from '$lib/components/Title.svelte';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
 	let { lands, buildings, roads, rails } = data;
+
+	let radiusMultiplier = 0.2;
 
 	let canvas;
 	let ctx;
@@ -24,13 +27,6 @@
 		}
 	};
 
-	const objects = [
-		{ x: 1, y: 1, r: 0.5 },
-		{ x: -1, y: -1, r: 0.5 },
-		{ x: 2, y: -1.5, r: 0.5 },
-		{ x: -1.5, y: 2, r: 0.5 }
-	];
-
 	function getNiceScaleLength(targetLength) {
 		const niceNumbers = [1, 2, 5];
 		const exponent = Math.floor(Math.log10(targetLength));
@@ -44,8 +40,64 @@
 		return 10 * base; // Fallback to the next order of magnitude
 	}
 
+	function render() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		console.log(roads);
+		roads.forEach((road) => {
+			const landAPosition = road.line.coordinates[0];
+			const landBPosition = road.line.coordinates[1];
+			const screenPosA = camera.convertWorldToScreen(landAPosition[0], landAPosition[1]);
+			const screenPosB = camera.convertWorldToScreen(landBPosition[0], landBPosition[1]);
+			ctx.strokeStyle = 'grey';
+			ctx.lineWidth = 2;
+			ctx.beginPath();
+			ctx.moveTo(screenPosA.x, screenPosA.y);
+			ctx.lineTo(screenPosB.x, screenPosB.y);
+			ctx.stroke();
+
+			ctx.fillStyle = 'black';
+			ctx.font = '12px Arial';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+			const midX = (screenPosA.x + screenPosB.x) / 2;
+			const midY = (screenPosA.y + screenPosB.y) / 2;
+			const distance = Math.hypot(screenPosB.x - screenPosA.x, screenPosB.y - screenPosA.y);
+			if (distance >= 75 * window.devicePixelRatio) {
+				ctx.fillText(road.name, midX, midY);
+			}
+		});
+
+		lands.forEach((land) => {
+			const screenPos = camera.convertWorldToScreen(
+				land.position.coordinates[0],
+				land.position.coordinates[1]
+			);
+
+			const renderRadius = Math.max(5, (radiusMultiplier * camera.zoom) / 2);
+
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 2;
+			ctx.fillStyle = `#${land.color}`;
+			ctx.beginPath();
+			ctx.arc(screenPos.x, screenPos.y, renderRadius, 0, 2 * Math.PI);
+			ctx.fill();
+			ctx.stroke();
+
+			if (renderRadius >= 10) {
+				ctx.font = `${12}px Arial`;
+				ctx.fillStyle = 'black';
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'top';
+				ctx.fillText(land.name, screenPos.x, screenPos.y + renderRadius + 12);
+			}
+		});
+
+		renderScaleBar();
+	}
+
 	function renderScaleBar() {
-		const targetLengthInScreen = 50 * window.devicePixelRatio; // 50 pixels in screen space
+		const targetLengthInScreen = 75 * window.devicePixelRatio;
 		const targetLengthInWorld = targetLengthInScreen / camera.zoom;
 		const niceLength = getNiceScaleLength(targetLengthInWorld);
 
@@ -62,21 +114,38 @@
 		ctx.font = '12px Arial';
 		ctx.fillStyle = 'black';
 		ctx.textAlign = 'right';
-		ctx.fillText(`${niceLength}`, 20 + niceLength * camera.zoom, canvas.height - 35);
-	}
+		ctx.textBaseline = 'bottom';
+		ctx.fillText(`${niceLength}`, 20 + niceLength * camera.zoom, canvas.height - 30);
 
-	function render() {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-		objects.forEach((obj) => {
-			const screenPos = camera.convertWorldToScreen(obj.x, obj.y);
+		ctx.strokeStyle = 'rgb(0, 0, 0, 0.1)';
+		ctx.lineWidth = 1;
+		ctx.font = '10px Arial';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		const startingScreenX = camera.convertWorldToScreen(0, 0).x % (niceLength * camera.zoom);
+		for (let x = startingScreenX; x < canvas.width; x += niceLength * camera.zoom) {
 			ctx.beginPath();
-			ctx.arc(screenPos.x, screenPos.y, obj.r * camera.zoom, 0, Math.PI * 2);
-			ctx.fillStyle = 'blue';
-			ctx.fill();
-		});
-
-		renderScaleBar();
+			ctx.moveTo(x, 0);
+			ctx.lineTo(x, canvas.height);
+			ctx.stroke();
+			ctx.fillText(
+				`${Math.round((camera.x + (x - canvas.width / 2) / camera.zoom) / niceLength) * niceLength}`,
+				x,
+				canvas.height - 10
+			);
+		}
+		const startingScreenY = camera.convertWorldToScreen(0, 0).y % (niceLength * camera.zoom);
+		for (let y = startingScreenY; y < canvas.height; y += niceLength * camera.zoom) {
+			ctx.beginPath();
+			ctx.moveTo(0, y);
+			ctx.lineTo(canvas.width, y);
+			ctx.stroke();
+			ctx.fillText(
+				`${Math.round((camera.y + (y - canvas.height / 2) / camera.zoom) / niceLength) * niceLength}`,
+				10,
+				y
+			);
+		}
 	}
 
 	function resizeCanvas() {
@@ -203,6 +272,7 @@
 </script>
 
 <Container>
+	<Title>하 지도</Title>
 	<canvas class="canvas" bind:this={canvas}></canvas>
 </Container>
 

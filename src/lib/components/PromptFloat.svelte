@@ -64,5 +64,10 @@
 			box-sizing: border-box;
 			background-color: white;
 		}
+
+		input[type='color'] {
+			height: 2.5rem;
+			width: 100%;
+		}
 	}
 </style>
