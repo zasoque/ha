@@ -201,7 +201,7 @@
 		event.preventDefault();
 
 		camera.targetZoom *= Math.exp(-event.deltaY * 0.001);
-		if (camera.targetZoom < 1) camera.targetZoom = 1;
+		if (camera.targetZoom < 0.1) camera.targetZoom = 0.1;
 		if (camera.targetZoom > 1000) camera.targetZoom = 1000;
 
 		render();
@@ -268,7 +268,7 @@
 			const zoomFactor = currentDistance / lastTouchDistance;
 
 			camera.targetZoom *= zoomFactor;
-			if (camera.targetZoom < 10) camera.targetZoom = 10;
+			if (camera.targetZoom < 0.1) camera.targetZoom = 0.1;
 			if (camera.targetZoom > 1000) camera.targetZoom = 1000;
 
 			lastTouchDistance = currentDistance;
