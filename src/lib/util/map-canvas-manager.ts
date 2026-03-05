@@ -219,6 +219,8 @@ function resizeCanvas() {
 	canvas.width = canvas.clientWidth * window.devicePixelRatio;
 	canvas.height = canvas.clientHeight * window.devicePixelRatio;
 
+	console.log(canvas.width, canvas.height);
+
 	render();
 }
 

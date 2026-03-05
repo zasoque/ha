@@ -53,6 +53,10 @@
 	}
 
 	:global {
+		div {
+			margin-bottom: 0.5rem;
+		}
+
 		input,
 		select {
 			padding: 0.5rem;
@@ -60,7 +64,6 @@
 			border: 1px solid #ccc;
 			border-radius: 4px;
 			margin-bottom: 1rem;
-			margin-top: 0.5rem;
 			box-sizing: border-box;
 			background-color: white;
 		}
