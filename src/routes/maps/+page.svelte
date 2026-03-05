@@ -12,6 +12,9 @@
 	let camera = {
 		x: 0,
 		y: 0,
+		targetX: 0,
+		targetY: 0,
+		targetZoom: 100,
 		zoom: 100,
 		convertScreenToWorld: (screenX, screenY) => {
 			const worldX = (screenX - canvas.width / 2) / camera.zoom + camera.x;
@@ -38,10 +41,34 @@
 		return 10 * base; // Fallback to the next order of magnitude
 	}
 
+	function lerp(start, end, t) {
+		return start + (end - start) * t;
+	}
+
+	let previousTimestamp = 0;
+	function tick() {
+		const fps = 1000 / (performance.now() - previousTimestamp);
+
+		let needsRender = false;
+
+		if (Math.abs(camera.targetX - camera.x) > 0.01) needsRender = true;
+		if (Math.abs(camera.targetY - camera.y) > 0.01) needsRender = true;
+		if (Math.abs(Math.log(camera.targetZoom / camera.zoom)) > 0.01) needsRender = true;
+
+		previousTimestamp = performance.now();
+		if (!needsRender) return;
+
+		const t = 10 / fps;
+		camera.x = lerp(camera.x, camera.targetX, t);
+		camera.y = lerp(camera.y, camera.targetY, t);
+		camera.zoom *= Math.exp(lerp(0, Math.log(camera.targetZoom / camera.zoom), t));
+
+		render();
+	}
+
 	function render() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		console.log(roads);
 		roads.forEach((road) => {
 			const landAPosition = road.line.coordinates[0];
 			const landBPosition = road.line.coordinates[1];
@@ -49,21 +76,21 @@
 			const screenPosB = camera.convertWorldToScreen(landBPosition[0], landBPosition[1]);
 
 			ctx.strokeStyle = 'grey';
-			ctx.lineWidth = 14;
+			ctx.lineWidth = 14 * window.devicePixelRatio;
 			ctx.beginPath();
 			ctx.moveTo(screenPosA.x, screenPosA.y);
 			ctx.lineTo(screenPosB.x, screenPosB.y);
 			ctx.stroke();
 
 			ctx.strokeStyle = 'white';
-			ctx.lineWidth = 12;
+			ctx.lineWidth = 12 * window.devicePixelRatio;
 			ctx.beginPath();
 			ctx.moveTo(screenPosA.x, screenPosA.y);
 			ctx.lineTo(screenPosB.x, screenPosB.y);
 			ctx.stroke();
 
 			ctx.fillStyle = 'black';
-			ctx.font = '12px Arial';
+			ctx.font = `${12 * window.devicePixelRatio}px Arial`;
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
 			const midX = (screenPosA.x + screenPosB.x) / 2;
@@ -88,7 +115,7 @@
 			const renderRadius = 10 * window.devicePixelRatio;
 
 			ctx.strokeStyle = 'black';
-			ctx.lineWidth = 2;
+			ctx.lineWidth = 2 * window.devicePixelRatio;
 			ctx.fillStyle = `#${land.color}`;
 			ctx.beginPath();
 			ctx.arc(screenPos.x, screenPos.y, renderRadius, 0, 2 * Math.PI);
@@ -96,11 +123,15 @@
 			ctx.stroke();
 
 			if (camera.zoom >= 50) {
-				ctx.font = `${12}px Arial`;
+				ctx.font = `${12 * window.devicePixelRatio}px Arial`;
 				ctx.fillStyle = 'black';
 				ctx.textAlign = 'left';
 				ctx.textBaseline = 'middle';
-				ctx.fillText(land.name, screenPos.x + renderRadius + 5, screenPos.y);
+				ctx.fillText(
+					land.name,
+					screenPos.x + renderRadius + 5 * window.devicePixelRatio,
+					screenPos.y
+				);
 			}
 		});
 
@@ -122,7 +153,7 @@
 		ctx.lineWidth = 2;
 		ctx.stroke();
 
-		ctx.font = '12px Arial';
+		ctx.font = `${12 * window.devicePixelRatio}px Arial`;
 		ctx.fillStyle = 'black';
 		ctx.textAlign = 'right';
 		ctx.textBaseline = 'bottom';
@@ -130,7 +161,7 @@
 
 		ctx.strokeStyle = 'rgb(0, 0, 0, 0.1)';
 		ctx.lineWidth = 1;
-		ctx.font = '10px Arial';
+		ctx.font = `${10 * window.devicePixelRatio}px Arial`;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 		const startingScreenX = camera.convertWorldToScreen(0, 0).x % (niceLength * camera.zoom);
@@ -169,9 +200,9 @@
 	function wheelZoom(event) {
 		event.preventDefault();
 
-		camera.zoom *= Math.exp(-event.deltaY * 0.001);
-		if (camera.zoom < 1) camera.zoom = 1;
-		if (camera.zoom > 1000) camera.zoom = 1000;
+		camera.targetZoom *= Math.exp(-event.deltaY * 0.001);
+		if (camera.targetZoom < 1) camera.targetZoom = 1;
+		if (camera.targetZoom > 1000) camera.targetZoom = 1000;
 
 		render();
 	}
@@ -193,8 +224,8 @@
 			const deltaX = event.clientX - lastMousePos.x;
 			const deltaY = event.clientY - lastMousePos.y;
 
-			camera.x -= (deltaX * window.devicePixelRatio) / camera.zoom;
-			camera.y -= (deltaY * window.devicePixelRatio) / camera.zoom;
+			camera.targetX -= (deltaX * window.devicePixelRatio) / camera.zoom;
+			camera.targetY -= (deltaY * window.devicePixelRatio) / camera.zoom;
 
 			lastMousePos = { x: event.clientX, y: event.clientY };
 			render();
@@ -223,8 +254,8 @@
 			const deltaX = event.touches[0].clientX - lastMousePos.x;
 			const deltaY = event.touches[0].clientY - lastMousePos.y;
 
-			camera.x -= (deltaX * window.devicePixelRatio) / camera.zoom;
-			camera.y -= (deltaY * window.devicePixelRatio) / camera.zoom;
+			camera.targetX -= (deltaX * window.devicePixelRatio) / camera.zoom;
+			camera.targetY -= (deltaY * window.devicePixelRatio) / camera.zoom;
 
 			lastMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
 			render();
@@ -236,9 +267,9 @@
 			const currentDistance = Math.sqrt(dx * dx + dy * dy);
 			const zoomFactor = currentDistance / lastTouchDistance;
 
-			camera.zoom *= zoomFactor;
-			if (camera.zoom < 10) camera.zoom = 10;
-			if (camera.zoom > 1000) camera.zoom = 1000;
+			camera.targetZoom *= zoomFactor;
+			if (camera.targetZoom < 10) camera.targetZoom = 10;
+			if (camera.targetZoom > 1000) camera.targetZoom = 1000;
 
 			lastTouchDistance = currentDistance;
 			render();
@@ -267,6 +298,8 @@
 		canvas.addEventListener('touchmove', touchMove);
 		canvas.addEventListener('touchend', touchEnd);
 
+		const interval = setInterval(tick);
+
 		resizeCanvas();
 
 		return () => {
@@ -278,6 +311,7 @@
 			canvas.removeEventListener('touchstart', touchStart);
 			canvas.removeEventListener('touchmove', touchMove);
 			canvas.removeEventListener('touchend', touchEnd);
+			clearInterval(interval);
 		};
 	});
 </script>
