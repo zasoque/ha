@@ -151,6 +151,9 @@ CREATE TABLE visas (
 - **`POST` /admin/economy/print**: 화폐 발행 (관리자 권한 필요)
   - `amount`: 발행할 화폐 양
   - `account`: 화폐를 입금할 계좌 ID
+- **`POST` /admin/economy/burn**: 화폐 소각 (관리자 권한 필요)
+  - `amount`: 소각할 화폐 양
+  - `account`: 화폐를 출금할 계좌 ID
 
 ### 6. 아이템 API `/items`
 
