@@ -6,8 +6,6 @@
 	let { data } = $props();
 	let { lands, buildings, roads, rails } = data;
 
-	let radiusMultiplier = 0.2;
-
 	let canvas;
 	let ctx;
 
@@ -49,8 +47,16 @@
 			const landBPosition = road.line.coordinates[1];
 			const screenPosA = camera.convertWorldToScreen(landAPosition[0], landAPosition[1]);
 			const screenPosB = camera.convertWorldToScreen(landBPosition[0], landBPosition[1]);
+
 			ctx.strokeStyle = 'grey';
-			ctx.lineWidth = 2;
+			ctx.lineWidth = 14;
+			ctx.beginPath();
+			ctx.moveTo(screenPosA.x, screenPosA.y);
+			ctx.lineTo(screenPosB.x, screenPosB.y);
+			ctx.stroke();
+
+			ctx.strokeStyle = 'white';
+			ctx.lineWidth = 12;
 			ctx.beginPath();
 			ctx.moveTo(screenPosA.x, screenPosA.y);
 			ctx.lineTo(screenPosB.x, screenPosB.y);
@@ -63,9 +69,14 @@
 			const midX = (screenPosA.x + screenPosB.x) / 2;
 			const midY = (screenPosA.y + screenPosB.y) / 2;
 			const distance = Math.hypot(screenPosB.x - screenPosA.x, screenPosB.y - screenPosA.y);
+			const angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
+			ctx.save();
 			if (distance >= 75 * window.devicePixelRatio) {
-				ctx.fillText(road.name, midX, midY);
+				ctx.translate(midX, midY);
+				ctx.rotate(angle);
+				ctx.fillText(road.name, 0, 0);
 			}
+			ctx.restore();
 		});
 
 		lands.forEach((land) => {
@@ -74,7 +85,7 @@
 				land.position.coordinates[1]
 			);
 
-			const renderRadius = Math.max(5, (radiusMultiplier * camera.zoom) / 2);
+			const renderRadius = 10 * window.devicePixelRatio;
 
 			ctx.strokeStyle = 'black';
 			ctx.lineWidth = 2;
@@ -84,12 +95,12 @@
 			ctx.fill();
 			ctx.stroke();
 
-			if (renderRadius >= 10) {
+			if (camera.zoom >= 50) {
 				ctx.font = `${12}px Arial`;
 				ctx.fillStyle = 'black';
-				ctx.textAlign = 'center';
-				ctx.textBaseline = 'top';
-				ctx.fillText(land.name, screenPos.x, screenPos.y + renderRadius + 12);
+				ctx.textAlign = 'left';
+				ctx.textBaseline = 'middle';
+				ctx.fillText(land.name, screenPos.x + renderRadius + 5, screenPos.y);
 			}
 		});
 
