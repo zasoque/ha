@@ -28,24 +28,26 @@ let camera = {
 	}
 };
 
-function getNiceScaleLength(targetLength: number) {
-	const niceNumbers = [1, 2, 5];
-	const exponent = Math.floor(Math.log10(targetLength));
-	const base = Math.pow(10, exponent);
-	for (let i = 0; i < niceNumbers.length; i++) {
-		const niceLength = niceNumbers[i] * base;
-		if (niceLength >= targetLength) {
-			return niceLength;
-		}
-	}
-	return 10 * base; // Fallback to the next order of magnitude
+function getTouchPositions(event: TouchEvent) {
+	const rect = canvas.getBoundingClientRect();
+
+	if (event.touches.length === 0)
+		return Array.from(event.changedTouches).map((touch) => ({
+			x: (touch.clientX - rect.left) * window.devicePixelRatio,
+			y: (touch.clientY - rect.top) * window.devicePixelRatio
+		}));
+
+	return Array.from(event.touches).map((touch) => ({
+		x: (touch.clientX - rect.left) * window.devicePixelRatio,
+		y: (touch.clientY - rect.top) * window.devicePixelRatio
+	}));
 }
 
 function getMousePosition(event: MouseEvent) {
 	const rect = canvas.getBoundingClientRect();
 	return {
-		x: event.clientX - rect.left,
-		y: event.clientY - rect.top
+		x: (event.clientX - rect.left) * window.devicePixelRatio,
+		y: (event.clientY - rect.top) * window.devicePixelRatio
 	};
 }
 
@@ -144,6 +146,19 @@ function render() {
 	});
 
 	renderScaleBar();
+}
+
+function getNiceScaleLength(targetLength: number) {
+	const niceNumbers = [1, 2, 5];
+	const exponent = Math.floor(Math.log10(targetLength));
+	const base = Math.pow(10, exponent);
+	for (let i = 0; i < niceNumbers.length; i++) {
+		const niceLength = niceNumbers[i] * base;
+		if (niceLength >= targetLength) {
+			return niceLength;
+		}
+	}
+	return 10 * base; // Fallback to the next order of magnitude
 }
 
 function renderScaleBar() {
@@ -246,7 +261,7 @@ let lastTouchDistance = 0;
 function touchStart(event: TouchEvent) {
 	if (event.touches.length === 1) {
 		isDragging = true;
-		lastMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+		lastMousePos = getTouchPositions(event)[0];
 	}
 
 	if (event.touches.length === 2) {
@@ -254,25 +269,29 @@ function touchStart(event: TouchEvent) {
 		isZooming = true;
 		const dx = event.touches[0].clientX - event.touches[1].clientX;
 		const dy = event.touches[0].clientY - event.touches[1].clientY;
-		lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+		lastTouchDistance = Math.hypot(dx, dy);
 	}
 }
 
 function touchMove(event: TouchEvent) {
 	if (isDragging && event.touches.length >= 1) {
-		const deltaX = event.touches[0].clientX - lastMousePos.x;
-		const deltaY = event.touches[0].clientY - lastMousePos.y;
+		event.preventDefault();
 
-		camera.targetX -= (deltaX * window.devicePixelRatio) / camera.zoom;
-		camera.targetY -= (deltaY * window.devicePixelRatio) / camera.zoom;
+		const currentMousePos = getTouchPositions(event)[0];
+		const deltaX = currentMousePos.x - lastMousePos.x;
+		const deltaY = currentMousePos.y - lastMousePos.y;
 
-		lastMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+		camera.targetX -= deltaX / camera.zoom;
+		camera.targetY -= deltaY / camera.zoom;
+
+		lastMousePos = getTouchPositions(event)[0];
 		render();
 	}
 
 	if (isZooming && event.touches.length === 2) {
-		const dx = event.touches[0].clientX - event.touches[1].clientX;
-		const dy = event.touches[0].clientY - event.touches[1].clientY;
+		const currentTouchPositions = getTouchPositions(event);
+		const dx = currentTouchPositions[0].x - currentTouchPositions[1].x;
+		const dy = currentTouchPositions[0].y - currentTouchPositions[1].y;
 		const currentDistance = Math.sqrt(dx * dx + dy * dy);
 		const zoomFactor = currentDistance / lastTouchDistance;
 
@@ -288,6 +307,7 @@ function touchMove(event: TouchEvent) {
 function touchEnd(event: TouchEvent) {
 	if (event.touches.length === 0) {
 		isDragging = false;
+		openPopup(getTouchPositions(event)[0]);
 	}
 
 	if (event.touches.length < 2) {
@@ -295,17 +315,17 @@ function touchEnd(event: TouchEvent) {
 	}
 }
 
-function doubleClick(event: MouseEvent) {
-	const currentMousePos = getMousePosition(event);
+function openPopup(cursorPosition: { x: number; y: number }) {
 	const land = lands.find((land) => {
 		const screenPos = camera.convertWorldToScreen(
 			land.position.coordinates[0],
 			land.position.coordinates[1]
 		);
-		const dx = currentMousePos.x - screenPos.x;
-		const dy = currentMousePos.y - screenPos.y;
+		const dx = cursorPosition.x - screenPos.x;
+		const dy = cursorPosition.y - screenPos.y;
 		const distance = Math.hypot(dx, dy);
-		return distance < 30 * window.devicePixelRatio;
+		console.log(distance);
+		return distance < 50 * window.devicePixelRatio;
 	});
 
 	if (land) {
@@ -323,13 +343,13 @@ function doubleClick(event: MouseEvent) {
 			const dy = screenPosB.y - screenPosA.y;
 			const length = Math.hypot(dx, dy);
 			const t =
-				((currentMousePos.x - screenPosA.x) * dx + (currentMousePos.y - screenPosA.y) * dy) /
+				((cursorPosition.x - screenPosA.x) * dx + (cursorPosition.y - screenPosA.y) * dy) /
 				(length * length);
 			if (t < 0 || t > 1) return false;
 
 			const closestX = screenPosA.x + t * dx;
 			const closestY = screenPosA.y + t * dy;
-			const distance = Math.hypot(currentMousePos.x - closestX, currentMousePos.y - closestY);
+			const distance = Math.hypot(cursorPosition.x - closestX, cursorPosition.y - closestY);
 			return distance < 15 * window.devicePixelRatio;
 		});
 
@@ -339,6 +359,11 @@ function doubleClick(event: MouseEvent) {
 	}
 
 	render();
+}
+
+function doubleClick(event: MouseEvent) {
+	const currentMousePos = getMousePosition(event);
+	openPopup(currentMousePos);
 }
 
 export function init(
