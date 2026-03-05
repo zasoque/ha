@@ -199,6 +199,8 @@ function renderScaleBar() {
 			canvas.height - 10
 		);
 	}
+
+	ctx.textAlign = 'left';
 	const startingScreenY = camera.convertWorldToScreen(0, 0).y % (niceLength * camera.zoom);
 	for (let y = startingScreenY; y < canvas.height; y += niceLength * camera.zoom) {
 		ctx.beginPath();
@@ -267,8 +269,9 @@ function touchStart(event: TouchEvent) {
 	if (event.touches.length === 2) {
 		event.preventDefault();
 		isZooming = true;
-		const dx = event.touches[0].clientX - event.touches[1].clientX;
-		const dy = event.touches[0].clientY - event.touches[1].clientY;
+		const touchPositions = getTouchPositions(event);
+		const dx = touchPositions[0].x - touchPositions[1].x;
+		const dy = touchPositions[0].y - touchPositions[1].y;
 		lastTouchDistance = Math.hypot(dx, dy);
 	}
 }
@@ -307,7 +310,6 @@ function touchMove(event: TouchEvent) {
 function touchEnd(event: TouchEvent) {
 	if (event.touches.length === 0) {
 		isDragging = false;
-		openPopup(getTouchPositions(event)[0]);
 	}
 
 	if (event.touches.length < 2) {

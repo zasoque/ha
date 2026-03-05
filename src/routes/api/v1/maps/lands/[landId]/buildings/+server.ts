@@ -86,16 +86,15 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	if (
-		(type === TYPE_OFFICE &&
-			alreadyBuildings.length === 1 &&
-			!(alreadyBuildings[0].type === TYPE_OFFICE || alreadyBuildings[0].type === TYPE_MARKET)) ||
-		(alreadyBuildings.length > 1 &&
-			alreadyBuildings[alreadyBuildings.length - 1].type !== TYPE_OFFICE)
+		type === TYPE_OFFICE &&
+		alreadyBuildings.length > 0 &&
+		alreadyBuildings[alreadyBuildings.length - 1].type !== TYPE_OFFICE &&
+		alreadyBuildings[alreadyBuildings.length - 1].type !== TYPE_MARKET
 	) {
 		return json(
 			{
 				success: false,
-				message: 'Office can only be built on land with one existing market or office building'
+				message: 'Office can only be built on office or market building'
 			},
 			{ status: 400 }
 		);

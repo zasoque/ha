@@ -6,7 +6,7 @@
 	import { init } from '$lib/util/map-canvas-manager';
 
 	let { data } = $props();
-	let { lands, buildings, roads, rails } = data;
+	let { lands, buildings, roads, rails, me } = data;
 
 	let canvas;
 
@@ -20,6 +20,40 @@
 	let roadPromptName = $state('');
 	let roadPromptLandAId = $state(0);
 	let roadPromptLandBId = $state(0);
+
+	let addLandPrompt;
+	let addLandName = $state('');
+	let addLandPosition = $state({ x: 0, y: 0 });
+	let addLandColor = $state('#000000');
+	let addLandAccountId = $state(0);
+
+	async function addLand() {
+		await fetch('/api/v1/maps/lands', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: addLandName,
+				owner_id: me.id,
+				x: addLandPosition.x,
+				y: addLandPosition.y,
+				color: addLandColor.replace('#', ''),
+				account_id: addLandAccountId
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('토지 추가에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('토지 추가 실패:', err);
+			});
+	}
 
 	onMount(() => {
 		init(
@@ -61,10 +95,24 @@
 	<div>토지 A ID: {roadPromptLandAId}</div>
 	<div>토지 B ID: {roadPromptLandBId}</div>
 </PromptFloat>
+<PromptFloat bind:this={addLandPrompt}>
+	<div>토지 추가</div>
+	<div>이름</div>
+	<input type="text" bind:value={addLandName} />
+	<div>위치</div>
+	<input type="number" bind:value={addLandPosition.x} placeholder="X 좌표" />
+	<input type="number" bind:value={addLandPosition.y} placeholder="Y 좌표" />
+	<div>색상</div>
+	<input type="color" bind:value={addLandColor} />
+	<div>계좌번호 (토지를 만들기 위해서는 2냥이 필요해.)</div>
+	<input type="number" bind:value={addLandAccountId} placeholder="계좌번호" />
+	<button onclick={addLand}>추가</button>
+</PromptFloat>
 
 <Container>
 	<Title>하 지도</Title>
 	<canvas class="canvas" bind:this={canvas}></canvas>
+	<button onclick={addLandPrompt.open}>토지 추가</button>
 </Container>
 
 <style>
