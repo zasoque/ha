@@ -67,7 +67,7 @@ export const DELETE: RequestHandler = async ({ cookies, params }) => {
 	}
 
 	await query('DELETE FROM accounts WHERE id = ?', [accountId]);
-	await sendNotification(me.id, `계좌번호 ${account[0].account_number}번의 계좌가 삭제됐어.`);
+	await sendNotification(me.id, `계좌번호 ${accountId}번의 계좌가 삭제됐어.`);
 
 	return json({ success: true, message: 'Account deleted successfully' });
 };
