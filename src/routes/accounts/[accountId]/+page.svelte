@@ -108,7 +108,7 @@
 <PromptFloat bind:this={transferPrompt}>
 	<div>계좌번호</div>
 	<input type="text" id="toAccountId" />
-	<div>금액</div>
+	<div>금액 (수수료가 발생한다면 여기에 입력한 것보다 더 많은 금액이 빠져나갈 수 있어)</div>
 	<input type="number" id="amount" min="0" step="0.01" />
 	<div>설명</div>
 	<input type="text" id="description" />
