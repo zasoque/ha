@@ -252,8 +252,8 @@ function mouseMove(event: MouseEvent) {
 		const deltaX = currentMousePos.x - lastMousePos.x;
 		const deltaY = currentMousePos.y - lastMousePos.y;
 
-		camera.targetX -= (deltaX * window.devicePixelRatio) / camera.zoom;
-		camera.targetY -= (deltaY * window.devicePixelRatio) / camera.zoom;
+		camera.targetX -= deltaX / camera.zoom;
+		camera.targetY -= deltaY / camera.zoom;
 
 		lastMousePos = currentMousePos;
 		render();
