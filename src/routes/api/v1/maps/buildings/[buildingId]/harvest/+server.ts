@@ -1,9 +1,8 @@
 import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
-import { TAINT_ITEM_ID } from '$lib/util/const';
+import { TAINT_ITEM_ID, TYPE_FARM } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { TYPE_FARM } from '../../../lands/[landId]/buildings/+server';
 
 export const POST: RequestHandler = async ({ params, cookies }) => {
 	const token = cookies.get('token');

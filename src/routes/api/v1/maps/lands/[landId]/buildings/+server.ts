@@ -1,7 +1,13 @@
 import { getMe } from '$lib/discord/users';
 import { getAccount } from '$lib/server/account';
 import { query } from '$lib/server/db';
-import { TAINT_ITEM_ID } from '$lib/util/const';
+import {
+	TAINT_ITEM_ID,
+	TYPE_FARM,
+	TYPE_MARKET,
+	TYPE_OFFICE,
+	TYPE_RESIDENTIAL
+} from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -17,11 +23,6 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	return json({ success: true, land: land[0], buildings });
 };
-
-export const TYPE_FARM = '농장';
-export const TYPE_RESIDENTIAL = '주거';
-export const TYPE_OFFICE = '사무';
-export const TYPE_MARKET = '시장';
 
 function taintCost(type: string): number {
 	if (type === TYPE_RESIDENTIAL) {
@@ -50,17 +51,21 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	const { landId } = params;
-	const { name, owner_id, land_id, type, account_id } = await request.json();
+	const owner_id = me.id;
+	const { name, type, account_id } = await request.json();
+	const land_id = landId;
 
-	if (!name || !owner_id || !land_id || !type || !account_id) {
+	if (!name || !land_id || !type || !account_id) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
 	}
 
-	if (account_id !== me.id) {
+	const account = await getAccount(account_id);
+
+	if (account.user_id !== me.id) {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
 
-	const stock = await query('SELECT * FROM inventories WHERE user_id = ? AND item_id = ?', [
+	const stock = await query('SELECT * FROM inventory WHERE user_id = ? AND item_id = ?', [
 		owner_id,
 		TAINT_ITEM_ID
 	]);
@@ -139,7 +144,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		);
 	}
 
-	await query('UPDATE inventories SET quantity = quantity - ? WHERE user_id = ? AND item_id = ?', [
+	await query('UPDATE inventory SET quantity = quantity - ? WHERE user_id = ? AND item_id = ?', [
 		taintCost(type),
 		owner_id,
 		TAINT_ITEM_ID

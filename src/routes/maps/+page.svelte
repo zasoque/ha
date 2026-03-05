@@ -87,17 +87,15 @@
 	let addBuildingAccountId = $state(0);
 
 	async function addBuilding() {
-		await fetch('/api/v1/maps/buildings', {
+		await fetch(`/api/v1/maps/lands/${addBuildingLandId}/buildings`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
 				name: addBuildingName,
-				land_id: addBuildingLandId,
 				type: addBuildingType,
-				account_id: addBuildingAccountId,
-				owner_id: me.id
+				account_id: addBuildingAccountId
 			})
 		})
 			.then((res) => res.json())
@@ -147,7 +145,7 @@
 	let harvestPromptBuilding = $state(0);
 
 	async function harvest() {
-		await fetch(`/api/v1/buildings/${harvestPromptBuilding}/harvest`, {
+		await fetch(`/api/v1/maps/buildings/${harvestPromptBuilding}/harvest`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

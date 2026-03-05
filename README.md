@@ -225,7 +225,6 @@ CREATE TABLE notifications (
 - **`GET` /maps/lands**: 토지 목록 조회
 - **`POST` /maps/lands**: 새 토지 생성
   - `name`: 토지 이름
-  - `owner_id`: 토지 소유자 ID (Discord ID)
   - `x`: 토지 X 좌표
   - `y`: 토지 Y 좌표
   - `color`: 토지 색상 (예: `#FF0000`)
@@ -257,7 +256,6 @@ CREATE TABLE lands (
 - **`GET` /maps/lands/{landId}/buildings**: 건물 목록 조회
 - **`POST` /maps/lands/{landId}/buildings**: 새 건물 생성
   - `name`: 건물 이름
-  - `owner_id`: 건물 소유자 ID (Discord ID)
   - `land_id`: 건물이 위치한 토지 ID
   - `type`: 건물 유형 (예: `'주거'`, `'사무'`, `'시장'`, `'농장'`)
   - `account_id`: 건물 건설 비용을 지불할 계좌 ID
