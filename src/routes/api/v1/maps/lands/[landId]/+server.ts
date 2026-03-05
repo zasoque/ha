@@ -8,6 +8,9 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	const land = await query('SELECT * FROM lands WHERE id = ?', [landId]);
 
+	land.fertility = undefined;
+	land.solidity = undefined;
+
 	if (land.length === 0) {
 		return json({ success: false, message: 'Land not found' }, { status: 404 });
 	}

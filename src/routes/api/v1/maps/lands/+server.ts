@@ -6,6 +6,12 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async () => {
 	const lands = await query('SELECT * FROM lands');
+
+	lands.forEach((land: any) => {
+		land.fertility = undefined;
+		land.solidity = undefined;
+	});
+
 	return json({ success: true, lands });
 };
 
