@@ -80,6 +80,69 @@
 			});
 	}
 
+	let addBuildingPrompt;
+	let addBuildingName = $state('');
+	let addBuildingLandId = $state(0);
+	let addBuildingType = $state('');
+	let addBuildingAccountId = $state(0);
+
+	async function addBuilding() {
+		await fetch('/api/v1/maps/buildings', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: addBuildingName,
+				land_id: addBuildingLandId,
+				type: addBuildingType,
+				account_id: addBuildingAccountId,
+				owner_id: me.id
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('건물 추가에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('건물 추가 실패:', err);
+			});
+	}
+
+	let addRailPrompt;
+	let addRailName = $state('');
+	let addRailLandAId = $state(0);
+	let addRailLandBId = $state(0);
+
+	async function addRail() {
+		await fetch('/api/v1/maps/rails', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: addRailName,
+				land_a_id: addRailLandAId,
+				land_b_id: addRailLandBId
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('철도 추가에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('철도 추가 실패:', err);
+			});
+	}
+
 	onMount(() => {
 		init(
 			canvas,
@@ -153,17 +216,46 @@
 	<div>이름</div>
 	<input type="text" bind:value={addLandName} />
 	<div>위치</div>
-	<input type="number" bind:value={addLandPosition.x} placeholder="X 좌표" />
-	<input type="number" bind:value={addLandPosition.y} placeholder="Y 좌표" />
+	<input type="number" bind:value={addLandPosition.x} step="0.01" placeholder="X 좌표" />
+	<input type="number" bind:value={addLandPosition.y} step="0.01" placeholder="Y 좌표" />
 	<div>색상</div>
 	<input type="color" bind:value={addLandColor} />
 	<div>계좌번호 (토지를 만들기 위해서는 2냥이 필요해.)</div>
 	<input type="number" bind:value={addLandAccountId} placeholder="계좌번호" />
 	<button onclick={addLand}>추가</button>
 </PromptFloat>
+<PromptFloat bind:this={addBuildingPrompt}>
+	<div>건물 추가</div>
+	<div>이름</div>
+	<input type="text" bind:value={addBuildingName} />
+	<div>토지 ID</div>
+	<input type="number" bind:value={addBuildingLandId} placeholder="토지 ID" />
+	<div>건물 종류</div>
+	<select bind:value={addBuildingType}>
+		<option value="" disabled selected>건물 종류 선택</option>
+		<option>농장</option>
+		<option>거주</option>
+		<option>사무</option>
+		<option>시장</option>
+	</select>
+	<div>계좌번호 (거주지를 등록할 때에는 층의 제곱 &times; 30푼만큼 내야 해)</div>
+	<input type="number" bind:value={addBuildingAccountId} placeholder="계좌번호" />
+	<button onclick={addBuilding}>추가</button>
+</PromptFloat>
 <PromptFloat bind:this={addRoadPrompt}>
 	<div>도로 추가</div>
 	<div>도로를 만들기 위해서는 단위길이당 테인트 1개가 필요해.</div>
+	<div>이름</div>
+	<input type="text" bind:value={addRoadName} />
+	<div>토지 A ID</div>
+	<input type="number" bind:value={addRoadLandAId} placeholder="토지 A ID" />
+	<div>토지 B ID</div>
+	<input type="number" bind:value={addRoadLandBId} placeholder="토지 B ID" />
+	<button onclick={addRoad}>추가</button>
+</PromptFloat>
+<PromptFloat bind:this={addRailPrompt}>
+	<div>철도 추가</div>
+	<div>철도를 만들기 위해서는 단위길이당 테인트 20개가 필요해.</div>
 	<div>이름</div>
 	<input type="text" bind:value={addRoadName} />
 	<div>토지 A ID</div>
@@ -177,7 +269,9 @@
 	<Title>하 지도</Title>
 	<canvas class="canvas" bind:this={canvas}></canvas>
 	<button onclick={addLandPrompt.open}>토지 추가</button>
+	<button onclick={addBuildingPrompt.open}>건물 추가</button>
 	<button onclick={addRoadPrompt.open}>도로 추가</button>
+	<button onclick={addRailPrompt.open}>철도 추가</button>
 </Container>
 
 <style>
