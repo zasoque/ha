@@ -1,4 +1,5 @@
 <script>
+	import Container from '$lib/components/Container.svelte';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();
@@ -30,7 +31,41 @@
 		{ x: -1.5, y: 2, r: 0.5 }
 	];
 
-	function renderObjects() {
+	function getNiceScaleLength(targetLength) {
+		const niceNumbers = [1, 2, 5];
+		const exponent = Math.floor(Math.log10(targetLength));
+		const base = Math.pow(10, exponent);
+		for (let i = 0; i < niceNumbers.length; i++) {
+			const niceLength = niceNumbers[i] * base;
+			if (niceLength >= targetLength) {
+				return niceLength;
+			}
+		}
+		return 10 * base; // Fallback to the next order of magnitude
+	}
+
+	function renderScaleBar() {
+		const targetLengthInScreen = 50 * window.devicePixelRatio; // 50 pixels in screen space
+		const targetLengthInWorld = targetLengthInScreen / camera.zoom;
+		const niceLength = getNiceScaleLength(targetLengthInWorld);
+
+		ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+		ctx.fillRect(10, canvas.height - 50, niceLength * camera.zoom + 20, 30);
+
+		ctx.beginPath();
+		ctx.moveTo(20, canvas.height - 30);
+		ctx.lineTo(20 + niceLength * camera.zoom, canvas.height - 30);
+		ctx.strokeStyle = 'black';
+		ctx.lineWidth = 2;
+		ctx.stroke();
+
+		ctx.font = '12px Arial';
+		ctx.fillStyle = 'black';
+		ctx.textAlign = 'right';
+		ctx.fillText(`${niceLength}`, 20 + niceLength * camera.zoom, canvas.height - 35);
+	}
+
+	function render() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		objects.forEach((obj) => {
@@ -40,29 +75,25 @@
 			ctx.fillStyle = 'blue';
 			ctx.fill();
 		});
+
+		renderScaleBar();
 	}
 
 	function resizeCanvas() {
-		canvas.width = window.innerWidth * window.devicePixelRatio;
-		canvas.height = (window.innerHeight - 200) * window.devicePixelRatio;
+		canvas.width = canvas.clientWidth * window.devicePixelRatio;
+		canvas.height = canvas.clientHeight * window.devicePixelRatio;
 
-		renderObjects();
+		render();
 	}
 
 	function wheelZoom(event) {
 		event.preventDefault();
 
-		camera.x += (event.clientX - canvas.width / 2) / camera.zoom;
-		camera.y += (event.clientY - canvas.height / 2) / camera.zoom;
-
 		camera.zoom *= Math.exp(-event.deltaY * 0.001);
-		if (camera.zoom < 10) camera.zoom = 10;
+		if (camera.zoom < 1) camera.zoom = 1;
 		if (camera.zoom > 1000) camera.zoom = 1000;
 
-		camera.x -= (event.clientX - canvas.width / 2) / camera.zoom;
-		camera.y -= (event.clientY - canvas.height / 2) / camera.zoom;
-
-		renderObjects();
+		render();
 	}
 
 	let isDragging = false;
@@ -86,7 +117,7 @@
 			camera.y -= (deltaY * window.devicePixelRatio) / camera.zoom;
 
 			lastMousePos = { x: event.clientX, y: event.clientY };
-			renderObjects();
+			render();
 		}
 	}
 
@@ -116,7 +147,7 @@
 			camera.y -= (deltaY * window.devicePixelRatio) / camera.zoom;
 
 			lastMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-			renderObjects();
+			render();
 		}
 
 		if (isZooming && event.touches.length === 2) {
@@ -130,7 +161,7 @@
 			if (camera.zoom > 1000) camera.zoom = 1000;
 
 			lastTouchDistance = currentDistance;
-			renderObjects();
+			render();
 		}
 	}
 
@@ -171,11 +202,15 @@
 	});
 </script>
 
-<canvas class="canvas" bind:this={canvas}></canvas>
+<Container>
+	<canvas class="canvas" bind:this={canvas}></canvas>
+</Container>
 
 <style>
 	.canvas {
 		width: 100%;
 		height: calc(100vh - 200px);
+		border: 1px solid #ccc;
+		border-radius: 4px;
 	}
 </style>
