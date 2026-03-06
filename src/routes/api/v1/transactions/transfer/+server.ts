@@ -2,6 +2,7 @@ import { getMe } from '$lib/discord/users';
 import { query } from '$lib/server/db';
 import { getFee } from '$lib/server/maps';
 import { sendNotification } from '$lib/server/notification';
+import { GOVERNMENT_ACCOUNT_ID } from '$lib/util/const';
 import { formatCurrency } from '$lib/util/economy';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
@@ -135,6 +136,10 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		me.id
 	]);
 	await query(`UPDATE accounts SET balance = balance + ? WHERE id = ?`, [amount, toAccountId]);
+	await query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [
+		fee,
+		GOVERNMENT_ACCOUNT_ID
+	]);
 	await sendNotification(
 		toAccount.user_id,
 		`계좌번호 ${toAccount.id}번으로 ${formatCurrency(amount)}원이 입금됐어. 현재 잔액은 ${formatCurrency(parseFloat(toAccount.balance) + parseFloat(amount))}원이야.`

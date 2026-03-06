@@ -3,6 +3,7 @@ import { getFee } from '$lib/server/maps';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { formatCurrency } from '$lib/util/economy';
 import { getMe } from '$lib/discord/users';
+import { GOVERNMENT_ACCOUNT_ID } from '$lib/util/const';
 
 export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const token = cookies.get('token');
@@ -93,6 +94,10 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	await query(`UPDATE accounts SET balance = balance + ? WHERE id = ?`, [
 		product.price * count,
 		product.account_id
+	]);
+	await query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [
+		fee,
+		GOVERNMENT_ACCOUNT_ID
 	]);
 	await query(
 		'INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)',

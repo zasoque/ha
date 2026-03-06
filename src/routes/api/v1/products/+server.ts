@@ -2,7 +2,7 @@ import { getMe } from '$lib/discord/users';
 import { getAccount } from '$lib/server/account';
 import { query } from '$lib/server/db';
 import { getFee } from '$lib/server/maps';
-import { TYPE_MARKET } from '$lib/util/const';
+import { GOVERNMENT_ACCOUNT_ID, TYPE_MARKET } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -133,6 +133,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		[account_id, fee, 'withdrawal', `"${item_id}" 출품을 위한 운송비`]
 	);
 	await query('UPDATE accounts SET balance = balance - ? WHERE id = ?', [fee, account_id]);
+	await query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [
+		fee,
+		GOVERNMENT_ACCOUNT_ID
+	]);
 	await query(
 		'INSERT INTO products (item_id, quantity, price, description, owner_id, market_id, account_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
 		[item_id, count, price, description, me.id, market_id, account_id]
