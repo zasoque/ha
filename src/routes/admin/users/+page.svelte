@@ -58,6 +58,7 @@
 		display: flex;
 		gap: 0.5rem;
 		margin-bottom: 1rem;
+		flex-wrap: wrap;
 	}
 
 	.admin {
