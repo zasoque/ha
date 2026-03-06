@@ -56,7 +56,6 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { name, type, account_id, free } = await request.json();
 	const land_id = landId;
 
-	console.log({ name, type, account_id, free, land_id });
 	if (!name || !land_id || !type || !account_id) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
 	}

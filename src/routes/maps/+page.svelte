@@ -449,7 +449,7 @@
 	<select bind:value={addBuildingType}>
 		<option value="" disabled selected>건물 종류 선택</option>
 		<option>농장</option>
-		<option>거주</option>
+		<option>주거</option>
 		<option>사무</option>
 		<option>시장</option>
 	</select>
