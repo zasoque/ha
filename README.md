@@ -223,6 +223,9 @@ CREATE TABLE notifications (
 
 ### 8. 지도 API `/maps`
 
+- **`GET` /maps/path/[path]**: 지도 경로 조회
+  - `1_2_3`: 토지 1 → 토지 2 → 토지 3
+
 #### 토지 API `/maps/lands`
 
 - **`GET` /maps/lands**: 토지 목록 조회

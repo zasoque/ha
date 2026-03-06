@@ -186,17 +186,20 @@
 		return distance.toFixed(2);
 	}
 
-	function getPathFee(path) {
-		let distance = 0;
-		for (let i = 0; i < path.length - 1; i++) {
-			const landA = path[i];
-			const landB = path[i + 1];
-			const dx = landA.position.coordinates[0] - landB.position.coordinates[0];
-			const dy = landA.position.coordinates[1] - landB.position.coordinates[1];
-			distance += Math.hypot(dx, dy);
-		}
-		const fee = Math.ceil(Math.pow(distance, 2) / 200) / 100;
-		return formatCurrency(fee);
+	async function getPathFee(path) {
+		return await fetch(`/api/v1/maps/path/${getPathCode(path)}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					return formatCurrency(data.fee);
+				} else {
+					return '수수료 정보를 가져오는데 실패했어.';
+				}
+			})
+			.catch((err) => {
+				console.error('수수료 정보 가져오기 실패:', err);
+				return '수수료 정보를 가져오는데 실패했어.';
+			});
 	}
 
 	function getPathCode(path) {
@@ -248,7 +251,15 @@
 		</div>
 		<div class="info-row">
 			<div class="info-key">수수료</div>
-			<div class="info-value">{getPathFee(pathPromptPath)}</div>
+			<div class="info-value">
+				{#await getPathFee(pathPromptPath)}
+					불러오는 중...
+				{:then fee}
+					{fee}
+				{:catch error}
+					수수료 정보를 가져오는데 실패했어.
+				{/await}
+			</div>
 		</div>
 		<div class="info-row">
 			<div class="info-key">경로코드</div>
