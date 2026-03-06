@@ -253,6 +253,12 @@ CREATE TABLE notifications (
 - **`GET` /maps/lands/{landId}**: 특정 토지 상세 조회
 - **`PUT` /maps/lands/{landId}**: 토지 정보 업데이트 (지주)
 - **`DELETE` /maps/lands/{landId}**: 토지 삭제 (관리자 권한 필요)
+- **`GET` /maps/lands/{landId}/fertility**: 토지 비옥도 조회
+  - `level`: 비옥도 단계 (예: `1`, `2`, `3`)
+  - `account_id`: 비옥도 조회 비용을 지불할 계좌번호
+- **`GET` /maps/lands/{landId}/solidity**: 토지 강도 조회
+  - `level`: 강도 단계 (예: `1`, `2`, `3`)
+  - `account_id`: 강도 조회 비용을 지불할 계좌번호
 
 ```mysql
 CREATE TABLE lands (
