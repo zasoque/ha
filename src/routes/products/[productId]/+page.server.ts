@@ -14,5 +14,15 @@ export const load: Load = async ({ parent, fetch, params }) => {
 
 	product.product.owner_name = await getUserName(product.product.owner_id);
 
+	product.product.item = await fetch(`/api/v1/items/${product.product.item_id}`)
+		.then((res) => res.json())
+		.then((res) => {
+			if (res.success) {
+				return res.item;
+			} else {
+				return null;
+			}
+		});
+
 	return { product: product.product, mine };
 };

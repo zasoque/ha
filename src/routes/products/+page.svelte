@@ -80,7 +80,11 @@
 	<div>시장까지 이동 경로</div>
 	<input type="text" bind:value={newPath} placeholder="시장까지 이동 경로를 입력해줘!" />
 	<div>운송비 지불 계좌</div>
-	<input type="number" bind:value={newAccountId} placeholder="운송비 지불 계좌를 입력해줘!" />
+	<input
+		type="number"
+		bind:value={newAccountId}
+		placeholder="운송비 지불 및 판매대금 입금 계좌를 입력해줘!"
+	/>
 	<button onclick={newProduct}>출품하기</button>
 </PromptFloat>
 

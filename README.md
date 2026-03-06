@@ -75,10 +75,12 @@ CREATE TABLE transactions (
   - `description`: 품목 설명 (선택 사항)
   - `market_id`: 품목이 판매되는 시장 ID
   - `path`: 품목 거래 경로 (예: `1_2_3` - 토지 1 → 토지 2 → 토지 3)
-  - `account_id`: 품목 시장 등록 시 운송비를 지불할 계좌번호
+  - `account_id`: 품목 시장 등록 시 운송비를 지불하고 판매 대금을 입금할 계좌번호
 - **`GET` /products/{productId}**: 특정 시장 품목 상세 조회
-- **`PUT` /products/{productId}**: 시장 품목 정보 업데이트
-- **`DELETE` /products/{productId}**: 시장 품목 삭제
+- **`POST` /products/{productId}/buy**: 시장 품목 구매
+  - `account_id`: 구매자가 지불할 계좌번호
+  - `count`: 구매할 품목 수량
+  - `path`: 품목 거래 경로 (예: `1_2_3` - 토지 1 → 토지 2 → 토지 3)
 
 ```mysql
 CREATE TABLE products (
@@ -89,11 +91,13 @@ CREATE TABLE products (
     description TEXT,
     owner_id VARCHAR(255),
     market_id INTEGER,
+    account_id INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (item_id) REFERENCES items(id),
     FOREIGN KEY (owner_id) REFERENCES users(id),
-    FOREIGN KEY (market_id) REFERENCES buildings(id)
+    FOREIGN KEY (market_id) REFERENCES buildings(id),
+    FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 ```
 

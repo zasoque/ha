@@ -1,0 +1,145 @@
+import { query } from '$lib/server/db';
+import { getFee } from '$lib/server/maps';
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { formatCurrency } from '$lib/util/economy';
+import { getMe } from '$lib/discord/users';
+
+export const POST: RequestHandler = async ({ params, request, cookies }) => {
+	const token = cookies.get('token');
+	if (!token) {
+		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+	}
+
+	const me = await getMe(token);
+
+	if (!me) {
+		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+	}
+
+	const { productId } = params;
+
+	const { account_id, count, path } = await request.json();
+
+	if (!account_id || !count || !path) {
+		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
+	}
+
+	const [product] = await query(`SELECT * FROM products WHERE id = ?`, [productId]);
+
+	if (!product) {
+		return json({ success: false, message: 'Product not found' }, { status: 404 });
+	}
+
+	const pathIds = path.split('_').map((id: string) => parseInt(id));
+	const [startLand] = await query(`SELECT * FROM lands WHERE id = ?`, [pathIds[0]]);
+	const [endLand] = await query(`SELECT * FROM lands WHERE id = ?`, [pathIds[pathIds.length - 1]]);
+
+	if (!startLand || !endLand) {
+		return json({ success: false, message: 'Invalid path' }, { status: 400 });
+	}
+
+	const [buyer] = await query(`SELECT * FROM people WHERE id = ?`, [me.id]);
+	const [buyerResidence] = await query(`SELECT * FROM buildings WHERE id = ?`, [buyer.residence]);
+	const [buyerResidenceLand] = await query(`SELECT * FROM lands WHERE id = ?`, [
+		buyerResidence.land_id
+	]);
+
+	if (!buyerResidenceLand) {
+		return json({ success: false, message: 'Buyer residence land not found' }, { status: 404 });
+	}
+
+	if (buyerResidenceLand.id !== startLand.id) {
+		return json(
+			{ success: false, message: 'Buyer must start from their residence land' },
+			{ status: 400 }
+		);
+	}
+
+	const [market] = await query(`SELECT * FROM buildings WHERE id = ?`, [product.market_id]);
+	const [marketLand] = await query(`SELECT * FROM lands WHERE id = ?`, [market.land_id]);
+
+	if (!marketLand) {
+		return json({ success: false, message: 'Market land not found' }, { status: 404 });
+	}
+
+	if (marketLand.id !== endLand.id) {
+		return json({ success: false, message: 'Buyer must end at the market land' }, { status: 400 });
+	}
+
+	const fee = await getFee(path);
+
+	if (fee instanceof Response) {
+		return fee;
+	}
+
+	if (product.quantity < count) {
+		return json({ success: false, message: 'Not enough products in stock' }, { status: 400 });
+	}
+
+	const totalPrice = product.price * count + fee;
+
+	const [account] = await query(`SELECT * FROM accounts WHERE id = ? AND user_id = ?`, [
+		account_id,
+		me.id
+	]);
+
+	if (account.balance < totalPrice) {
+		return json({ success: false, message: 'Not enough balance' }, { status: 400 });
+	}
+
+	const [productItem] = await query(`SELECT * FROM items WHERE id = ?`, [product.item_id]);
+
+	await query(`UPDATE accounts SET balance = balance - ? WHERE id = ?`, [totalPrice, account_id]);
+	await query(`UPDATE accounts SET balance = balance + ? WHERE id = ?`, [
+		product.price * count,
+		product.account_id
+	]);
+	await query(
+		'INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)',
+		[
+			account_id,
+			totalPrice,
+			'withdrawal',
+			`"${productItem.name}" 구매 (수량: ${count}, 상품 ID: ${product.id})`
+		]
+	);
+	await query(
+		'INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)',
+		[
+			product.account_id,
+			product.price * count,
+			'deposit',
+			`"${productItem.name}" 판매 (수량: ${count}, 상품 ID: ${product.id})`
+		]
+	);
+	await query('INSERT INTO notifications (user_id, message) VALUES (?, ?)', [
+		product.owner_id,
+		`${market.name}에서 ${productItem.name} ${count}개가 판매되었습니다. ${formatCurrency(product.price * count)}을 획득하였습니다.`
+	]);
+
+	if (product.quantity === count) {
+		await query(`DELETE FROM products WHERE id = ?`, [productId]);
+	} else {
+		await query(`UPDATE products SET quantity = quantity - ? WHERE id = ?`, [count, productId]);
+	}
+
+	const [buyerStock] = await query(`SELECT * FROM inventory WHERE user_id = ? AND item_id = ?`, [
+		me.id,
+		product.item_id
+	]);
+
+	if (buyerStock) {
+		await query(`UPDATE inventory SET quantity = quantity + ? WHERE id = ?`, [
+			count,
+			buyerStock.id
+		]);
+	} else {
+		await query(`INSERT INTO inventory (user_id, item_id, quantity) VALUES (?, ?, ?)`, [
+			me.id,
+			product.item_id,
+			count
+		]);
+	}
+
+	return json({ success: true, message: 'Purchase successful' });
+};

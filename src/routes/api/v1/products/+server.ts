@@ -117,7 +117,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, message: 'Account not found' }, { status: 404 });
 	}
 
-	if (account.owner_id !== me.id) {
+	if (account.user_id !== me.id) {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -134,8 +134,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	);
 	await query('UPDATE accounts SET balance = balance - ? WHERE id = ?', [fee, account_id]);
 	await query(
-		'INSERT INTO products (item_id, quantity, price, description, owner_id, market_id) VALUES (?, ?, ?, ?, ?, ?)',
-		[item_id, count, price, description, me.id, market_id]
+		'INSERT INTO products (item_id, quantity, price, description, owner_id, market_id, account_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+		[item_id, count, price, description, me.id, market_id, account_id]
 	);
 
 	return json({ success: true, message: 'Product created successfully' });

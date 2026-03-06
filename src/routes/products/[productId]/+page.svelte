@@ -8,66 +8,58 @@
 	const product = $derived(() => data.product);
 	const me = $derived(() => data.me);
 
-	let editProductPrompt;
-	let editName = $state('');
-	let editDescription = $state('');
-	let editPrice = $state('');
+	let buyPrompt: PromptFloat;
+	let buyPromptQuantity = $state(1);
+	let buyPromptAccount = $state(0);
+	let buyPromptPath = $state('');
 
-	function editProduct() {
-		const price = parseFloat(editPrice);
-
-		if (isNaN(price)) {
-			alert('유효한 가격을 입력해줘!');
-			return;
-		}
-
-		fetch(`/api/v1/products/${product().id}`, {
-			method: 'PUT',
+	async function buy() {
+		await fetch(`/api/v1/products/${product().id}/buy`, {
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ name: editName, description: editDescription, price })
-		}).then(() => location.reload());
-	}
-
-	function deleteProduct() {
-		if (!confirm('정말 이 상품을 삭제할래?')) return;
-
-		fetch(`/api/v1/products/${product().id}`, {
-			method: 'DELETE'
-		}).then(() => (location.href = '/products'));
-	}
-
-	function openEditProductPrompt() {
-		editName = product().name;
-		editDescription = product().description;
-		editPrice = product().price.toString();
-		editProductPrompt.open();
+			body: JSON.stringify({
+				count: buyPromptQuantity,
+				account_id: buyPromptAccount,
+				path: buyPromptPath
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.href = '/products';
+				} else {
+					alert('구매에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				alert('구매 중 오류가 발생했습니다: ' + err.message);
+			});
 	}
 </script>
 
 <Container>
 	<div class="back"><a href="/products">뒤로 가기</a></div>
 	<Title>상품 상세</Title>
-	<div class="name">{product().name}</div>
+	<div class="name">{product().item.name} &times; {product().quantity}</div>
 	<div class="description">{product().description}</div>
 	<div class="price">{formatCurrency(product().price)}</div>
 	<div class="owner">판매자: {product().owner_name}</div>
 	<div class="buttons">
-		{#if me().id === product().owner_id}
-			<button class="edit-product" onclick={openEditProductPrompt}>상품 수정</button>
-			<button class="delete-product" onclick={deleteProduct}>상품 삭제</button>
-		{/if}
+		<button onclick={buyPrompt.open}>구매하기</button>
 	</div>
 </Container>
-<PromptFloat bind:this={editProductPrompt}>
-	<div>상품 이름</div>
-	<input type="text" bind:value={editName} placeholder="상품 이름을 입력하세요" />
-	<div>상품 설명</div>
-	<input type="text" bind:value={editDescription} placeholder="상품 설명을 입력하세요" />
-	<div>상품 가격</div>
-	<input type="text" bind:value={editPrice} placeholder="상품 가격을 입력하세요" />
-	<button onclick={editProduct}>수정하기</button>
+
+<PromptFloat bind:this={buyPrompt}>
+	<div>상품 구매</div>
+	<div>구매 수량</div>
+	<input type="number" min="1" bind:value={buyPromptQuantity} />
+	<div>지불 계좌</div>
+	<input type="number" placeholder="계좌 번호 입력" bind:value={buyPromptAccount} />
+	<div>이동 경로</div>
+	<input type="text" placeholder="이동 경로" bind:value={buyPromptPath} />
+	<button onclick={buy}>구매</button>
 </PromptFloat>
 
 <style>
