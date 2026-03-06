@@ -20,6 +20,9 @@
 	let roadPrompt;
 	let roadPromptRoad;
 
+	let railPrompt;
+	let railPromptRail;
+
 	let addLandPrompt;
 	let addLandName = $state('');
 	let addLandPosition = $state({ x: 0, y: 0 });
@@ -168,9 +171,17 @@
 			});
 	}
 
-	function calculateDistance(road) {
+	function calculateDistanceOfRoad(road) {
 		const dx = road.land_a.position.coordinates[0] - road.land_b.position.coordinates[0];
 		const dy = road.land_a.position.coordinates[1] - road.land_b.position.coordinates[1];
+		return Math.hypot(dx, dy).toFixed(2);
+	}
+
+	function calculateDistanceOfRail(rail) {
+		const landA = lands.find((land) => land.id === rail.land_a_id).position.coordinates;
+		const landB = lands.find((land) => land.id === rail.land_b_id).position.coordinates;
+		const dx = landA[0] - landB[0];
+		const dy = landA[1] - landB[1];
 		return Math.hypot(dx, dy).toFixed(2);
 	}
 
@@ -220,6 +231,10 @@
 			(road) => {
 				roadPromptRoad = road;
 				roadPrompt.open();
+			},
+			(rail) => {
+				railPromptRail = rail;
+				railPrompt.open();
 			}
 		);
 
@@ -329,7 +344,30 @@
 	</div>
 	<div class="info-row">
 		<div class="info-key">도로 길이</div>
-		<div class="info-value">{calculateDistance(roadPromptRoad)}</div>
+		<div class="info-value">{calculateDistanceOfRoad(roadPromptRoad)}</div>
+	</div>
+</PromptFloat>
+<PromptFloat bind:this={railPrompt}>
+	<div>철도 정보</div>
+	<div class="info-row">
+		<div class="info-key">이름</div>
+		<div class="info-value">{railPromptRail.name}</div>
+	</div>
+	<div class="info-row">
+		<div class="info-key">ID</div>
+		<div class="info-value">{railPromptRail.id}</div>
+	</div>
+	<div class="info-row">
+		<div class="info-key">토지 A</div>
+		<div class="info-value">{railPromptRail.land_a.name} #{railPromptRail.land_a.id}</div>
+	</div>
+	<div class="info-row">
+		<div class="info-key">토지 B</div>
+		<div class="info-value">{railPromptRail.land_b.name} #{railPromptRail.land_b.id}</div>
+	</div>
+	<div class="info-row">
+		<div class="info-key">철도 길이</div>
+		<div class="info-value">{calculateDistanceOfRail(railPromptRail)}</div>
 	</div>
 </PromptFloat>
 <PromptFloat bind:this={addLandPrompt}>

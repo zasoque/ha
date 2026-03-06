@@ -8,6 +8,7 @@ let rails: any[];
 
 let openLandPrompt: (land: any) => void;
 let openRoadPrompt: (road: any) => void;
+let openRailPrompt: (rail: any) => void;
 
 let camera = {
 	x: 0,
@@ -79,12 +80,57 @@ function tick() {
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+	renderRails();
 	renderRoads();
 	renderLands();
 
 	renderPath();
 
 	renderScaleBar();
+}
+
+function renderRails() {
+	rails.forEach((rail) => {
+		const landAPosition = lands.find((l) => l.id === rail.land_a_id).position.coordinates;
+		const landBPosition = lands.find((l) => l.id === rail.land_b_id).position.coordinates;
+		const screenPosA = camera.convertWorldToScreen(landAPosition[0], landAPosition[1]);
+		const screenPosB = camera.convertWorldToScreen(landBPosition[0], landBPosition[1]);
+
+		ctx.strokeStyle = 'grey';
+		ctx.lineWidth = 14 * window.devicePixelRatio;
+		ctx.beginPath();
+		ctx.moveTo(screenPosA.x, screenPosA.y);
+		ctx.lineTo(screenPosB.x, screenPosB.y);
+		ctx.stroke();
+
+		ctx.strokeStyle = '#afdbff';
+		ctx.lineWidth = 12 * window.devicePixelRatio;
+		ctx.beginPath();
+		ctx.moveTo(screenPosA.x, screenPosA.y);
+		ctx.lineTo(screenPosB.x, screenPosB.y);
+		ctx.stroke();
+
+		ctx.fillStyle = 'black';
+		ctx.font = `${12 * window.devicePixelRatio}px Arial`;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		const midX = (screenPosA.x + screenPosB.x) / 2;
+		const midY = (screenPosA.y + screenPosB.y) / 2;
+		const distance = Math.hypot(screenPosB.x - screenPosA.x, screenPosB.y - screenPosA.y);
+		const angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
+		const mapDistance = Math.hypot(
+			landBPosition[0] - landAPosition[0],
+			landBPosition[1] - landAPosition[1]
+		);
+		ctx.save();
+		if (distance >= 75 * window.devicePixelRatio) {
+			ctx.translate(midX, midY);
+			ctx.rotate(angle);
+			ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+			ctx.fillText(`${rail.name} (${mapDistance.toFixed(1)})`, 0, 0);
+		}
+		ctx.restore();
+	});
 }
 
 function renderRoads() {
@@ -124,6 +170,7 @@ function renderRoads() {
 		if (distance >= 75 * window.devicePixelRatio) {
 			ctx.translate(midX, midY);
 			ctx.rotate(angle);
+			ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
 			ctx.fillText(`${road.name} (${mapDistance.toFixed(1)})`, 0, 0);
 		}
 		ctx.restore();
@@ -137,7 +184,9 @@ function renderLands() {
 			land.position.coordinates[1]
 		);
 
-		const renderRadius = 10 * window.devicePixelRatio;
+		const buildingsOnIt = buildings.filter((b) => b.land_id === land.id);
+
+		const renderRadius = (10 + Math.sqrt(buildingsOnIt.length + 1)) * window.devicePixelRatio;
 
 		ctx.strokeStyle = 'black';
 		ctx.lineWidth = 2 * window.devicePixelRatio;
@@ -167,6 +216,7 @@ function renderPath() {
 	ctx.strokeStyle = '#007bff';
 	ctx.lineWidth = 4 * window.devicePixelRatio;
 	ctx.lineCap = 'round';
+	ctx.lineJoin = 'round';
 	ctx.beginPath();
 	path.forEach((land, index) => {
 		const screenPos = camera.convertWorldToScreen(
@@ -395,6 +445,28 @@ function getRoadByCursorPosition(cursorPosition: { x: number; y: number }): any 
 	});
 }
 
+function getRailByCursorPosition(cursorPosition: { x: number; y: number }): any | undefined {
+	return rails.find((rail) => {
+		const landAPosition = lands.find((l) => l.id === rail.land_a_id).position.coordinates;
+		const landBPosition = lands.find((l) => l.id === rail.land_b_id).position.coordinates;
+		const screenPosA = camera.convertWorldToScreen(landAPosition[0], landAPosition[1]);
+		const screenPosB = camera.convertWorldToScreen(landBPosition[0], landBPosition[1]);
+
+		const dx = screenPosB.x - screenPosA.x;
+		const dy = screenPosB.y - screenPosA.y;
+		const length = Math.hypot(dx, dy);
+		const t =
+			((cursorPosition.x - screenPosA.x) * dx + (cursorPosition.y - screenPosA.y) * dy) /
+			(length * length);
+		if (t < 0 || t > 1) return false;
+
+		const closestX = screenPosA.x + t * dx;
+		const closestY = screenPosA.y + t * dy;
+		const distance = Math.hypot(cursorPosition.x - closestX, cursorPosition.y - closestY);
+		return distance < 15 * window.devicePixelRatio;
+	});
+}
+
 function openPopup(cursorPosition: { x: number; y: number }): boolean {
 	const land = getLandByCursorPosition(cursorPosition);
 
@@ -410,15 +482,22 @@ function openPopup(cursorPosition: { x: number; y: number }): boolean {
 		return true;
 	}
 
+	const rail = getRailByCursorPosition(cursorPosition);
+
+	if (rail) {
+		openRailPrompt(rail);
+		return true;
+	}
+
 	return false;
 }
 
 function doubleClick(event: MouseEvent) {
 	const currentMousePos = getMousePosition(event);
-	if (!openPopup(currentMousePos)) {
-		path.length = 0;
-		render();
-	}
+	openPopup(currentMousePos);
+
+	path.length = 0;
+	render();
 }
 
 const path: any[] = [];
@@ -429,14 +508,25 @@ function click(event: MouseEvent) {
 
 	if (!land) return;
 
-	const lastLand = path.length > 0 ? path[path.length - 1] : null;
+	const lastLand = path[path.length - 1];
+
+	if (land.id === lastLand?.id) {
+		path.splice(path.length - 1, 1);
+		return render();
+	}
+
 	const road: any = roads.find(
 		(r) =>
 			(r.land_a_id === lastLand?.id && r.land_b_id === land.id) ||
 			(r.land_b_id === lastLand?.id && r.land_a_id === land.id)
 	);
+	const rail: any = rails.find(
+		(r) =>
+			(r.land_a_id === lastLand?.id && r.land_b_id === land.id) ||
+			(r.land_b_id === lastLand?.id && r.land_a_id === land.id)
+	);
 
-	if ((road || path.length === 0) && path.indexOf(land) === -1) {
+	if ((road || rail || path.length === 0) && path.indexOf(land) === -1) {
 		path.push(land);
 		render();
 	}
@@ -449,7 +539,8 @@ export function init(
 	rds: any[],
 	rls: any[],
 	onLandClick: (land: any) => void,
-	onRoadClick: (road: any) => void
+	onRoadClick: (road: any) => void,
+	onRailClick: (rail: any) => void
 ) {
 	canvas = c;
 	ctx = c.getContext('2d')!;
@@ -461,6 +552,7 @@ export function init(
 
 	openLandPrompt = onLandClick;
 	openRoadPrompt = onRoadClick;
+	openRailPrompt = onRailClick;
 
 	window.addEventListener('resize', resizeCanvas);
 	canvas.addEventListener('wheel', wheelZoom);

@@ -18,6 +18,12 @@ export const load: Load = async ({ fetch }) => {
 		road.land_b = lands.lands.find((land: any) => land.id === road.land_b_id);
 	}
 
+	for (const rail of rails.rails) {
+		rail.owner = await getUserName(rail.owner_id);
+		rail.land_a = lands.lands.find((land: any) => land.id === rail.land_a_id);
+		rail.land_b = lands.lands.find((land: any) => land.id === rail.land_b_id);
+	}
+
 	return {
 		lands: lands.lands,
 		buildings: buildings.buildings,

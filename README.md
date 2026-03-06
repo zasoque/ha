@@ -332,7 +332,8 @@ CREATE TABLE roads (
 - **`POST` /maps/rails**: 새 철도 생성
   - `name`: 철도 이름
   - `land_a_id`: 철도가 연결하는 토지 A ID
-  - `land_b_id`: 철도가 연결하는 토지 B ID
+  - `land_b_id`: 철도가도로 연결하는 토지 B ID
+  - `free`: 철도 건설 무료 여부 (관리자 권한 필요)
 - **`GET` /maps/rails/{railId}**: 특정 철도 상세
 - **`PUT` /maps/rails/{railId}**: 철도 정보 업데이트 (철도주)
 - **`DELETE` /maps/rails/{railId}**: 철도 삭제 (관리자 권한 필요)
