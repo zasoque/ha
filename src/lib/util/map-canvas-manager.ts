@@ -186,7 +186,7 @@ function renderLands() {
 
 		const buildingsOnIt = buildings.filter((b) => b.land_id === land.id);
 
-		const renderRadius = (10 + Math.sqrt(buildingsOnIt.length + 1)) * window.devicePixelRatio;
+		const renderRadius = 10 * Math.sqrt(buildingsOnIt.length + 1) * window.devicePixelRatio;
 
 		ctx.strokeStyle = 'black';
 		ctx.lineWidth = 2 * window.devicePixelRatio;
