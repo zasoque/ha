@@ -20,7 +20,7 @@ export async function getFee(path: any[]): Promise<number | Response> {
 				return json(
 					{
 						success: false,
-						error: `No road or rail between land ${path[i].id} and land ${path[i + 1].id}`
+						message: `No road or rail between land ${path[i].id} and land ${path[i + 1].id}`
 					},
 					{ status: 404 }
 				);

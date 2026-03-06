@@ -46,6 +46,7 @@ CREATE TABLE accounts (
   - `toAccountId`: 입금 계좌 ID
   - `amount`: 이체 금액
   - `description`: 거래 설명 (선택 사항)
+  - `path`: 거래 경로 (예: `1_2_3` - 토지 1 → 토지 2 → 토지 3)
 - **`GET` /transactions/{transactionId}**: 특정 거래 상세 조회
 - **`GET` /transactions/accounts/{accountId}**: 특정 계좌 거래 내역 조회
 
@@ -121,8 +122,9 @@ CREATE TABLE admin_users (
 CREATE TABLE people (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255),
-    residence VARCHAR(255),
-    FOREIGN KEY (id) REFERENCES users(id)
+    residence INTEGER,
+    FOREIGN KEY (id) REFERENCES users(id),
+    FOREIGN KEY (residence) REFERENCES buildings(id)
 );
 ```
 
@@ -265,6 +267,7 @@ CREATE TABLE lands (
   - `land_id`: 건물이 위치한 토지 ID
   - `type`: 건물 유형 (예: `'주거'`, `'사무'`, `'시장'`, `'농장'`)
   - `account_id`: 건물 건설 비용을 지불할 계좌 ID
+  - `free`: 건물 건설 무료 여부 (관리자 권한 필요)
 - **`GET` /maps/buildings/{buildingId}**: 특정 건물 상세 조회
 - **`PUT` /maps/buildings/{buildingId}**: 건물 정보 업데이트 (건물주)
 - **`DELETE` /maps/buildings/{buildingId}**: 건물 삭제 (관리자 권한 필요)

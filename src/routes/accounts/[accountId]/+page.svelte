@@ -24,16 +24,22 @@
 		const toAccountId = parseInt(document.getElementById('toAccountId').value);
 		const amount = parseFloat(document.getElementById('amount').value);
 		const description = document.getElementById('description').value;
+		const path = document.getElementById('path').value;
 
 		if (isNaN(toAccountId) || isNaN(amount)) {
 			alert('모든 필드를 올바르게 입력해주세요.');
 			return;
 		}
 
-		await transfer(toAccountId, amount, description.length === 0 ? null : description);
+		await transfer(toAccountId, amount, description.length === 0 ? null : description, path);
 	}
 
-	async function transfer(toAccountId: number, amount: number, description: string | null) {
+	async function transfer(
+		toAccountId: number,
+		amount: number,
+		description: string | null,
+		path: string
+	) {
 		await fetch(`/api/v1/transactions/transfer`, {
 			method: 'POST',
 			headers: {
@@ -43,15 +49,16 @@
 				fromAccountId: account().id,
 				toAccountId,
 				amount,
-				description
+				description,
+				path
 			})
 		})
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.success) {
-					alert('송금이 완료되었습니다.');
-					window.location.href = '/accounts';
+					window.reload();
 				} else {
+					console.log(data);
 					alert('송금에 실패했습니다: ' + data.message);
 				}
 			})
@@ -112,6 +119,8 @@
 	<input type="number" id="amount" min="0" step="0.01" />
 	<div>설명</div>
 	<input type="text" id="description" />
+	<div>이동 경로</div>
+	<input type="text" id="path" placeholder="1_2" />
 	<button onclick={transferButton}>송금하기</button>
 </PromptFloat>
 
