@@ -2,6 +2,7 @@ import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
 import { sendNotification } from '$lib/server/notification';
+import { TYPE_RESIDENTIAL } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const DELETE: RequestHandler = async ({ params, cookies }) => {
@@ -46,6 +47,19 @@ export const PUT: RequestHandler = async ({ request, params, cookies }) => {
 
 	if (!residence || !name) {
 		return json({ success: false, error: 'Residence and name are required' }, { status: 400 });
+	}
+
+	const building = await query('SELECT * FROM buildings WHERE id = ?', [residence]);
+
+	if (building.length === 0) {
+		return json({ success: false, error: 'Invalid residence' }, { status: 400 });
+	}
+
+	if (building[0].type !== TYPE_RESIDENTIAL) {
+		return json(
+			{ success: false, error: 'Residence must be a residential building' },
+			{ status: 400 }
+		);
 	}
 
 	const id = params.personId!;
