@@ -57,9 +57,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 		}
 	} else {
-		const distance = Math.sqrt(
-			Math.pow(landA[0].position_x - landB[0].position_x, 2) +
-				Math.pow(landA[0].position_y - landB[0].position_y, 2)
+		const distance = Math.hypot(
+			landA[0].position.coordinates[0] - landB[0].position.coordinates[0],
+			landA[0].position.coordinates[1] - landB[0].position.coordinates[1]
 		);
 		const taintCost = Math.ceil(distance);
 
