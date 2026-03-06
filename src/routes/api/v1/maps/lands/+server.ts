@@ -64,11 +64,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		}
 
 		await query('UPDATE accounts SET balance = balance - 2.0 WHERE id = ?', [account_id]);
-		await query('INSERT INTO transactions (account_id, amount, type) VALUES (?, ?, ?)', [
-			account_id,
-			-2.0,
-			'토지 개발'
-		]);
+		await query(
+			'INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)',
+			[account_id, -2.0, 'withdrawal', '토지 개발']
+		);
 	}
 
 	const result = await query(
