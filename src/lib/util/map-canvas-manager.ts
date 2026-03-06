@@ -79,6 +79,15 @@ function tick() {
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+	renderRoads();
+	renderLands();
+
+	renderPath();
+
+	renderScaleBar();
+}
+
+function renderRoads() {
 	roads.forEach((road) => {
 		const landAPosition = road.line.coordinates[0];
 		const landBPosition = road.line.coordinates[1];
@@ -107,15 +116,21 @@ function render() {
 		const midY = (screenPosA.y + screenPosB.y) / 2;
 		const distance = Math.hypot(screenPosB.x - screenPosA.x, screenPosB.y - screenPosA.y);
 		const angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
+		const mapDistance = Math.hypot(
+			landBPosition[0] - landAPosition[0],
+			landBPosition[1] - landAPosition[1]
+		);
 		ctx.save();
 		if (distance >= 75 * window.devicePixelRatio) {
 			ctx.translate(midX, midY);
 			ctx.rotate(angle);
-			ctx.fillText(road.name, 0, 0);
+			ctx.fillText(`${road.name} (${mapDistance.toFixed(1)})`, 0, 0);
 		}
 		ctx.restore();
 	});
+}
 
+function renderLands() {
 	lands.forEach((land) => {
 		const screenPos = camera.convertWorldToScreen(
 			land.position.coordinates[0],
@@ -138,14 +153,42 @@ function render() {
 			ctx.textAlign = 'left';
 			ctx.textBaseline = 'middle';
 			ctx.fillText(
-				land.name,
+				`${land.name} #${land.id}`,
 				screenPos.x + renderRadius + 5 * window.devicePixelRatio,
 				screenPos.y
 			);
 		}
 	});
+}
 
-	renderScaleBar();
+function renderPath() {
+	if (path.length === 0) return;
+
+	ctx.strokeStyle = '#007bff';
+	ctx.lineWidth = 4 * window.devicePixelRatio;
+	ctx.lineCap = 'round';
+	ctx.beginPath();
+	path.forEach((land, index) => {
+		const screenPos = camera.convertWorldToScreen(
+			land.position.coordinates[0],
+			land.position.coordinates[1]
+		);
+		if (index === 0) {
+			ctx.moveTo(screenPos.x, screenPos.y);
+		} else {
+			ctx.lineTo(screenPos.x, screenPos.y);
+		}
+	});
+	ctx.stroke();
+
+	const lastLand = path[path.length - 1];
+	const lastScreenPos = camera.convertWorldToScreen(
+		lastLand.position.coordinates[0],
+		lastLand.position.coordinates[1]
+	);
+	ctx.beginPath();
+	ctx.arc(lastScreenPos.x, lastScreenPos.y, 12 * window.devicePixelRatio, 0, 2 * Math.PI);
+	ctx.stroke();
 }
 
 function getNiceScaleLength(targetLength: number) {
@@ -218,8 +261,6 @@ function renderScaleBar() {
 function resizeCanvas() {
 	canvas.width = canvas.clientWidth * window.devicePixelRatio;
 	canvas.height = canvas.clientHeight * window.devicePixelRatio;
-
-	console.log(canvas.width, canvas.height);
 
 	render();
 }
@@ -319,8 +360,8 @@ function touchEnd(event: TouchEvent) {
 	}
 }
 
-function openPopup(cursorPosition: { x: number; y: number }) {
-	const land = lands.find((land) => {
+function getLandByCursorPosition(cursorPosition: { x: number; y: number }): any | undefined {
+	return lands.find((land) => {
 		const screenPos = camera.convertWorldToScreen(
 			land.position.coordinates[0],
 			land.position.coordinates[1]
@@ -328,46 +369,77 @@ function openPopup(cursorPosition: { x: number; y: number }) {
 		const dx = cursorPosition.x - screenPos.x;
 		const dy = cursorPosition.y - screenPos.y;
 		const distance = Math.hypot(dx, dy);
-		console.log(distance);
 		return distance < 50 * window.devicePixelRatio;
 	});
+}
+
+function getRoadByCursorPosition(cursorPosition: { x: number; y: number }): any | undefined {
+	return roads.find((road) => {
+		const landAPosition = road.line.coordinates[0];
+		const landBPosition = road.line.coordinates[1];
+		const screenPosA = camera.convertWorldToScreen(landAPosition[0], landAPosition[1]);
+		const screenPosB = camera.convertWorldToScreen(landBPosition[0], landBPosition[1]);
+
+		const dx = screenPosB.x - screenPosA.x;
+		const dy = screenPosB.y - screenPosA.y;
+		const length = Math.hypot(dx, dy);
+		const t =
+			((cursorPosition.x - screenPosA.x) * dx + (cursorPosition.y - screenPosA.y) * dy) /
+			(length * length);
+		if (t < 0 || t > 1) return false;
+
+		const closestX = screenPosA.x + t * dx;
+		const closestY = screenPosA.y + t * dy;
+		const distance = Math.hypot(cursorPosition.x - closestX, cursorPosition.y - closestY);
+		return distance < 15 * window.devicePixelRatio;
+	});
+}
+
+function openPopup(cursorPosition: { x: number; y: number }): boolean {
+	const land = getLandByCursorPosition(cursorPosition);
 
 	if (land) {
 		openLandPrompt(land);
+		return true;
 	}
 
-	if (!land) {
-		const road = roads.find((road) => {
-			const landAPosition = road.line.coordinates[0];
-			const landBPosition = road.line.coordinates[1];
-			const screenPosA = camera.convertWorldToScreen(landAPosition[0], landAPosition[1]);
-			const screenPosB = camera.convertWorldToScreen(landBPosition[0], landBPosition[1]);
+	const road = getRoadByCursorPosition(cursorPosition);
 
-			const dx = screenPosB.x - screenPosA.x;
-			const dy = screenPosB.y - screenPosA.y;
-			const length = Math.hypot(dx, dy);
-			const t =
-				((cursorPosition.x - screenPosA.x) * dx + (cursorPosition.y - screenPosA.y) * dy) /
-				(length * length);
-			if (t < 0 || t > 1) return false;
-
-			const closestX = screenPosA.x + t * dx;
-			const closestY = screenPosA.y + t * dy;
-			const distance = Math.hypot(cursorPosition.x - closestX, cursorPosition.y - closestY);
-			return distance < 15 * window.devicePixelRatio;
-		});
-
-		if (road) {
-			openRoadPrompt(road);
-		}
+	if (road) {
+		openRoadPrompt(road);
+		return true;
 	}
 
-	render();
+	return false;
 }
 
 function doubleClick(event: MouseEvent) {
 	const currentMousePos = getMousePosition(event);
-	openPopup(currentMousePos);
+	if (!openPopup(currentMousePos)) {
+		path.length = 0;
+		render();
+	}
+}
+
+const path: any[] = [];
+
+function click(event: MouseEvent) {
+	const currentMousePos = getMousePosition(event);
+	const land = getLandByCursorPosition(currentMousePos);
+
+	if (!land) return;
+
+	const lastLand = path.length > 0 ? path[path.length - 1] : null;
+	const road: any = roads.find(
+		(r) =>
+			(r.land_a_id === lastLand?.id && r.land_b_id === land.id) ||
+			(r.land_b_id === lastLand?.id && r.land_a_id === land.id)
+	);
+
+	if ((road || path.length === 0) && path.indexOf(land) === -1) {
+		path.push(land);
+		render();
+	}
 }
 
 export function init(
@@ -399,21 +471,26 @@ export function init(
 	canvas.addEventListener('touchmove', touchMove);
 	canvas.addEventListener('touchend', touchEnd);
 	canvas.addEventListener('dblclick', doubleClick);
+	canvas.addEventListener('click', click);
 
 	const interval = setInterval(tick);
 
 	resizeCanvas();
 
-	return () => {
-		window.removeEventListener('resize', resizeCanvas);
-		canvas.removeEventListener('wheel', wheelZoom);
-		canvas.removeEventListener('mousedown', mouseDown);
-		canvas.removeEventListener('mouseup', mouseUp);
-		canvas.removeEventListener('mousemove', mouseMove);
-		canvas.removeEventListener('touchstart', touchStart);
-		canvas.removeEventListener('touchmove', touchMove);
-		canvas.removeEventListener('touchend', touchEnd);
-		canvas.removeEventListener('dblclick', doubleClick);
-		clearInterval(interval);
+	return {
+		clear: () => {
+			window.removeEventListener('resize', resizeCanvas);
+			canvas.removeEventListener('wheel', wheelZoom);
+			canvas.removeEventListener('mousedown', mouseDown);
+			canvas.removeEventListener('mouseup', mouseUp);
+			canvas.removeEventListener('mousemove', mouseMove);
+			canvas.removeEventListener('touchstart', touchStart);
+			canvas.removeEventListener('touchmove', touchMove);
+			canvas.removeEventListener('touchend', touchEnd);
+			canvas.removeEventListener('dblclick', doubleClick);
+			canvas.removeEventListener('click', click);
+			clearInterval(interval);
+		},
+		path
 	};
 }

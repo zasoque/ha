@@ -4,11 +4,15 @@
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import { onMount } from 'svelte';
 	import { init } from '$lib/util/map-canvas-manager';
+	import { formatCurrency } from '$lib/util/economy';
 
 	let { data } = $props();
 	let { lands, buildings, roads, rails, me } = data;
 
 	let canvas;
+
+	let pathPrompt;
+	let pathPromptPath;
 
 	let landPrompt;
 	let landPromptLand;
@@ -164,8 +168,43 @@
 			});
 	}
 
+	function calculateDistance(road) {
+		const dx = road.land_a.position.coordinates[0] - road.land_b.position.coordinates[0];
+		const dy = road.land_a.position.coordinates[1] - road.land_b.position.coordinates[1];
+		return Math.hypot(dx, dy).toFixed(2);
+	}
+
+	function getPathDistance(path) {
+		let distance = 0;
+		for (let i = 0; i < path.length - 1; i++) {
+			const landA = path[i];
+			const landB = path[i + 1];
+			const dx = landA.position.coordinates[0] - landB.position.coordinates[0];
+			const dy = landA.position.coordinates[1] - landB.position.coordinates[1];
+			distance += Math.hypot(dx, dy);
+		}
+		return distance.toFixed(2);
+	}
+
+	function getPathFee(path) {
+		let distance = 0;
+		for (let i = 0; i < path.length - 1; i++) {
+			const landA = path[i];
+			const landB = path[i + 1];
+			const dx = landA.position.coordinates[0] - landB.position.coordinates[0];
+			const dy = landA.position.coordinates[1] - landB.position.coordinates[1];
+			distance += Math.hypot(dx, dy);
+		}
+		const fee = Math.ceil(Math.pow(distance, 2) / 200) / 100;
+		return formatCurrency(fee);
+	}
+
+	function getPathCode(path) {
+		return path.map((land) => `${land.id}`).join('_');
+	}
+
 	onMount(() => {
-		init(
+		data = init(
 			canvas,
 			lands,
 			buildings,
@@ -180,9 +219,43 @@
 				roadPrompt.open();
 			}
 		);
+
+		pathPromptPath = data.path;
+
+		return data.clear;
 	});
 </script>
 
+<PromptFloat bind:this={pathPrompt}>
+	<div>경로 정보</div>
+	{#if pathPromptPath.length === 0}
+		<div>경로가 없어.</div>
+	{:else}
+		<div class="info-row">
+			<div class="info-key">출발</div>
+			<div class="info-value">{pathPromptPath[0].name} #{pathPromptPath[0].id}</div>
+		</div>
+		<div class="info-row">
+			<div class="info-key">도착</div>
+			<div class="info-value">
+				{pathPromptPath[pathPromptPath.length - 1].name}
+				#{pathPromptPath[pathPromptPath.length - 1].id}
+			</div>
+		</div>
+		<div class="info-row">
+			<div class="info-key">총 거리</div>
+			<div class="info-value">{getPathDistance(pathPromptPath)}</div>
+		</div>
+		<div class="info-row">
+			<div class="info-key">수수료</div>
+			<div class="info-value">{getPathFee(pathPromptPath)}</div>
+		</div>
+		<div class="info-row">
+			<div class="info-key">경로코드</div>
+			<div class="info-value">{getPathCode(pathPromptPath)}</div>
+		</div>
+	{/if}
+</PromptFloat>
 <PromptFloat bind:this={landPrompt}>
 	<div>토지 정보</div>
 	<div class="info-row">
@@ -242,6 +315,10 @@
 	<div class="info-row">
 		<div class="info-key">토지 B</div>
 		<div class="info-value">{roadPromptRoad.land_b.name} #{roadPromptRoad.land_b.id}</div>
+	</div>
+	<div class="info-row">
+		<div class="info-key">도로 길이</div>
+		<div class="info-value">{calculateDistance(roadPromptRoad)}</div>
 	</div>
 </PromptFloat>
 <PromptFloat bind:this={addLandPrompt}>
@@ -312,6 +389,7 @@
 	<button onclick={addRoadPrompt.open}>도로 추가</button>
 	<button onclick={addRailPrompt.open}>철도 추가</button>
 	<button onclick={harvestPrompt.open}>수확</button>
+	<button onclick={pathPrompt.open}>경로</button>
 </Container>
 
 <style>
