@@ -113,13 +113,20 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		);
 	}
 
+	const land = await query('SELECT * FROM lands WHERE id = ?', [landId]);
+
+	if (land.length === 0) {
+		return json({ success: false, message: 'Land not found' }, { status: 404 });
+	}
+
 	if (type === TYPE_RESIDENTIAL) {
 		if (free) {
 			if (!(await isAdmin(owner_id))) {
 				return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 			}
 		} else {
-			const residentialBuildingCost = Math.pow(alreadyBuildings.length + 1, 2) * 0.3;
+			const residentialBuildingCost =
+				(Math.pow(alreadyBuildings.length + 1, 2) * 0.3) / (2 * land[0].solidity);
 			const account = await getAccount(account_id);
 			if (account.balance < residentialBuildingCost) {
 				return json(
@@ -141,6 +148,23 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 				]
 			);
 		}
+	} else {
+		const buildingCost = 0.25 / (land[0].solidity * Math.random());
+		if (account.balance < buildingCost) {
+			return json(
+				{ success: false, message: 'Not enough balance to build building' },
+				{ status: 400 }
+			);
+		}
+
+		await query('UPDATE accounts SET balance = balance - ? WHERE id = ?', [
+			buildingCost,
+			account_id
+		]);
+		await query(
+			"INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, 'withdrawal', ?)",
+			[account_id, buildingCost, `땅#${land_id} ${type} 건축 비용`]
+		);
 	}
 
 	if (free) {
