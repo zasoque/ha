@@ -3,7 +3,7 @@ import { getAccount } from '$lib/server/account';
 import { query } from '$lib/server/db';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ params, request, cookies }) => {
+export const GET: RequestHandler = async ({ params, cookies, url }) => {
 	const token = cookies.get('token');
 
 	if (!token) {
@@ -24,9 +24,10 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		return json({ success: false, message: 'Land not found' }, { status: 404 });
 	}
 
-	const { level, account_id } = await request.json();
+	const level = Number(url.searchParams.get('level'));
+	const account_id = Number(url.searchParams.get('account_id'));
 
-	if (level === undefined || account_id === undefined) {
+	if (isNaN(level) || isNaN(account_id)) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
 	}
 

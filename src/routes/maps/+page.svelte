@@ -217,6 +217,62 @@
 		return path.map((land) => `${land.id}`).join('_');
 	}
 
+	let investFertilityPrompt;
+	let investFertilityLandId = $state(0);
+	let investFertilityLevel = $state(0);
+	let investFertilityAccountId = $state(0);
+
+	async function investFertility() {
+		await fetch(
+			`/api/v1/maps/lands/${investFertilityLandId}/fertility?level=${investFertilityLevel}&account_id=${investFertilityAccountId}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					alert(`땅의 비옥도는 ${data.min}에서 ${data.max} 사이야.`);
+				} else {
+					alert('비옥도 조사를 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('비옥도 조사 실패:', err);
+			});
+	}
+
+	let investSolidityPrompt;
+	let investSolidityLandId = $state(0);
+	let investSolidityLevel = $state(0);
+	let investSolidityAccountId = $state(0);
+
+	async function investSolidity() {
+		await fetch(
+			`/api/v1/maps/lands/${investSolidityLandId}/solidity?level=${investSolidityLevel}&account_id=${investSolidityAccountId}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					alert(`땅의 강도는 ${data.min}에서 ${data.max} 사이야.`);
+				} else {
+					alert('강도 조사를 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('강도 조사 실패:', err);
+			});
+	}
+
 	onMount(() => {
 		data = init(
 			canvas,
@@ -429,6 +485,26 @@
 	<input type="number" bind:value={harvestPromptBuilding} placeholder="건물 ID" />
 	<button onclick={harvest}>수확</button>
 </PromptFloat>
+<PromptFloat bind:this={investFertilityPrompt}>
+	<div>비옥도 조사</div>
+	<div>토지 ID</div>
+	<input type="number" bind:value={investFertilityLandId} placeholder="토지 ID" />
+	<div>조사 레벨</div>
+	<input type="number" bind:value={investFertilityLevel} placeholder="조사 레벨" />
+	<div>계좌번호</div>
+	<input type="number" bind:value={investFertilityAccountId} placeholder="계좌번호" />
+	<button onclick={investFertility}>조사</button>
+</PromptFloat>
+<PromptFloat bind:this={investSolidityPrompt}>
+	<div>강도 조사</div>
+	<div>토지 ID</div>
+	<input type="number" bind:value={investSolidityLandId} placeholder="토지 ID" />
+	<div>조사 레벨</div>
+	<input type="number" bind:value={investSolidityLevel} placeholder="조사 레벨" />
+	<div>계좌번호</div>
+	<input type="number" bind:value={investSolidityAccountId} placeholder="계좌번호" />
+	<button onclick={investSolidity}>조사</button>
+</PromptFloat>
 
 <Container>
 	<Title>하 지도</Title>
@@ -439,6 +515,8 @@
 	<button onclick={addRailPrompt.open}>철도 추가</button>
 	<button onclick={harvestPrompt.open}>수확</button>
 	<button onclick={pathPrompt.open}>경로</button>
+	<button onclick={investFertilityPrompt.open}>비옥도 조사</button>
+	<button onclick={investSolidityPrompt.open}>강도 조사</button>
 </Container>
 
 <style>
