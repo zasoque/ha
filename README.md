@@ -134,9 +134,9 @@ CREATE TABLE admin_users (
 CREATE TABLE people (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255),
-    residence INTEGER,
+    residence INTEGER UNIQUE,
     FOREIGN KEY (id) REFERENCES users(id),
-    FOREIGN KEY (residence) REFERENCES buildings(id)
+    FOREIGN KEY (residence) REFERENCES buildings(id),
 );
 ```
 
