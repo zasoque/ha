@@ -31,11 +31,30 @@
 			location.reload();
 		});
 	}
+
+	function sortByType(event) {
+		const value = event.target.value;
+		let sortedVisas = [...visas()];
+		if (value === '발급 날짜 내림차순') {
+			sortedVisas.sort(
+				(a, b) => new Date(b.date_issued).getTime() - new Date(a.date_issued).getTime()
+			);
+		} else if (value === '만료 날짜 내림차순') {
+			sortedVisas.sort(
+				(a, b) => new Date(b.date_expiry).getTime() - new Date(a.date_expiry).getTime()
+			);
+		}
+		data.visas = sortedVisas;
+	}
 </script>
 
 <Container>
 	<div><a href="/admin">뒤로 가기</a></div>
 	<Title>사증 관리</Title>
+	<select onchange={sortByType}>
+		<option>발급 날짜 내림차순</option>
+		<option>만료 날짜 내림차순</option>
+	</select>
 	<table class="table">
 		<thead>
 			<tr>
