@@ -156,6 +156,7 @@ CREATE TABLE visas (
     user_id VARCHAR(255),
     type VARCHAR(255),
     date_issued DATE,
+    date_expiry DATE,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 ```

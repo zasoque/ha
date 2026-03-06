@@ -42,9 +42,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, error: 'Forbidden' }, { status: 403 });
 	}
 
-	const { user_id, type, date_issued } = await request.json();
+	const { user_id, type, date_issued, date_expiry } = await request.json();
 
-	if (!user_id || !type || !date_issued) {
+	if (!user_id || !type || !date_issued || !date_expiry) {
 		return json(
 			{ success: false, error: 'User ID, type, and date issued are required' },
 			{ status: 400 }
@@ -52,10 +52,11 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 
 	await ensureAccountExists(user_id);
-	await query('INSERT INTO visas (user_id, type, date_issued) VALUES (?, ?, ?)', [
+	await query('INSERT INTO visas (user_id, type, date_issued, date_expiry) VALUES (?, ?, ?, ?)', [
 		user_id,
 		type,
-		date_issued
+		date_issued,
+		date_expiry
 	]);
 	await sendNotification(
 		user_id,

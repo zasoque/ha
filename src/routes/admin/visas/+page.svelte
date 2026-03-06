@@ -13,6 +13,7 @@
 	let addVisaUserId = $state('');
 	let addVisaType = $state('');
 	let addVisaDateIssued = $state('');
+	let addVisaDateExpiry = $state('');
 
 	function addVisa() {
 		fetch('/api/v1/admin/visas', {
@@ -23,31 +24,12 @@
 			body: JSON.stringify({
 				user_id: addVisaUserId,
 				type: addVisaType,
-				date_issued: addVisaDateIssued
+				date_issued: addVisaDateIssued,
+				date_expiry: addVisaDateExpiry
 			})
 		}).then((res) => {
 			location.reload();
 		});
-	}
-
-	function getExpiry(dateIssued: string, type: string): Date {
-		const issuedDate = new Date(dateIssued);
-		let expiryDate: Date;
-
-		switch (type) {
-			case '단기':
-				expiryDate = new Date(issuedDate.setDate(issuedDate.getDate() + 6));
-				break;
-			case '체험':
-			case '사업':
-				expiryDate = new Date(issuedDate.setMonth(issuedDate.getMonth() + 1));
-				expiryDate.setDate(expiryDate.getDate() - 1); // 한 달 후의 전날로 설정
-				break;
-			default:
-				return new Date(issuedDate); // 기본적으로 발급 날짜를 반환
-		}
-
-		return expiryDate; // YYYY-MM-DD 형식으로 반환
 	}
 </script>
 
@@ -69,7 +51,7 @@
 					<td>{visa.user_id}</td>
 					<td>{visa.type}</td>
 					<td>{new Date(visa.date_issued).toLocaleDateString()}</td>
-					<td>{getExpiry(visa.date_issued, visa.type).toLocaleDateString()}</td>
+					<td>{new Date(visa.date_expiry).toLocaleDateString()}</td>
 				</tr>
 			{/each}
 		</tbody>
@@ -89,6 +71,8 @@
 	</select>
 	<div>발급 날짜</div>
 	<input id="visa-date-issued" type="date" bind:value={addVisaDateIssued} />
+	<div>만료 날짜</div>
+	<input id="visa-date-expiry" type="date" bind:value={addVisaDateExpiry} />
 	<button class="button" onclick={addVisa}>추가</button>
 </PromptFloat>
 
