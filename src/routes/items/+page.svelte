@@ -31,6 +31,36 @@
 			location.reload();
 		});
 	}
+
+	let makeItemPrompt;
+	let makeItemId = $state('');
+	let makeItemQuantity = $state(1);
+
+	function makeItem() {
+		if (!makeItemId || makeItemQuantity <= 0) {
+			alert('아이템 ID와 수량은 필수야!');
+			return;
+		}
+
+		fetch(`/api/v1/items/${makeItemId}/craft`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				quantity: makeItemQuantity
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert(`아이템 제작에 실패했어: ${data.message}`);
+				}
+			})
+			.catch((err) => {
+				alert(`아이템 제작 중 오류가 발생했어: ${err.message}`);
+			});
+	}
 </script>
 
 <Container>
@@ -47,7 +77,8 @@
 			/>
 		{/each}
 	</div>
-	<button onclick={createItemPrompt.open}>아이템 제작하기</button>
+	<button onclick={createItemPrompt.open}>아이템 발명하기</button>
+	<button onclick={makeItemPrompt.open}>아이템 제작하기</button>
 	<Pagination page={page()} limit={limit()} />
 </Container>
 <PromptFloat bind:this={createItemPrompt}>
@@ -55,7 +86,14 @@
 	<input type="text" bind:value={newItemName} />
 	<div>아이템 설명</div>
 	<input type="text" bind:value={newItemDescription} />
-	<button onclick={createItem}>제작하기</button>
+	<button onclick={createItem}>발명하기</button>
+</PromptFloat>
+<PromptFloat bind:this={makeItemPrompt}>
+	<div>아이템 ID</div>
+	<input type="text" bind:value={makeItemId} />
+	<div>아이템 수량 (아이템을 하나 만들 때마다 테인트가 1개씩 필요해.)</div>
+	<input type="number" bind:value={makeItemQuantity} />
+	<button onclick={makeItem}>제작하기</button>
 </PromptFloat>
 
 <style>

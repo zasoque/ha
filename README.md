@@ -182,6 +182,8 @@ CREATE TABLE visas (
 - **`GET` /items/{itemId}**: 특정 아이템 상세 조회
 - **`PUT` /items/{itemId}**: 아이템 정보 업데이트
 - **`DELETE` /items/{itemId}**: 아이템 삭제
+- **`POST` /items/{itemId}/craft**: 아이템 제작
+  - `quantity`: 제작할 아이템 수량
 
 ```mysql
 CREATE TABLE items (

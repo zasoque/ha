@@ -11,7 +11,7 @@
 			&times; <span class="quantity">{stock.quantity}</span>
 		{/if}
 	</div>
-	<div class="description">{stock.item.description}</div>
+	<div class="description">({stock.item.maker_name}) {stock.item.description}</div>
 	{#if showaction}
 		<div class="action"><button onclick={ongive}>주기</button></div>
 	{/if}
