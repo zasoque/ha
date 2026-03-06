@@ -6,8 +6,8 @@
 	let notifications = $derived(() => data.notifications);
 
 	function readNotification(id: number) {
-		return () => {
-			fetch(`/api/v1/notifications/${id}/read`, {
+		return async () => {
+			await fetch(`/api/v1/notifications/${id}/read`, {
 				method: 'POST'
 			}).then(() => {
 				location.reload();

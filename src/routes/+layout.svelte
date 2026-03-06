@@ -4,6 +4,11 @@
 	const { children, data } = $props();
 	const me = $derived(() => data.me);
 	const isAdmin = $derived(() => data.isAdmin);
+	const notifications = $derived(() => data.notifications);
+
+	function getNotifCount() {
+		return notifications().filter((n) => !n.is_read).length;
+	}
 </script>
 
 <svelte:head>
@@ -57,7 +62,12 @@
 		<a href="/items" class="navigation-item">아이템</a>
 		<a href="/maps" class="navigation-item">지도</a>
 		{#if me()}
-			<a href="/notifications" class="navigation-item">알림</a>
+			<a href="/notifications" class="navigation-item">
+				알림
+				{#if getNotifCount()}
+					({getNotifCount()})
+				{/if}
+			</a>
 			<a href="/accounts" class="navigation-item">계좌</a>
 			<a href="/products" class="navigation-item">시장</a>
 			<a href="/inventory" class="navigation-item">인벤토리</a>
