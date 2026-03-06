@@ -14,6 +14,24 @@ export const load: Load = async ({ fetch, url }) => {
 
 	for (const product of data.products) {
 		product.owner_name = await getUserName(product.owner_id);
+		product.item = await fetch(`/api/v1/items/${product.item_id}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					return data.item;
+				} else {
+					return null;
+				}
+			});
+		product.market = await fetch(`/api/v1/maps/buildings/${product.market_id}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					return data.building;
+				} else {
+					return null;
+				}
+			});
 	}
 
 	return { products: data.products };

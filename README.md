@@ -42,8 +42,8 @@ CREATE TABLE accounts (
 
 - **`GET` /transactions**: 거래 내역 조회
 - **`POST` /transactions/transfer**: 계좌 간 이체 거래 생성
-  - `fromAccountId`: 출금 계좌 ID
-  - `toAccountId`: 입금 계좌 ID
+  - `fromAccountId`: 출금 계좌번호
+  - `toAccountId`: 입금 계좌번호
   - `amount`: 이체 금액
   - `description`: 거래 설명 (선택 사항)
   - `path`: 거래 경로 (예: `1_2_3` - 토지 1 → 토지 2 → 토지 3)
@@ -69,23 +69,31 @@ CREATE TABLE transactions (
     - `page`: 페이지 번호 (기본값: 1)
     - `limit`: 페이지당 품목 수 (기본값: 20)
 - **`POST` /products**: 새 시장 품목 생성
-  - `name`: 품목 이름
+  - `item_id`: 품목이 되는 아이템 ID
+  - `count`: 품목 수량
   - `price`: 품목 가격
   - `description`: 품목 설명 (선택 사항)
-- **`GET` /products/{marketId}**: 특정 시장 품목 상세 조회
-- **`PUT` /products/{marketId}**: 시장 품목 정보 업데이트
-- **`DELETE` /products/{marketId}**: 시장 품목 삭제
+  - `market_id`: 품목이 판매되는 시장 ID
+  - `path`: 품목 거래 경로 (예: `1_2_3` - 토지 1 → 토지 2 → 토지 3)
+  - `account_id`: 품목 시장 등록 시 운송비를 지불할 계좌번호
+- **`GET` /products/{productId}**: 특정 시장 품목 상세 조회
+- **`PUT` /products/{productId}**: 시장 품목 정보 업데이트
+- **`DELETE` /products/{productId}**: 시장 품목 삭제
 
 ```mysql
 CREATE TABLE products (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255),
+    item_id INTEGER,
+    quantity INTEGER,
     price DECIMAL(20, 2),
     description TEXT,
     owner_id VARCHAR(255),
+    market_id INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (owner_id) REFERENCES users(id)
+    FOREIGN KEY (item_id) REFERENCES items(id),
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    FOREIGN KEY (market_id) REFERENCES buildings(id)
 );
 ```
 
@@ -152,10 +160,10 @@ CREATE TABLE visas (
 
 - **`POST` /admin/economy/print**: 화폐 발행 (관리자 권한 필요)
   - `amount`: 발행할 화폐 양
-  - `account`: 화폐를 입금할 계좌 ID
+  - `account`: 화폐를 입금할 계좌번호
 - **`POST` /admin/economy/burn**: 화폐 소각 (관리자 권한 필요)
   - `amount`: 소각할 화폐 양
-  - `account`: 화폐를 출금할 계좌 ID
+  - `account`: 화폐를 출금할 계좌번호
 
 ### 6. 아이템 API `/items`
 
@@ -236,7 +244,7 @@ CREATE TABLE notifications (
   - `x`: 토지 X 좌표
   - `y`: 토지 Y 좌표
   - `color`: 토지 색상 (예: `#FF0000`)
-  - `account_id`: 토지 개발 비용을 지불할 계좌 ID
+  - `account_id`: 토지 개발 비용을 지불할 계좌번호
   - `free`: 토지 개발 무료 여부 (관리자 권한 필요)
 - **`GET` /maps/lands/{landId}**: 특정 토지 상세 조회
 - **`PUT` /maps/lands/{landId}**: 토지 정보 업데이트 (지주)
@@ -266,7 +274,7 @@ CREATE TABLE lands (
   - `name`: 건물 이름
   - `land_id`: 건물이 위치한 토지 ID
   - `type`: 건물 유형 (예: `'주거'`, `'사무'`, `'시장'`, `'농장'`)
-  - `account_id`: 건물 건설 비용을 지불할 계좌 ID
+  - `account_id`: 건물 건설 비용을 지불할 계좌번호
   - `free`: 건물 건설 무료 여부 (관리자 권한 필요)
 - **`GET` /maps/buildings/{buildingId}**: 특정 건물 상세 조회
 - **`PUT` /maps/buildings/{buildingId}**: 건물 정보 업데이트 (건물주)

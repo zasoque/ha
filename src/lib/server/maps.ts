@@ -1,7 +1,19 @@
 import { json } from '@sveltejs/kit';
 import { query } from './db';
 
-export async function getFee(path: any[]): Promise<number | Response> {
+export async function getFee(pathString: string): Promise<number | Response> {
+	const path = [];
+	for (let pathPart of pathString.split('_')) {
+		const land = await query('SELECT * FROM lands WHERE id = ?', [pathPart]);
+		if (land.length === 0) {
+			return json(
+				{ success: false, message: `Land with path ${pathPart} not found` },
+				{ status: 404 }
+			);
+		}
+		path.push(land[0]);
+	}
+
 	let previousWasRoad = true;
 	let buffer = 0;
 	let fee = 0;

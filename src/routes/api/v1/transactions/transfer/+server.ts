@@ -106,11 +106,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 	}
 	// path 검증 끝
 
-	const fee = await getFee(
-		path.split('_').map((id: string) => {
-			return { id: parseInt(id) };
-		})
-	);
+	const fee = await getFee(path);
 
 	if (fee instanceof Response) {
 		return fee;

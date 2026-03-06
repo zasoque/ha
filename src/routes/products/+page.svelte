@@ -8,26 +8,41 @@
 	const products = $derived(() => data.products);
 
 	let newProductPrompt;
-	let newName = $state('');
+	let newItemId = $state(0);
+	let newCount = $state(0);
+	let newPrice = $state(0);
 	let newDescription = $state('');
-	let newPrice = $state('');
+	let newMarketId = $state(0);
+	let newPath = $state('');
+	let newAccountId = $state(0);
 
 	async function newProduct() {
-		const price = parseInt(newPrice, 10);
-		if (isNaN(price)) {
-			alert('유효한 가격을 입력해줘!');
-			return;
-		}
-
 		await fetch('/api/v1/products', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ name: newName, description: newDescription, price })
-		});
-
-		location.reload();
+			body: JSON.stringify({
+				item_id: newItemId,
+				count: newCount,
+				price: newPrice,
+				description: newDescription,
+				market_id: newMarketId,
+				path: newPath,
+				account_id: newAccountId
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('상품 출품에 실패했어: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				alert('상품 출품 중 오류가 발생했어: ' + err.message);
+			});
 	}
 </script>
 
@@ -42,22 +57,30 @@
 	<div class="products">
 		{#each products() as product}
 			<a class="product" href="/products/{product.id}">
-				<div class="product-name">{product.name}</div>
+				<div class="product-name">{product.item.name} &times; {product.quantity}</div>
 				<div class="product-description">{product.description}</div>
 				<div class="product-price">{formatCurrency(product.price)}</div>
-				<div class="product-owner">{product.owner_name}</div>
+				<div class="product-owner">{product.owner_name}, {product.market.name}</div>
 			</a>
 		{/each}
 	</div>
 	<button class="new-product" onclick={newProductPrompt.open}>새로운 상품 출품</button>
 </Container>
 <PromptFloat bind:this={newProductPrompt}>
-	<div>상품 이름</div>
-	<input type="text" bind:value={newName} placeholder="상품 이름을 입력하세요" />
+	<div>아이템 ID</div>
+	<input type="number" bind:value={newItemId} placeholder="아이템 ID를 입력해줘!" />
+	<div>아이템 개수</div>
+	<input type="number" bind:value={newCount} placeholder="아이템 개수를 입력해줘!" />
 	<div>상품 설명</div>
-	<input type="text" bind:value={newDescription} placeholder="상품 설명을 입력하세요" />
+	<input type="text" bind:value={newDescription} placeholder="상품 설명을 입력해줘!" />
 	<div>상품 가격</div>
-	<input type="text" bind:value={newPrice} placeholder="상품 가격을 입력하세요" />
+	<input type="number" bind:value={newPrice} placeholder="상품 가격을 입력해줘!" />
+	<div>시장 ID</div>
+	<input type="number" bind:value={newMarketId} placeholder="시장 ID를 입력해줘!" />
+	<div>시장까지 이동 경로</div>
+	<input type="text" bind:value={newPath} placeholder="시장까지 이동 경로를 입력해줘!" />
+	<div>운송비 지불 계좌</div>
+	<input type="number" bind:value={newAccountId} placeholder="운송비 지불 계좌를 입력해줘!" />
 	<button onclick={newProduct}>출품하기</button>
 </PromptFloat>
 
