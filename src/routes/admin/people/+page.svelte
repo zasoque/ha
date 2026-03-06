@@ -82,7 +82,7 @@
 				<tr>
 					<td>{person.id}</td>
 					<td>{person.name}</td>
-					<td>{person.residence}</td>
+					<td>{person.residence_land.name} {person.residence_building.name} #{person.residence}</td>
 					<td><button onclick={openEditPersonPrompt(person.id)}>변경</button></td>
 				</tr>
 			{/each}

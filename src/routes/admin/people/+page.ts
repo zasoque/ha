@@ -8,5 +8,14 @@ export const load: Load = async ({ fetch, url }) => {
 		.then((res) => res.json())
 		.then((data) => data.people);
 
+	for (const person of people) {
+		person.residence_building = await fetch(`/api/v1/maps/buildings/${person.residence}`)
+			.then((res) => res.json())
+			.then((data) => data.building);
+		person.residence_land = await fetch(`/api/v1/maps/lands/${person.residence_building.land_id}`)
+			.then((res) => res.json())
+			.then((data) => data.land);
+	}
+
 	return { people, page, limit };
 };
