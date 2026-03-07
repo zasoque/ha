@@ -5,6 +5,7 @@
 	const { data } = $props();
 	const account = $derived(() => data.account);
 	const transactions = $derived(() => data.transactions);
+	const person = $derived(() => data.person);
 
 	function deleteAccount() {
 		fetch(`/api/v1/accounts/${account().id}`, {
@@ -73,6 +74,10 @@
 		<a href="/accounts">목록으로 돌아가기</a>
 	</div>
 	<div class="title">계좌 상세</div>
+	<div class="account-id">
+		<div class="row-key">주인</div>
+		<div class="row-value">{person().name} ({account().user_id})</div>
+	</div>
 	<div class="account-id">
 		<div class="row-key">계좌번호</div>
 		<div class="row-value">{account().id}</div>
