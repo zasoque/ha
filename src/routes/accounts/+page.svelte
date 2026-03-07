@@ -5,14 +5,32 @@
 
 	const { data } = $props();
 	const accounts = $derived(() => data.accounts);
+	const me = $derived(() => data.me);
 
 	function createAccount() {
+		const user_id = prompt('계좌를 개설할 국민/법인 ID를 입력하세요:', me().id);
+
+		if (!user_id) {
+			return;
+		}
+
 		fetch('/api/v1/accounts', {
-			method: 'POST'
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ user_id })
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				location.reload();
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('계좌 개설에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((error) => {
+				alert('계좌 개설 중 오류가 발생했습니다. 다시 시도해주세요.');
 			});
 	}
 </script>

@@ -47,6 +47,22 @@
 		a:hover {
 			text-decoration: underline;
 		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-bottom: 1rem;
+		}
+
+		table th,
+		table td {
+			padding: 0.5rem;
+			border: 1px solid #ccc;
+		}
+
+		table th {
+			background-color: #f5f5f5;
+		}
 	</style>
 	<link rel="icon" href={favicon} />
 	<title>하은행</title>

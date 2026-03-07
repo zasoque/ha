@@ -156,21 +156,3 @@
 	<input type="text" placeholder="거주지" bind:value={editResidence} />
 	<button onclick={editPerson(editId)}>변경하기</button>
 </PromptFloat>
-
-<style>
-	.table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-bottom: 1rem;
-	}
-
-	.table th,
-	.table td {
-		padding: 0.5rem;
-		border: 1px solid #ccc;
-	}
-
-	.table th {
-		background-color: #f5f5f5;
-	}
-</style>

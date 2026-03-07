@@ -5,6 +5,34 @@ import { sendNotification } from '$lib/server/notification';
 import { TYPE_RESIDENTIAL } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+export const GET: RequestHandler = async ({ params, cookies }) => {
+	const token = cookies.get('token');
+
+	if (!token) {
+		return json({ success: false, error: 'Unauthorized' }, { status: 401 });
+	}
+
+	const me = await getMe(token);
+
+	if (!(await isAdmin(me.id))) {
+		return json({ success: false, error: 'Forbidden' }, { status: 403 });
+	}
+
+	const id = params.personId;
+
+	if (!id) {
+		return json({ success: false, error: 'User ID is required' }, { status: 400 });
+	}
+
+	const people = await query('SELECT * FROM people WHERE id = ?', [id]);
+
+	if (people.length === 0) {
+		return json({ success: false, error: 'User not found' }, { status: 404 });
+	}
+
+	return json({ success: true, person: people[0] });
+};
+
 export const DELETE: RequestHandler = async ({ params, cookies }) => {
 	const token = cookies.get('token');
 
