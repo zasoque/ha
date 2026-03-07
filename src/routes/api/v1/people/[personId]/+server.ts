@@ -1,3 +1,4 @@
+import { getMe } from '$lib/discord/users';
 import { query } from '$lib/server/db';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
@@ -61,17 +62,24 @@ import { json, type RequestHandler } from '@sveltejs/kit';
  *                   type: string
  *                   example: User not found
  */
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, cookies }) => {
+	const token = cookies.get('token');
+	const me = token ? await getMe(token) : null;
+
 	const id = params.personId;
 
 	if (!id) {
 		return json({ success: false, error: 'User ID is required' }, { status: 400 });
 	}
 
-	const person = await query('SELECT id, name FROM people WHERE id = ?', [id]);
+	const person = await query('SELECT id, name, residence FROM people WHERE id = ?', [id]);
 
 	if (person.length === 0) {
 		return json({ success: false, error: 'User not found' }, { status: 404 });
+	}
+
+	if (!me) {
+		person.residence = undefined;
 	}
 
 	return json({ success: true, person: person[0] });
