@@ -4,7 +4,7 @@
 	import Pagination from '$lib/components/Pagination.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
-	const { data } = $props();
+	let { data } = $props();
 	const visas = $derived(() => data.visas);
 	const limit = $derived(() => data.limit);
 	const page = $derived(() => data.page);
@@ -43,6 +43,7 @@
 			);
 		}
 		data.visas = sortedVisas;
+		data = { ...data };
 	}
 </script>
 
