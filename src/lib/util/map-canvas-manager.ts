@@ -117,7 +117,9 @@ function renderRails() {
 		const midX = (screenPosA.x + screenPosB.x) / 2;
 		const midY = (screenPosA.y + screenPosB.y) / 2;
 		const distance = Math.hypot(screenPosB.x - screenPosA.x, screenPosB.y - screenPosA.y);
-		const angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
+		let angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
+		if (angle >= Math.PI / 2) angle -= Math.PI;
+		if (angle <= -Math.PI / 2) angle += Math.PI;
 		const mapDistance = Math.hypot(
 			landBPosition[0] - landAPosition[0],
 			landBPosition[1] - landAPosition[1]
@@ -127,7 +129,7 @@ function renderRails() {
 			ctx.translate(midX, midY);
 			ctx.rotate(angle);
 			ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-			ctx.fillText(`${rail.name} (${mapDistance.toFixed(1)})`, 0, 0);
+			ctx.fillText(rail.name, 0, 0);
 		}
 		ctx.restore();
 	});
@@ -161,7 +163,9 @@ function renderRoads() {
 		const midX = (screenPosA.x + screenPosB.x) / 2;
 		const midY = (screenPosA.y + screenPosB.y) / 2;
 		const distance = Math.hypot(screenPosB.x - screenPosA.x, screenPosB.y - screenPosA.y);
-		const angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
+		let angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
+		if (angle >= Math.PI / 2) angle -= Math.PI;
+		if (angle <= -Math.PI / 2) angle += Math.PI;
 		const mapDistance = Math.hypot(
 			landBPosition[0] - landAPosition[0],
 			landBPosition[1] - landAPosition[1]
@@ -171,10 +175,21 @@ function renderRoads() {
 			ctx.translate(midX, midY);
 			ctx.rotate(angle);
 			ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-			ctx.fillText(`${road.name} (${mapDistance.toFixed(1)})`, 0, 0);
+			ctx.fillText(road.name, 0, 0);
 		}
 		ctx.restore();
 	});
+}
+
+function lerpColor(a: string, b: string, t: number) {
+	const colorA = parseInt(a, 16);
+	const colorB = parseInt(b, 16);
+
+	const r = Math.round((colorA >> 16) * (1 - t) + (colorB >> 16) * t);
+	const g = Math.round(((colorA >> 8) & 0xff) * (1 - t) + ((colorB >> 8) & 0xff) * t);
+	const blue = Math.round((colorA & 0xff) * (1 - t) + (colorB & 0xff) * t);
+
+	return `#${((1 << 24) + (r << 16) + (g << 8) + blue).toString(16).slice(1)}`;
 }
 
 function renderLands() {
@@ -186,11 +201,11 @@ function renderLands() {
 
 		const buildingsOnIt = buildings.filter((b) => b.land_id === land.id);
 
-		const renderRadius = 5 * Math.sqrt(buildingsOnIt.length + 1) * window.devicePixelRatio;
+		const renderRadius = 10 * Math.sqrt(buildingsOnIt.length + 1) * window.devicePixelRatio;
 
 		ctx.strokeStyle = 'black';
 		ctx.lineWidth = 2 * window.devicePixelRatio;
-		ctx.fillStyle = `#${land.color}`;
+		ctx.fillStyle = lerpColor(land.color, 'ffffff', 0.5);
 		ctx.beginPath();
 		ctx.arc(screenPos.x, screenPos.y, renderRadius, 0, 2 * Math.PI);
 		ctx.fill();
@@ -201,11 +216,11 @@ function renderLands() {
 			ctx.fillStyle = 'black';
 			ctx.textAlign = 'left';
 			ctx.textBaseline = 'middle';
-			ctx.fillText(
-				`${land.name} #${land.id}`,
-				screenPos.x + renderRadius + 5 * window.devicePixelRatio,
-				screenPos.y
-			);
+			ctx.save();
+			ctx.translate(screenPos.x, screenPos.y);
+			ctx.rotate((-15 * Math.PI) / 180);
+			ctx.fillText(`${land.name} #${land.id}`, (renderRadius + 4) * window.devicePixelRatio, 0);
+			ctx.restore();
 		}
 	});
 }
