@@ -1,7 +1,40 @@
 import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
+import { getUserName } from '$lib/server/people';
 import { json, type RequestHandler } from '@sveltejs/kit';
+
+export const GET: RequestHandler = async ({ params, cookies }) => {
+	const userId = params.userId;
+
+	const token = cookies.get('token');
+
+	if (!token) {
+		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+	}
+
+	const me = await getMe(token);
+
+	if (!me) {
+		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+	}
+
+	if (me.id !== userId && !(await isAdmin(me.id))) {
+		return json({ success: false, message: 'Forbidden' }, { status: 403 });
+	}
+
+	const inventory = await query(
+		'SELECT items.id, items.name, inventory.quantity FROM inventory JOIN items ON inventory.item_id = items.id WHERE inventory.user_id = ?',
+		[userId]
+	);
+
+	for (const item of inventory) {
+		item.item = (await query('SELECT * FROM items WHERE id = ?', [item.id]))[0];
+		item.item.maker_name = await getUserName(item.item.maker);
+	}
+
+	return json({ success: true, inventory });
+};
 
 export const POST: RequestHandler = async ({ params, cookies, request }) => {
 	const userId = params.userId;

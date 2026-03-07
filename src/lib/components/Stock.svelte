@@ -12,7 +12,7 @@
 		{/if}
 	</div>
 	<div class="description">({stock.item.maker_name}) {stock.item.description}</div>
-	{#if showaction}
+	{#if showaction && ongive}
 		<div class="action"><button onclick={ongive}>주기</button></div>
 	{/if}
 </div>

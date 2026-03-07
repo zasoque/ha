@@ -6,8 +6,13 @@ export const load: Load = async ({ params, fetch }) => {
 	const members = await fetch(`/api/v1/corporations/${corporationId}`).then((res) => res.json());
 	const corporation = await fetch(`/api/v1/people/${corporationId}`).then((res) => res.json());
 
+	const { inventory } = await fetch(`/api/v1/inventory/users/${corporationId}`).then((res) =>
+		res.json()
+	);
+
 	return {
 		members: members.members,
-		corporation: corporation.person
+		corporation: corporation.person,
+		inventory
 	};
 };
