@@ -23,6 +23,7 @@ CREATE TABLE users (
 
 - **`GET` /accounts**: 사용자 계좌 목록 조회
 - **`POST` /accounts**: 새 계좌 생성
+  - `user_id`: 계좌 소유자 ID (Discord ID)
 - **`GET` /accounts/{accountId}**: 특정 계좌 상세 조회
 - **`PUT` /accounts/{accountId}**: 계좌 정보 업데이트
 - **`DELETE` /accounts/{accountId}**: 계좌 삭제
@@ -127,6 +128,7 @@ CREATE TABLE admin_users (
   - `id`: 국민 ID (Discord ID)
   - `name`: 국민 이름
   - `residence`: 국민 거주지
+  - `type`: 국민 유형 (예: `'person'`, `'corporation'`)
 - **`PUT` /admin/people/{personId}**: 국민 정보 업데이트 (관리자 권한 필요)
 - **`DELETE` /admin/people/{personId}**: 국민 삭제 (관리자 권한 필요)
 
@@ -135,8 +137,28 @@ CREATE TABLE people (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255),
     residence INTEGER UNIQUE,
+    type ENUM('person', 'corporation') DEFAULT 'person',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (id) REFERENCES users(id),
     FOREIGN KEY (residence) REFERENCES buildings(id),
+);
+```
+
+#### 법인 API `/admin/corporations`
+
+- **`POST` /admin/corporations/{corporationId}/members**: 법인에 구성원 추가 (법인 회원 혹은 관리자 권한 필요)
+  - `user_id`: 추가할 구성원 ID (Discord ID)
+- **`DELETE` /admin/corporations/{corporationId}/members**: 법인에서 구성원 제거 (법인 회원 혹은 관리자 권한 필요)
+  - `user_id`: 제거할 구성원 ID (Discord ID)
+
+```mysql
+CREATE TABLE corporation_members (
+    corporation_id VARCHAR(255),
+    user_id VARCHAR(255),
+    PRIMARY KEY (corporation_id, user_id),
+    FOREIGN KEY (corporation_id) REFERENCES people(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 ```
 

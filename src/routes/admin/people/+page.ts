@@ -9,6 +9,12 @@ export const load: Load = async ({ fetch, url }) => {
 		.then((data) => data.people);
 
 	for (const person of people) {
+		if (!person.residence) {
+			person.residence_building = {};
+			person.residence_land = {};
+			continue;
+		}
+
 		person.residence_building = await fetch(`/api/v1/maps/buildings/${person.residence}`)
 			.then((res) => res.json())
 			.then((data) => data.building);

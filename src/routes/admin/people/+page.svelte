@@ -12,6 +12,7 @@
 	let newId = $state('');
 	let newName = $state('');
 	let newResidence = $state('');
+	let newType = $state('person');
 	let addPersonPrompt;
 
 	function addPerson() {
@@ -20,16 +21,25 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ id: newId, name: newName, residence: newResidence })
-		}).then((res) => {
-			location.reload();
-		});
+			body: JSON.stringify({ id: newId, name: newName, residence: newResidence, type: newType })
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('국민 추가에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				alert('국민 추가 중 오류가 발생했습니다: ' + err.message);
+			});
 	}
 
+	let editPersonPrompt;
 	let editId = $state('');
 	let editName = $state('');
 	let editResidence = $state('');
-	let editPersonPrompt;
 
 	function openEditPersonPrompt(personId: string) {
 		const person = people().find((p: any) => p.id === personId);
@@ -65,6 +75,27 @@
 				});
 		};
 	}
+
+	function deletePerson(personId: string) {
+		return () => {
+			if (!confirm('정말로 이 국민을 삭제하시겠습니까?')) return;
+
+			fetch(`/api/v1/admin/people/${personId}`, {
+				method: 'DELETE'
+			})
+				.then((res) => res.json())
+				.then((data) => {
+					if (data.success) {
+						location.reload();
+					} else {
+						alert('국민 삭제에 실패했습니다: ' + data.message);
+					}
+				})
+				.catch((err) => {
+					alert('국민 삭제 중 오류가 발생했습니다: ' + err.message);
+				});
+		};
+	}
 </script>
 
 <Container>
@@ -76,14 +107,25 @@
 				<th>본명</th>
 				<th>예명</th>
 				<th>거주지</th>
+				<th>종류</th>
 				<th>동작</th>
 			</tr>
 			{#each people() as person}
 				<tr>
 					<td>{person.id}</td>
 					<td>{person.name}</td>
-					<td>{person.residence_land.name} {person.residence_building.name} #{person.residence}</td>
-					<td><button onclick={openEditPersonPrompt(person.id)}>변경</button></td>
+					<td>
+						{#if person.residence}
+							{person.residence_land.name} {person.residence_building.name} #{person.residence}
+						{:else}
+							(거주지 없음)
+						{/if}
+					</td>
+					<td>{person.type}</td>
+					<td>
+						<button onclick={openEditPersonPrompt(person.id)}>변경</button>
+						<button onclick={deletePerson(person.id)}>삭제</button>
+					</td>
 				</tr>
 			{/each}
 		</tbody>
@@ -98,6 +140,11 @@
 	<input type="text" placeholder="예명" bind:value={newName} />
 	<div>국민 거주지</div>
 	<input type="text" placeholder="거주지" bind:value={newResidence} />
+	<div>국민 타입</div>
+	<select bind:value={newType}>
+		<option value="person">사람</option>
+		<option value="corporation">법인</option>
+	</select>
 	<button onclick={addPerson}>추가하기</button>
 </PromptFloat>
 <PromptFloat bind:this={editPersonPrompt}>

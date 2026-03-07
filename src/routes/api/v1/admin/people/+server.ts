@@ -28,13 +28,21 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
 		);
 	}
 
-	const result = await query('SELECT * FROM people LIMIT ? OFFSET ?', [
+	const result = await query('SELECT * FROM people ORDER BY updated_at DESC LIMIT ? OFFSET ?', [
 		Number(limit),
 		Number(page) > 1 ? (Number(page) - 1) * Number(limit) : 0
 	]);
 
 	return json({ success: true, people: result });
 };
+
+function randomDigits(length: number): string {
+	let result = '';
+	for (let i = 0; i < length; i++) {
+		result += Math.floor(Math.random() * 10).toString();
+	}
+	return result;
+}
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const token = cookies.get('token');
@@ -49,14 +57,27 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, error: 'Forbidden' }, { status: 403 });
 	}
 
-	const { name, id, residence } = await request.json();
+	let { name, id, residence, type } = await request.json();
 
-	if (!name || !id || !residence) {
-		return json({ success: false, error: 'Name, ID, and residence are required' }, { status: 400 });
+	if (!name || !type) {
+		return json({ success: false, error: 'Name and type are required' }, { status: 400 });
+	}
+
+	if (!id) {
+		id = randomDigits(17);
+	}
+
+	if (!residence) {
+		residence = null;
 	}
 
 	await ensureAccountExists(id);
-	await query('INSERT INTO people (name, id, residence) VALUES (?, ?, ?)', [name, id, residence]);
+	await query('INSERT INTO people (name, id, residence, type) VALUES (?, ?, ?, ?)', [
+		name,
+		id,
+		residence,
+		type
+	]);
 	await sendNotification(id, `관리자가 너를 ${residence}에 거주하는 ${name}으로 등록했어.`);
 
 	return json({ success: true });
