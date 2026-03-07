@@ -5,6 +5,25 @@ import { query } from '$lib/server/db';
 import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+function getDateExpiry(type: string, dateIssued: string): string {
+	const issuedDate = new Date(dateIssued);
+	let expiryDate: Date;
+
+	switch (type) {
+		case '단기':
+			expiryDate = new Date(issuedDate);
+			expiryDate.setMonth(expiryDate.getMonth() + 6);
+			break;
+		default:
+			expiryDate = new Date(issuedDate);
+			expiryDate.setMonth(expiryDate.getMonth() + 1);
+			expiryDate.setDate(expiryDate.getDate() - 1);
+			break;
+	}
+
+	return expiryDate.toISOString().split('T')[0];
+}
+
 /**
  * @swagger
  * /api/v1/admin/visas:
@@ -206,14 +225,16 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, error: 'Forbidden' }, { status: 403 });
 	}
 
-	const { user_id, type, date_issued, date_expiry } = await request.json();
+	const { user_id, type, date_issued } = await request.json();
 
-	if (!user_id || !type || !date_issued || !date_expiry) {
+	if (!user_id || !type || !date_issued) {
 		return json(
 			{ success: false, error: 'User ID, type, and date issued are required' },
 			{ status: 400 }
 		);
 	}
+
+	let date_expiry = getDateExpiry(type, date_issued);
 
 	await ensureAccountExists(user_id);
 	await query('INSERT INTO visas (user_id, type, date_issued, date_expiry) VALUES (?, ?, ?, ?)', [

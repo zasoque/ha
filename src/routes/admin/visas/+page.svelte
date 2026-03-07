@@ -13,7 +13,6 @@
 	let addVisaUserId = $state('');
 	let addVisaType = $state('');
 	let addVisaDateIssued = $state('');
-	let addVisaDateExpiry = $state('');
 
 	function addVisa() {
 		fetch('/api/v1/admin/visas', {
@@ -24,8 +23,7 @@
 			body: JSON.stringify({
 				user_id: addVisaUserId,
 				type: addVisaType,
-				date_issued: addVisaDateIssued,
-				date_expiry: addVisaDateExpiry
+				date_issued: addVisaDateIssued
 			})
 		}).then((res) => {
 			location.reload();
@@ -90,8 +88,6 @@
 	</select>
 	<div>발급 날짜</div>
 	<input id="visa-date-issued" type="date" bind:value={addVisaDateIssued} />
-	<div>만료 날짜</div>
-	<input id="visa-date-expiry" type="date" bind:value={addVisaDateExpiry} />
 	<button class="button" onclick={addVisa}>추가</button>
 </PromptFloat>
 
