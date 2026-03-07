@@ -14,7 +14,7 @@ export const load: Load = async ({ fetch, cookies }) => {
 
 		const residenceId = await fetch(`/api/v1/people/${me.id}`)
 			.then((res) => res.json())
-			.then((data) => data.person.residence);
+			.then((data) => data.person?.residence);
 		residence = residenceId
 			? await fetch(`/api/v1/maps/buildings/${residenceId}`)
 					.then((res) => res.json())
