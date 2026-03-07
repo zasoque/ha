@@ -10,6 +10,10 @@ export const load: Load = async ({ params, fetch }) => {
 		res.json()
 	);
 
+	for (const item of inventory) {
+		item.item_id = item.id;
+	}
+
 	const { accounts } = await fetch(`/api/v1/accounts/corporations/${corporationId}`).then((res) =>
 		res.json()
 	);
