@@ -141,10 +141,17 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		return json({ success: false, message: 'Invalid token' }, { status: 401 });
 	}
 
-	const [fromAccount] = await query('SELECT * FROM accounts WHERE id = ? AND user_id = ?', [
+	let [fromAccount] = await query('SELECT * FROM accounts WHERE id = ? AND user_id = ?', [
 		fromAccountId,
 		me.id
 	]);
+
+	if (!fromAccount) {
+		[fromAccount] = await query(
+			'SELECT a.* FROM accounts a JOIN corporation_members cm ON a.user_id = cm.corporation_id WHERE a.id = ? AND cm.user_id = ?',
+			[fromAccountId, me.id]
+		);
+	}
 
 	if (!fromAccount) {
 		return json(
@@ -242,10 +249,9 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		`INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)`,
 		[toAccountId, amount, 'transfer', description || '']
 	);
-	await query(`UPDATE accounts SET balance = balance - ? WHERE id = ? AND user_id = ?`, [
+	await query(`UPDATE accounts SET balance = balance - ? WHERE id = ?`, [
 		amount + fee,
-		fromAccountId,
-		me.id
+		parseInt(fromAccountId)
 	]);
 	await query(`UPDATE accounts SET balance = balance + ? WHERE id = ?`, [amount, toAccountId]);
 	await query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [

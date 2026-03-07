@@ -57,7 +57,7 @@
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.success) {
-					window.reload();
+					location.reload();
 				} else {
 					console.log(data);
 					alert('송금에 실패했습니다: ' + data.message);
