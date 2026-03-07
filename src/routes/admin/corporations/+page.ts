@@ -15,8 +15,6 @@ export const load: Load = async ({ fetch, url }) => {
 		member.corporation = (
 			await fetch(`/api/v1/admin/people/${member.corporation_id}`).then((res) => res.json())
 		).person;
-
-		console.log(member);
 	}
 
 	return {

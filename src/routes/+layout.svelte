@@ -74,7 +74,6 @@
 		>
 	</div>
 	<div class="navigation">
-		<a href="/" class="navigation-item">홈</a>
 		<a href="/items" class="navigation-item">아이템</a>
 		<a href="/maps" class="navigation-item">지도</a>
 		{#if me()}
@@ -84,6 +83,7 @@
 					({getNotifCount()})
 				{/if}
 			</a>
+			<a href="/corporations" class="navigation-item">법인</a>
 			<a href="/accounts" class="navigation-item">계좌</a>
 			<a href="/products" class="navigation-item">시장</a>
 			<a href="/inventory" class="navigation-item">인벤토리</a>

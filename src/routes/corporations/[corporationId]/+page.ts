@@ -1,0 +1,13 @@
+import type { Load } from '@sveltejs/kit';
+
+export const load: Load = async ({ params, fetch }) => {
+	const { corporationId } = params;
+
+	const members = await fetch(`/api/v1/corporations/${corporationId}`).then((res) => res.json());
+	const corporation = await fetch(`/api/v1/people/${corporationId}`).then((res) => res.json());
+
+	return {
+		members: members.members,
+		corporation: corporation.person
+	};
+};

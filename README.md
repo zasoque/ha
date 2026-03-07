@@ -129,7 +129,7 @@ CREATE TABLE admin_users (
   - `name`: 국민 이름
   - `residence`: 국민 거주지
   - `type`: 국민 유형 (예: `'person'`, `'corporation'`)
-- **`GET` /admin/people/{personId}**: 국민 정보 상세 조회 (관리자 권한 필요)
+- **`GET` /admin/people/{personId}**: 국민 정보 상세 조회
 - **`PUT` /admin/people/{personId}**: 국민 정보 업데이트 (관리자 권한 필요)
 - **`DELETE` /admin/people/{personId}**: 국민 삭제 (관리자 권한 필요)
 
@@ -159,7 +159,7 @@ CREATE TABLE corporation_members (
     user_id VARCHAR(255),
     PRIMARY KEY (corporation_id, user_id),
     FOREIGN KEY (corporation_id) REFERENCES people(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES people(id)
 );
 ```
 
