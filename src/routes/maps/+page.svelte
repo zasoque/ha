@@ -58,7 +58,7 @@
 	}
 
 	let addRoadPrompt;
-	let addRoadOwnerId = $state(data.me.id);
+	let addRoadOwnerId = $state(data.me?.id);
 	let addRoadName = $state('');
 	let addRoadLandAId = $state(0);
 	let addRoadLandBId = $state(0);
@@ -121,7 +121,7 @@
 	}
 
 	let addRailPrompt;
-	let addRailOwnerId = $state(data.me.id);
+	let addRailOwnerId = $state(data.me?.id);
 	let addRailName = $state('');
 	let addRailLandAId = $state(0);
 	let addRailLandBId = $state(0);

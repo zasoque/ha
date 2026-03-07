@@ -6,7 +6,7 @@ export const load: LayoutServerLoad = async ({ fetch, cookies }) => {
 	const token = cookies.get('token');
 
 	let me;
-	if (!(!token || token === 'undefined')) {
+	if (token) {
 		me = await getMe(token);
 	}
 
