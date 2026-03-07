@@ -12,14 +12,56 @@
 </script>
 
 <svelte:head>
-	<link
-		href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css"
-		rel="stylesheet"
-	/>
 	<style>
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-1Thin.woff2') format('woff2');
+			font-weight: 100;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-2ExtraLight.woff2') format('woff2');
+			font-weight: 200;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-3Light.woff2') format('woff2');
+			font-weight: 300;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-4Regular.woff2') format('woff2');
+			font-weight: 400;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-5Medium.woff2') format('woff2');
+			font-weight: 500;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-6SemiBold.woff2') format('woff2');
+			font-weight: 600;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-7Bold.woff2') format('woff2');
+			font-weight: 700;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-8ExtraBold.woff2') format('woff2');
+			font-weight: 800;
+		}
+		@font-face {
+			font-family: 'A2Z';
+			src: url('/fonts/에이투지체-9Black.woff2') format('woff2');
+			font-weight: 900;
+		}
+
 		body {
 			margin: 0;
-			font-family: 'SUIT Variable', sans-serif;
+			font-family: 'A2Z';
 
 			--max-width: 960px;
 		}
