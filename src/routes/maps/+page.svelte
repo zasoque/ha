@@ -450,6 +450,7 @@
 	<div>토지 ID</div>
 	<input type="number" bind:value={addBuildingLandId} placeholder="토지 ID" />
 	<div>건물 종류</div>
+	<div>농장은 5, 주거는 8, 사무는 10, 시장은 20개 테인트가 필요해.</div>
 	<select bind:value={addBuildingType}>
 		<option value="" disabled selected>건물 종류 선택</option>
 		<option>농장</option>
