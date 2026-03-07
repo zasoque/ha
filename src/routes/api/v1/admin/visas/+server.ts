@@ -5,6 +5,84 @@ import { query } from '$lib/server/db';
 import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/admin/visas:
+ *   get:
+ *     summary: Retrieve a paginated list of all visas (Admin only).
+ *     tags:
+ *       - Admin - Visas
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number for pagination.
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items per page.
+ *     responses:
+ *       200:
+ *         description: A paginated list of visas.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 visas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       user_id:
+ *                         type: string
+ *                         description: The Discord ID of the user associated with the visa.
+ *                       type:
+ *                         type: string
+ *                       date_issued:
+ *                         type: string
+ *                         format: date
+ *                       date_expiry:
+ *                         type: string
+ *                         format: date
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden
+ */
 export const GET: RequestHandler = async ({ cookies, url }) => {
 	const token = cookies.get('token');
 
@@ -29,6 +107,92 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
 	return json({ success: true, visas: result });
 };
 
+/**
+ * @swagger
+ * /api/v1/admin/visas:
+ *   post:
+ *     summary: Issue a new visa (Admin only).
+ *     tags:
+ *       - Admin - Visas
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - user_id
+ *               - type
+ *               - date_issued
+ *               - date_expiry
+ *             properties:
+ *               user_id:
+ *                 type: string
+ *                 description: The Discord ID of the user to issue the visa to.
+ *               type:
+ *                 type: string
+ *                 description: The type of visa (e.g., 'temporary', 'permanent').
+ *               date_issued:
+ *                 type: string
+ *                 format: date
+ *                 description: The date the visa was issued.
+ *               date_expiry:
+ *                 type: string
+ *                 format: date
+ *                 description: The date the visa expires.
+ *     responses:
+ *       200:
+ *         description: Visa issued successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad request, missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: User ID, type, and date issued are required
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden
+ */
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const token = cookies.get('token');
 

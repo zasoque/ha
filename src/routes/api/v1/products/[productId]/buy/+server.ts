@@ -5,6 +5,114 @@ import { formatCurrency } from '$lib/util/economy';
 import { getMe } from '$lib/discord/users';
 import { GOVERNMENT_ACCOUNT_ID } from '$lib/util/const';
 
+/**
+ * @swagger
+ * /api/v1/products/{productId}/buy:
+ *   post:
+ *     summary: Purchase a product.
+ *     tags:
+ *       - Products
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         description: The ID of the product (starts from 1) to purchase.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - account_id
+ *               - count
+ *               - path
+ *             properties:
+ *               account_id:
+ *                 type: integer
+ *                 description: The account ID (starts from 1) to use for the purchase.
+ *               count:
+ *                 type: integer
+ *                 description: The quantity of the product to purchase.
+ *               path:
+ *                 type: string
+ *                 description: The path (land IDs separated by underscores) from the buyer's residence to the market.
+ *     responses:
+ *       200:
+ *         description: Purchase successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Purchase successful
+ *       400:
+ *         description: Bad request, missing required fields, invalid path, not enough products in stock, or not enough balance.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "Missing required fields"
+ *                     invalidPath:
+ *                       value: "Invalid path"
+ *                     pathStartError:
+ *                       value: "Buyer must start from their residence land"
+ *                     pathEndError:
+ *                       value: "Buyer must end at the market land"
+ *                     notEnoughStock:
+ *                       value: "Not enough products in stock"
+ *                     notEnoughBalance:
+ *                       value: "Not enough balance"
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Product, buyer residence land, or market land not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     productNotFound:
+ *                       value: "Product not found"
+ *                     buyerResidenceLandNotFound:
+ *                       value: "Buyer residence land not found"
+ *                     marketLandNotFound:
+ *                       value: "Market land not found"
+ */
 export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const token = cookies.get('token');
 	if (!token) {

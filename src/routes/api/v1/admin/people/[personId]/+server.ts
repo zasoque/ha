@@ -5,6 +5,97 @@ import { sendNotification } from '$lib/server/notification';
 import { TYPE_RESIDENTIAL } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/admin/people/{personId}:
+ *   get:
+ *     summary: Retrieve details of a specific person by ID (Admin only).
+ *     tags:
+ *       - Admin - People
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: personId
+ *         required: true
+ *         description: The Discord ID of the person to retrieve.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Details of the specified person.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 person:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       description: The Discord ID of the person.
+ *                     name:
+ *                       type: string
+ *                     residence:
+ *                       type: integer
+ *                       description: The ID of the residential building (starts from 1) where the person resides.
+ *       400:
+ *         description: Bad request, person ID is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: User ID is required
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden
+ *       404:
+ *         description: Person not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: User not found
+ */
 export const GET: RequestHandler = async ({ params, cookies }) => {
 	const token = cookies.get('token');
 
@@ -33,6 +124,73 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 	return json({ success: true, person: people[0] });
 };
 
+/**
+ * @swagger
+ * /api/v1/admin/people/{personId}:
+ *   delete:
+ *     summary: Delete a specific person by ID (Admin only).
+ *     tags:
+ *       - Admin - People
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: personId
+ *         required: true
+ *         description: The Discord ID of the person to delete.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Person deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad request, person ID is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: User ID is required
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden
+ */
 export const DELETE: RequestHandler = async ({ params, cookies }) => {
 	const token = cookies.get('token');
 
@@ -58,6 +216,95 @@ export const DELETE: RequestHandler = async ({ params, cookies }) => {
 	return json({ success: true });
 };
 
+/**
+ * @swagger
+ * /api/v1/admin/people/{personId}:
+ *   put:
+ *     summary: Update details of a specific person by ID (Admin only).
+ *     tags:
+ *       - Admin - People
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: personId
+ *         required: true
+ *         description: The Discord ID of the person to update.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - residence
+ *               - name
+ *             properties:
+ *               residence:
+ *                 type: integer
+ *                 description: The ID of the new residential building (starts from 1) for the person.
+ *               name:
+ *                 type: string
+ *                 description: The new name of the person.
+ *     responses:
+ *       200:
+ *         description: Person details updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad request, missing residence/name, invalid residence, or residence is not residential.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "Residence and name are required"
+ *                     invalidResidence:
+ *                       value: "Invalid residence"
+ *                     notResidential:
+ *                       value: "Residence must be a residential building"
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden
+ */
 export const PUT: RequestHandler = async ({ request, params, cookies }) => {
 	const token = cookies.get('token');
 

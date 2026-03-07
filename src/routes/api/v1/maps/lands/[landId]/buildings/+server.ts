@@ -11,6 +11,80 @@ import {
 } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/maps/lands/{landId}/buildings:
+ *   get:
+ *     summary: Retrieve a list of buildings on a specific land.
+ *     tags:
+ *       - Maps - Lands
+ *     parameters:
+ *       - in: path
+ *         name: landId
+ *         required: true
+ *         description: The ID of the land (starts from 1) to retrieve buildings from.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: A list of buildings on the specified land.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 land:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     x:
+ *                       type: integer
+ *                     y:
+ *                       type: integer
+ *                     owner_id:
+ *                       type: string
+ *                       description: The Discord ID of the land owner.
+ *                     solidity:
+ *                       type: number
+ *                       format: float
+ *                     fertility:
+ *                       type: number
+ *                       format: float
+ *                 buildings:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       owner_id:
+ *                         type: string
+ *                         description: The Discord ID of the building owner.
+ *                       land_id:
+ *                         type: integer
+ *                       type:
+ *                         type: string
+ *                         enum: [residential, office, market, farm]
+ *       404:
+ *         description: Land not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Land not found
+ */
 export const GET: RequestHandler = async ({ params }) => {
 	const { landId } = params;
 
@@ -38,6 +112,116 @@ function taintCost(type: string): number {
 	return Infinity;
 }
 
+/**
+ * @swagger
+ * /api/v1/maps/lands/{landId}/buildings:
+ *   post:
+ *     summary: Construct a new building on a specific land.
+ *     tags:
+ *       - Maps - Lands
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: landId
+ *         required: true
+ *         description: The ID of the land (starts from 1) to construct the building on.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *               - account_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the new building.
+ *               type:
+ *                 type: string
+ *                 enum: [residential, office, market, farm]
+ *                 description: The type of the new building.
+ *               account_id:
+ *                 type: integer
+ *                 description: The account ID (starts from 1) from which construction costs will be deducted.
+ *               free:
+ *                 type: boolean
+ *                 description: Optional. If true, construction is free (admin only).
+ *     responses:
+ *       200:
+ *         description: Building created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Building created successfully
+ *       400:
+ *         description: Bad request, missing required fields, building type restrictions, or not enough balance/taint.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "Missing required fields"
+ *                     farmBuildingRestriction:
+ *                       value: "Farm cannot be built on land with existing buildings"
+ *                     marketBuildingRestriction:
+ *                       value: "Market cannot be built on land with existing buildings"
+ *                     officeBuildingRestriction:
+ *                       value: "Office can only be built on office or market building"
+ *                     residentialBuildingRestriction:
+ *                       value: "Residential building can only be built on land with no existing buildings or with one existing residential building"
+ *                     notEnoughBalance:
+ *                       value: "Not enough balance to build residential building"
+ *                     notEnoughBalanceGeneric:
+ *                       value: "Not enough balance to build building"
+ *                     notEnoughTaint:
+ *                       value: "Not enough taint in inventory"
+ *       401:
+ *         description: Unauthorized, no token found, invalid token, or not authorized to use free construction.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Land not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Land not found
+ */
 export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const token = cookies.get('token');
 

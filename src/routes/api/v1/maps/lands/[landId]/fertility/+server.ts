@@ -3,6 +3,103 @@ import { getAccount } from '$lib/server/account';
 import { query } from '$lib/server/db';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/maps/lands/{landId}/fertility:
+ *   get:
+ *     summary: Determine the fertility range of a specific land (costs money).
+ *     description: This endpoint allows an authenticated user to investigate the fertility of a land by performing a "fertility survey" at a given level. This action costs money, which is deducted from the specified account.
+ *     tags:
+ *       - Maps - Lands
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: landId
+ *         required: true
+ *         description: The ID of the land (starts from 1) to investigate.
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: level
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: The level of fertility investigation. Higher levels provide more precise ranges but cost more.
+ *       - in: query
+ *         name: account_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the account (starts from 1) from which the investigation cost will be deducted.
+ *     responses:
+ *       200:
+ *         description: Returns the minimum and maximum possible fertility values for the land at the requested investigation level.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 min:
+ *                   type: number
+ *                   format: float
+ *                   description: The minimum possible fertility value.
+ *                 max:
+ *                   type: number
+ *                   format: float
+ *                   description: The maximum possible fertility value.
+ *       400:
+ *         description: Bad request, missing required fields, invalid level/account_id, or insufficient funds.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "Missing required fields"
+ *                     insufficientFunds:
+ *                       value: "Insufficient funds"
+ *       401:
+ *         description: Unauthorized, no token found, invalid token, or account does not belong to the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Land or account not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     landNotFound:
+ *                       value: "Land not found"
+ *                     accountNotFound:
+ *                       value: "Account not found"
+ */
 export const GET: RequestHandler = async ({ params, cookies, url }) => {
 	const token = cookies.get('token');
 

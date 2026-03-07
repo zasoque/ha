@@ -5,6 +5,64 @@ import { getFee } from '$lib/server/maps';
 import { GOVERNMENT_ACCOUNT_ID, TYPE_MARKET } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/products:
+ *   get:
+ *     summary: Retrieve a paginated list of products.
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: The number of items to return per page.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *     responses:
+ *       200:
+ *         description: A paginated list of products.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       item_id:
+ *                         type: integer
+ *                       quantity:
+ *                         type: integer
+ *                       price:
+ *                         type: number
+ *                         format: float
+ *                       description:
+ *                         type: string
+ *                       owner_id:
+ *                         type: string
+ *                         description: The Discord ID of the product owner.
+ *                       market_id:
+ *                         type: integer
+ *                       account_id:
+ *                         type: integer
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ */
 export const GET: RequestHandler = async ({ url }) => {
 	const limit = url.searchParams.get('limit') || '20';
 	const page = url.searchParams.get('page') || '1';
@@ -17,6 +75,132 @@ export const GET: RequestHandler = async ({ url }) => {
 	return json({ success: true, products });
 };
 
+/**
+ * @swagger
+ * /api/v1/products:
+ *   post:
+ *     summary: Create a new product listing.
+ *     tags:
+ *       - Products
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - item_id
+ *               - count
+ *               - price
+ *               - market_id
+ *               - path
+ *               - account_id
+ *             properties:
+ *               item_id:
+ *                 type: integer
+ *                 description: The ID of the item (starts from 1) to list as a product.
+ *               count:
+ *                 type: integer
+ *                 description: The quantity of the item to list.
+ *               description:
+ *                 type: string
+ *                 nullable: true
+ *                 description: A description for the product listing.
+ *               price:
+ *                 type: number
+ *                 format: float
+ *                 description: The price of the product.
+ *               market_id:
+ *                 type: integer
+ *                 description: The ID of the market (starts from 1) where the product will be listed.
+ *               path:
+ *                 type: string
+ *                 description: The path (land IDs separated by underscores) from the owner's residence to the market.
+ *               account_id:
+ *                 type: integer
+ *                 description: The account ID (starts from 1) from which the listing fee will be deducted.
+ *     responses:
+ *       200:
+ *         description: Product created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Product created successfully
+ *       400:
+ *         description: Bad request, missing required fields, invalid market, invalid path, not enough stock, or not enough balance.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "Missing required fields"
+ *                     invalidMarket:
+ *                       value: "Invalid market"
+ *                     invalidPathStart:
+ *                       value: "Invalid path start"
+ *                     invalidPathEnd:
+ *                       value: "Invalid path end"
+ *                     notEnoughStock:
+ *                       value: "Not enough stock"
+ *                     notEnoughBalance:
+ *                       value: "Not enough balance to cover the fee"
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Market, person, residence, residence land, market building, market land, or account not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     marketNotFound:
+ *                       value: "Market not found"
+ *                     personNotFound:
+ *                       value: "Person not found"
+ *                     residenceNotFound:
+ *                       value: "Residence not found"
+ *                     residenceLandNotFound:
+ *                       value: "Residence land not found"
+ *                     marketBuildingNotFound:
+ *                       value: "Market building not found"
+ *                     marketLandNotFound:
+ *                       value: "Market land not found"
+ *                     accountNotFound:
+ *                       value: "Account not found"
+ */
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const { item_id, count, description, price, market_id, path, account_id } = await request.json();
 

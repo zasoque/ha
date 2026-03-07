@@ -5,6 +5,37 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *   get:
+ *     summary: Initiate Discord OAuth2 login flow.
+ *     description: This endpoint is the callback URL for Discord OAuth2. It exchanges the authorization code for an access token, sets an authentication cookie, and redirects the user to the homepage.
+ *     tags:
+ *       - Authentication
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The authorization code received from Discord.
+ *     responses:
+ *       308:
+ *         description: Redirects to the homepage upon successful authentication.
+ *       500:
+ *         description: Internal server error if token exchange fails.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Failed to exchange code for token
+ *                 details:
+ *                   type: object
+ */
 export const GET: RequestHandler = async ({ cookies, fetch, request }) => {
 	const query = new URL(request.url).searchParams;
 	const code = query.get('code');

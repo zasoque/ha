@@ -4,6 +4,87 @@ import { query } from '$lib/server/db';
 import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/admin/economy/print:
+ *   post:
+ *     summary: Print (add) money to a specified account (Admin only).
+ *     tags:
+ *       - Admin - Economy
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - account
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *                 description: The amount of money to add. Must be a positive number.
+ *               account:
+ *                 type: integer
+ *                 description: The ID of the account (starts from 1) to add money to.
+ *     responses:
+ *       200:
+ *         description: Money added successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad request, missing parameters or invalid amount.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     missingParams:
+ *                       value: "Amount and account are required"
+ *                     invalidAmount:
+ *                       value: "Amount must be a positive number"
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ *       403:
+ *         description: Forbidden, user is not an administrator.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Forbidden
+ */
 export const POST: RequestHandler = async ({ cookies, request }) => {
 	const { amount, account } = await request.json();
 

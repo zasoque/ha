@@ -4,6 +4,80 @@ import { query } from '$lib/server/db';
 import { TAINT_ITEM_ID, TYPE_FARM } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/maps/buildings/{buildingId}/harvest:
+ *   post:
+ *     summary: Harvest resources from a farm building.
+ *     tags:
+ *       - Maps - Buildings
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: buildingId
+ *         required: true
+ *         description: The ID of the farm building (starts from 1) to harvest from.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Resources harvested successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 quantity:
+ *                   type: integer
+ *                   description: The amount of resources harvested.
+ *       400:
+ *         description: Bad request, building is not a farm.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Building is not a farm
+ *       401:
+ *         description: Unauthorized, no token found, invalid token, or not the owner/admin of the building.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Building or land not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     buildingNotFound:
+ *                       value: "Building not found"
+ *                     landNotFound:
+ *                       value: "Land not found"
+ */
 export const POST: RequestHandler = async ({ params, cookies }) => {
 	const token = cookies.get('token');
 

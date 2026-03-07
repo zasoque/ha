@@ -4,6 +4,51 @@ import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/maps/lands:
+ *   get:
+ *     summary: Retrieve a list of all lands.
+ *     tags:
+ *       - Maps - Lands
+ *     responses:
+ *       200:
+ *         description: A list of lands, with fertility and solidity information omitted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 lands:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       owner_id:
+ *                         type: string
+ *                         description: The Discord ID of the land owner.
+ *                       position:
+ *                         type: object
+ *                         properties:
+ *                           type:
+ *                             type: string
+ *                             example: Point
+ *                           coordinates:
+ *                             type: array
+ *                             items:
+ *                               type: number
+ *                             minItems: 2
+ *                             maxItems: 2
+ *                       color:
+ *                         type: string
+ */
 export const GET: RequestHandler = async () => {
 	const lands = await query('SELECT * FROM lands');
 
@@ -15,6 +60,106 @@ export const GET: RequestHandler = async () => {
 	return json({ success: true, lands });
 };
 
+/**
+ * @swagger
+ * /api/v1/maps/lands:
+ *   post:
+ *     summary: Create a new land.
+ *     tags:
+ *       - Maps - Lands
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - x
+ *               - y
+ *               - color
+ *               - account_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the new land.
+ *               x:
+ *                 type: number
+ *                 description: The X coordinate of the new land.
+ *               y:
+ *                 type: number
+ *                 description: The Y coordinate of the new land.
+ *               color:
+ *                 type: string
+ *                 description: The color of the new land (e.g., '#RRGGBB').
+ *               account_id:
+ *                 type: integer
+ *                 description: The account ID (starts from 1) from which the land creation cost will be deducted.
+ *               free:
+ *                 type: boolean
+ *                 description: Optional. If true, land creation is free (admin only).
+ *     responses:
+ *       200:
+ *         description: Land created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Land created successfully
+ *       400:
+ *         description: Bad request, missing required fields, land too close to existing land, or insufficient funds.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "Missing required fields"
+ *                     tooClose:
+ *                       value: "Land is too close to an existing land"
+ *                     insufficientFunds:
+ *                       value: "Insufficient funds"
+ *       401:
+ *         description: Unauthorized, no token found, invalid token, or not authorized for free creation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       500:
+ *         description: Failed to create land.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Failed to create land
+ */
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const token = cookies.get('token');
 

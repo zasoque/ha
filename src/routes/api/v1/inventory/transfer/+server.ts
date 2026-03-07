@@ -3,6 +3,93 @@ import { query } from '$lib/server/db';
 import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/inventory/transfer:
+ *   post:
+ *     summary: Transfer an item to another user.
+ *     tags:
+ *       - Inventory
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - to_user_id
+ *               - item_id
+ *               - quantity
+ *             properties:
+ *               to_user_id:
+ *                 type: string
+ *                 description: The Discord ID of the user to transfer the item to.
+ *               item_id:
+ *                 type: integer
+ *                 description: The ID of the item (starts from 1) to transfer.
+ *               quantity:
+ *                 type: integer
+ *                 description: The quantity of the item to transfer.
+ *     responses:
+ *       200:
+ *         description: Item transferred successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Item transferred
+ *       400:
+ *         description: Bad request, missing required fields or not enough stock.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "To user ID, item ID and quantity are required"
+ *                     notEnoughStock:
+ *                       value: "Not enough stock"
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Item not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Item not found
+ */
 export const POST: RequestHandler = async ({ cookies, request }) => {
 	const token = cookies.get('token');
 

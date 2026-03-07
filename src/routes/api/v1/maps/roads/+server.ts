@@ -4,11 +4,151 @@ import { query } from '$lib/server/db';
 import { TAINT_ITEM_ID } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/maps/roads:
+ *   get:
+ *     summary: Retrieve a list of all roads.
+ *     tags:
+ *       - Maps - Roads
+ *     responses:
+ *       200:
+ *         description: A list of roads.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 roads:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       owner_id:
+ *                         type: string
+ *                         description: The Discord ID of the road owner.
+ *                       land_a_id:
+ *                         type: integer
+ *                       land_b_id:
+ *                         type: integer
+ *                       line:
+ *                         type: object
+ *                         properties:
+ *                           type:
+ *                             type: string
+ *                             example: LineString
+ *                           coordinates:
+ *                             type: array
+ *                             items:
+ *                               type: array
+ *                               items:
+ *                                 type: number
+ *                               minItems: 2
+ *                               maxItems: 2
+ */
 export const GET: RequestHandler = async () => {
 	const roads = await query('SELECT * FROM roads');
 	return json({ success: true, roads });
 };
 
+/**
+ * @swagger
+ * /api/v1/maps/roads:
+ *   post:
+ *     summary: Create a new road between two lands.
+ *     tags:
+ *       - Maps - Roads
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - land_a_id
+ *               - land_b_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the road.
+ *               land_a_id:
+ *                 type: integer
+ *                 description: The ID of the first land (starts from 1) connected by the road.
+ *               land_b_id:
+ *                 type: integer
+ *                 description: The ID of the second land (starts from 1) connected by the road.
+ *               free:
+ *                 type: boolean
+ *                 description: Optional. If true, road construction is free (admin only).
+ *     responses:
+ *       200:
+ *         description: Road created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad request, missing required fields, lands are the same, road intersects with existing road, or insufficient taint.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: "Missing required fields"
+ *                     sameLand:
+ *                       value: "Cannot build road on the same land"
+ *                     intersects:
+ *                       value: "Road intersects with existing road"
+ *                     insufficientTaint:
+ *                       value: "Insufficient taint"
+ *       401:
+ *         description: Unauthorized, no token found, invalid token, or not authorized for free construction.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Land not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Land not found
+ */
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const token = cookies.get('token');
 

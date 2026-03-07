@@ -3,6 +3,76 @@ import { query } from '$lib/server/db';
 import { sendNotification } from '$lib/server/notification';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/accounts/{accountId}:
+ *   get:
+ *     summary: Retrieve a specific account by ID for the authenticated user.
+ *     tags:
+ *       - Accounts
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: accountId
+ *         required: true
+ *         description: The ID of the account to retrieve.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Details of the specified account.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 account:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: The unique identifier of the account.
+ *                     user_id:
+ *                       type: string
+ *                       description: The unique identifier of the user (Discord ID) who owns the account.
+ *                     balance:
+ *                       type: number
+ *                       format: float
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     noToken:
+ *                       value: "No token found"
+ *                     invalidToken:
+ *                       value: "Invalid token"
+ *       404:
+ *         description: Account not found or does not belong to the authenticated user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Account not found or does not belong to the user
+ */
 export const GET: RequestHandler = async ({ cookies, params }) => {
 	const token = cookies.get('token');
 	const accountId = params.accountId;
@@ -36,6 +106,67 @@ export const GET: RequestHandler = async ({ cookies, params }) => {
 	return json({ success: true, account: account[0] });
 };
 
+/**
+ * @swagger
+ * /api/v1/accounts/{accountId}:
+ *   delete:
+ *     summary: Delete a specific account by ID for the authenticated user.
+ *     tags:
+ *       - Accounts
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: accountId
+ *         required: true
+ *         description: The ID of the account to delete.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Account deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Account deleted successfully
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     noToken:
+ *                       value: "No token found"
+ *                     invalidToken:
+ *                       value: "Invalid token"
+ *       404:
+ *         description: Account not found or does not belong to the authenticated user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Account not found or does not belong to the user
+ */
 export const DELETE: RequestHandler = async ({ cookies, params }) => {
 	const token = cookies.get('token');
 	const accountId = params.accountId;

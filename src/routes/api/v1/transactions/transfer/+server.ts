@@ -6,6 +6,118 @@ import { GOVERNMENT_ACCOUNT_ID } from '$lib/util/const';
 import { formatCurrency } from '$lib/util/economy';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
+/**
+ * @swagger
+ * /api/v1/transactions/transfer:
+ *   post:
+ *     summary: Transfer money between accounts.
+ *     tags:
+ *       - Transactions
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - fromAccountId
+ *               - toAccountId
+ *               - amount
+ *               - path
+ *             properties:
+ *               fromAccountId:
+ *                 type: integer
+ *                 description: The ID of the account (starts from 1) to transfer money from.
+ *               toAccountId:
+ *                 type: integer
+ *                 description: The ID of the account (starts from 1) to transfer money to.
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *                 description: The amount of money to transfer. Must be greater than zero.
+ *               description:
+ *                 type: string
+ *                 nullable: true
+ *                 description: An optional description for the transaction.
+ *               path:
+ *                 type: string
+ *                 description: The path (land IDs separated by underscores) between the from account owner's residence and the to account owner's residence, used for fee calculation.
+ *     responses:
+ *       200:
+ *         description: Transaction created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Transaction created successfully
+ *       400:
+ *         description: Bad request, missing required parameters, invalid amount, invalid path, or insufficient funds.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingParams:
+ *                       value: "Missing required parameters"
+ *                     invalidAmount:
+ *                       value: "Amount must be greater than zero"
+ *                     invalidPathStartOrEnd:
+ *                       value: "Invalid path: start or end land not found"
+ *                     invalidPathFromAccountResidence:
+ *                       value: "Invalid path: from account owner residence is not located on the start land"
+ *                     invalidPathToAccountResidence:
+ *                       value: "Invalid path: to account owner residence is not located on the end land"
+ *                     insufficientFunds:
+ *                       value: "Insufficient funds in the from account"
+ *       401:
+ *         description: Unauthorized, no token found or invalid token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: No token found
+ *       404:
+ *         description: From account not found, to account not found, or account owner not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     fromAccountNotFound:
+ *                       value: "From account not found or does not belong to the user"
+ *                     toAccountNotFound:
+ *                       value: "To account not found"
+ *                     accountOwnerNotFound:
+ *                       value: "Invalid path: from or to account owner not found"
+ *                     accountOwnerResidenceNotFound:
+ *                       value: "Invalid path: from or to account owner residence not found"
+ */
 export const POST: RequestHandler = async ({ cookies, request }) => {
 	const token = cookies.get('token');
 
