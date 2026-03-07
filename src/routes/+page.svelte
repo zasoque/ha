@@ -12,7 +12,7 @@
 			너의 이름은 {username}(이)야.
 		</div>
 	{/if}
-	{#if land && residence}
+	{#if land?.name && residence?.id}
 		<div>
 			그리고 너는 {land.name}
 			{residence.name}(#{residence.id})에 살고 있구나.

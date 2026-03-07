@@ -7,6 +7,7 @@ export const load: Load = async ({ fetch, cookies }) => {
 	let username;
 	let residence;
 	let land;
+
 	if (token) {
 		const me = await getMe(token);
 		username = await getUserName(me.id);
