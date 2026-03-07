@@ -28,7 +28,16 @@
 		const path = document.getElementById('path').value;
 
 		if (isNaN(toAccountId) || isNaN(amount)) {
-			alert('모든 필드를 올바르게 입력해주세요.');
+			alert('모든 필드를 올바르게 입력해줘.');
+			return;
+		}
+
+		const owner = await fetch(`/api/v1/accounts/${toAccountId}/owner`)
+			.then((response) => response.json())
+			.then((data) => data.owner)
+			.catch(() => null);
+
+		if (!confirm(`${owner.name}에게 ${formatCurrency(amount)}을 송금할게`)) {
 			return;
 		}
 
