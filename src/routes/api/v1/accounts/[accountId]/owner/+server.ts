@@ -6,6 +6,8 @@ import { json, type RequestHandler } from '@sveltejs/kit';
  * /api/v1/accounts/{accountId}/owner:
  *   get:
  *     summary: Get the owner of an account
+ *     tags:
+ *       - Accounts
  *     parameters:
  *       - in: path
  *         name: accountId
