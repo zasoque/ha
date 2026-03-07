@@ -91,10 +91,17 @@ export const GET: RequestHandler = async ({ cookies, params }) => {
 		});
 	}
 
-	const account = await query(
-		'SELECT a.* FROM accounts a JOIN corporation_members cm ON a.user_id = cm.corporation_id WHERE a.id = ? AND (cm.user_id = ? OR a.user_id = ?)',
-		[accountId, me.id, me.id]
+	const corporationAccount = await query(
+		'SELECT a.* FROM accounts a JOIN corporation_members cm ON a.user_id = cm.corporation_id WHERE a.id = ? AND cm.user_id = ?',
+		[accountId, me.id]
 	);
+
+	const individualAccount = await query('SELECT * FROM accounts WHERE id = ? AND user_id = ?', [
+		accountId,
+		me.id
+	]);
+
+	const account = corporationAccount.length > 0 ? corporationAccount : individualAccount;
 
 	if (account.length === 0) {
 		return json(
