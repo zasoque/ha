@@ -10,9 +10,14 @@ export const load: Load = async ({ params, fetch }) => {
 		res.json()
 	);
 
+	const { accounts } = await fetch(`/api/v1/accounts/corporations/${corporationId}`).then((res) =>
+		res.json()
+	);
+
 	return {
 		members: members.members,
 		corporation: corporation.person,
-		inventory
+		inventory,
+		accounts
 	};
 };

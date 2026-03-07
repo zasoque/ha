@@ -3,11 +3,13 @@
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import Stock from '$lib/components/Stock.svelte';
+	import { formatCurrency } from '$lib/util/economy';
 
 	let { data } = $props();
 	let corporation = $derived(() => data.corporation);
 	let members = $derived(() => data.members);
 	let inventory = $derived(() => data.inventory);
+	let accounts = $derived(() => data.accounts);
 
 	let addMemberPrompt: PromptFloat;
 	let addMemberUserId = $state('');
@@ -56,6 +58,12 @@
 			<Stock {stock} />
 		{/each}
 	</div>
+	<div>계좌</div>
+	<ul>
+		{#each accounts() as account}
+			<li><a href="/accounts/{account.id}">{account.id} - {formatCurrency(account.balance)}</a></li>
+		{/each}
+	</ul>
 </Container>
 <PromptFloat bind:this={addMemberPrompt}>
 	<div>법인 멤버 추가</div>
