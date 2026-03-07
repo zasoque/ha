@@ -7,9 +7,7 @@
 <div class="stock">
 	<div class="name">
 		{stock.item.name} <span class="item-id">#{stock.item_id}</span>
-		{#if stock.quantity}
-			&times; <span class="quantity">{stock.quantity}</span>
-		{/if}
+		&times; <span class="quantity">{stock.quantity}</span>
 	</div>
 	<div class="description">({stock.item.maker_name}) {stock.item.description}</div>
 	{#if showaction && ongive}
