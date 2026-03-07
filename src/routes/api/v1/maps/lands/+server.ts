@@ -173,7 +173,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
 
-	const owner_id = me.id;
+	let owner_id = me.id;
 
 	const { name, x, y, color, account_id, free } = await request.json();
 
@@ -201,7 +201,18 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		const account = await getAccount(account_id);
 
 		if (account.user_id !== owner_id) {
-			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+			// assert that the account owner is corporation
+
+			const corporationMemberRelation = await query(
+				'SELECT cm.* FROM corporation_members cm JOIN accounts a ON cm.corporation_id = a.user_id WHERE a.id = ? AND cm.user_id = ?',
+				[account_id, owner_id]
+			);
+
+			if (corporationMemberRelation.length === 0) {
+				return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+			}
+
+			owner_id = corporationMemberRelation[0].corporation_id;
 		}
 
 		if (account.balance < 2.0) {

@@ -133,6 +133,34 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
 	}
 
+	let buyer_id = me.id;
+	const isValidAccount = await query(`SELECT * FROM accounts WHERE id = ? AND user_id = ?`, [
+		account_id,
+		buyer_id
+	]);
+
+	if (isValidAccount.length === 0) {
+		// assert that the buyer is a corporation
+		const corporationMemberRelation = await query(
+			'SELECT cm.* FROM corporation_members cm JOIN accounts a ON cm.corporation_id = a.user_id WHERE a.id = ? AND cm.user_id = ?',
+			[account_id, buyer_id]
+		);
+
+		if (corporationMemberRelation.length === 0) {
+			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+		}
+
+		const corporation = await query('SELECT * FROM people WHERE id = ?', [
+			corporationMemberRelation[0].corporation_id
+		]);
+
+		buyer_id = corporation[0].id;
+	} else {
+		if (buyer_id !== me.id) {
+			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+		}
+	}
+
 	const [product] = await query(`SELECT * FROM products WHERE id = ?`, [productId]);
 
 	if (!product) {
@@ -147,7 +175,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		return json({ success: false, message: 'Invalid path' }, { status: 400 });
 	}
 
-	const [buyer] = await query(`SELECT * FROM people WHERE id = ?`, [me.id]);
+	const [buyer] = await query(`SELECT * FROM people WHERE id = ?`, [buyer_id]);
 	const [buyerResidence] = await query(`SELECT * FROM buildings WHERE id = ?`, [buyer.residence]);
 	const [buyerResidenceLand] = await query(`SELECT * FROM lands WHERE id = ?`, [
 		buyerResidence.land_id
@@ -189,7 +217,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 
 	const [account] = await query(`SELECT * FROM accounts WHERE id = ? AND user_id = ?`, [
 		account_id,
-		me.id
+		buyer_id
 	]);
 
 	if (account.balance < totalPrice) {
@@ -237,7 +265,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	const [buyerStock] = await query(`SELECT * FROM inventory WHERE user_id = ? AND item_id = ?`, [
-		me.id,
+		buyer_id,
 		product.item_id
 	]);
 
@@ -248,7 +276,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		]);
 	} else {
 		await query(`INSERT INTO inventory (user_id, item_id, quantity) VALUES (?, ?, ?)`, [
-			me.id,
+			buyer_id,
 			product.item_id,
 			count
 		]);

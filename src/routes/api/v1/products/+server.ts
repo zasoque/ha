@@ -229,12 +229,37 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, message: 'Invalid market' }, { status: 400 });
 	}
 
+	let sellerId = me.id;
+
+	const isValidAccount = await query(`SELECT * FROM accounts WHERE id = ? AND user_id = ?`, [
+		account_id,
+		sellerId
+	]);
+
+	if (isValidAccount.length === 0) {
+		// assert that the seller is a corporation
+		const corporationMemberRelation = await query(
+			'SELECT cm.* FROM corporation_members cm JOIN accounts a ON cm.corporation_id = a.user_id WHERE a.id = ? AND cm.user_id = ?',
+			[account_id, sellerId]
+		);
+
+		if (corporationMemberRelation.length === 0) {
+			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+		}
+
+		const corporation = await query('SELECT * FROM people WHERE id = ?', [
+			corporationMemberRelation[0].corporation_id
+		]);
+
+		sellerId = corporation[0].id;
+	}
+
 	// path 검증
 	const pathIds = path.split('_').map((id: string) => {
 		return { id: parseInt(id) };
 	});
 
-	const [mePerson] = await query('SELECT * FROM people WHERE id = ?', [me.id]);
+	const [mePerson] = await query('SELECT * FROM people WHERE id = ?', [sellerId]);
 	if (!mePerson) {
 		return json({ success: false, message: 'Person not found' }, { status: 404 });
 	}
@@ -280,19 +305,19 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	const [stock] = await query('SELECT * FROM inventory WHERE item_id = ? AND user_id = ?', [
 		item_id,
-		me.id
+		sellerId
 	]);
 	if (!stock || stock.quantity < count) {
 		return json({ success: false, message: 'Not enough stock' }, { status: 400 });
 	}
 
 	if (stock.count === count) {
-		await query('DELETE FROM inventory WHERE item_id = ? AND user_id = ?', [item_id, me.id]);
+		await query('DELETE FROM inventory WHERE item_id = ? AND user_id = ?', [item_id, sellerId]);
 	} else {
 		await query('UPDATE inventory SET quantity = quantity - ? WHERE item_id = ? AND user_id = ?', [
 			count,
 			item_id,
-			me.id
+			sellerId
 		]);
 	}
 
@@ -301,7 +326,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, message: 'Account not found' }, { status: 404 });
 	}
 
-	if (account.user_id !== me.id) {
+	if (account.user_id !== sellerId) {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -323,7 +348,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	]);
 	await query(
 		'INSERT INTO products (item_id, quantity, price, description, owner_id, market_id, account_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-		[item_id, count, price, description, me.id, market_id, account_id]
+		[item_id, count, price, description, sellerId, market_id, account_id]
 	);
 
 	return json({ success: true, message: 'Product created successfully' });

@@ -162,8 +162,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
 
-	const owner_id = me.id;
-	const { name, land_a_id, land_b_id, free } = await request.json();
+	let { owner_id, name, land_a_id, land_b_id, free } = await request.json();
 
 	if (!name || !owner_id || !land_a_id || !land_b_id) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
@@ -202,6 +201,20 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			landA[0].position.coordinates[1] - landB[0].position.coordinates[1]
 		);
 		const taintCost = Math.ceil(distance);
+
+		if (me.id !== owner_id) {
+			// assert that the user is corporation
+			const corporationMemberRelation = await query(
+				'SELECT * FROM corporation_members WHERE user_id = ? AND corporation_id = ?',
+				[me.id, owner_id]
+			);
+
+			if (corporationMemberRelation.length === 0) {
+				return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+			}
+		}
+
+		console.log(owner_id);
 
 		const stock = await query('SELECT * FROM inventory WHERE user_id = ? AND item_id = ?', [
 			owner_id,

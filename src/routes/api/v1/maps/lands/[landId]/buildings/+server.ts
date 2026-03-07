@@ -236,7 +236,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	}
 
 	const { landId } = params;
-	const owner_id = me.id;
+	let owner_id = me.id;
 	const { name, type, account_id, free } = await request.json();
 	const land_id = landId;
 
@@ -246,8 +246,18 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 
 	const account = await getAccount(account_id);
 
-	if (!free && account.user_id !== me.id) {
-		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+	if (!free && account.user_id !== owner_id) {
+		// assert that the owner is a corporation
+		const corporationMemberRelation = await query(
+			'SELECT cm.* FROM corporation_members cm JOIN accounts a ON cm.corporation_id = a.user_id WHERE cm.user_id = ? AND a.id = ?',
+			[owner_id, account_id]
+		);
+
+		if (corporationMemberRelation.length === 0) {
+			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
+		}
+
+		owner_id = corporationMemberRelation[0].corporation_id;
 	}
 
 	const alreadyBuildings = await query('SELECT * FROM buildings WHERE land_id = ?', [landId]);

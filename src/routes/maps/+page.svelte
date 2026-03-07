@@ -58,6 +58,7 @@
 	}
 
 	let addRoadPrompt;
+	let addRoadOwnerId = $state(data.me.id);
 	let addRoadName = $state('');
 	let addRoadLandAId = $state(0);
 	let addRoadLandBId = $state(0);
@@ -69,6 +70,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
+				owner_id: addRoadOwnerId,
 				name: addRoadName,
 				land_a_id: addRoadLandAId,
 				land_b_id: addRoadLandBId
@@ -119,6 +121,7 @@
 	}
 
 	let addRailPrompt;
+	let addRailOwnerId = $state(data.me.id);
 	let addRailName = $state('');
 	let addRailLandAId = $state(0);
 	let addRailLandBId = $state(0);
@@ -130,6 +133,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
+				owner_id: addRailOwnerId,
 				name: addRailName,
 				land_a_id: addRailLandAId,
 				land_b_id: addRailLandBId
@@ -460,6 +464,8 @@
 <PromptFloat bind:this={addRoadPrompt}>
 	<div>도로 추가</div>
 	<div>도로를 만들기 위해서는 단위길이당 테인트 1개가 필요해.</div>
+	<div>건축주</div>
+	<input type="text" bind:value={addRoadOwnerId} />
 	<div>이름</div>
 	<input type="text" bind:value={addRoadName} />
 	<div>토지 A ID</div>
@@ -471,13 +477,15 @@
 <PromptFloat bind:this={addRailPrompt}>
 	<div>철도 추가</div>
 	<div>철도를 만들기 위해서는 단위길이당 테인트 20개가 필요해.</div>
+	<div>건축주</div>
+	<input type="text" bind:value={addRailOwnerId} />
 	<div>이름</div>
-	<input type="text" bind:value={addRoadName} />
+	<input type="text" bind:value={addRailName} />
 	<div>토지 A ID</div>
-	<input type="number" bind:value={addRoadLandAId} placeholder="토지 A ID" />
+	<input type="number" bind:value={addRailLandAId} placeholder="토지 A ID" />
 	<div>토지 B ID</div>
-	<input type="number" bind:value={addRoadLandBId} placeholder="토지 B ID" />
-	<button onclick={addRoad}>추가</button>
+	<input type="number" bind:value={addRailLandBId} placeholder="토지 B ID" />
+	<button onclick={addRail}>추가</button>
 </PromptFloat>
 <PromptFloat bind:this={harvestPrompt}>
 	<div>수확</div>
