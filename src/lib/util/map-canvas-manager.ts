@@ -120,10 +120,6 @@ function renderRails() {
 		let angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
 		if (angle >= Math.PI / 2) angle -= Math.PI;
 		if (angle <= -Math.PI / 2) angle += Math.PI;
-		const mapDistance = Math.hypot(
-			landBPosition[0] - landAPosition[0],
-			landBPosition[1] - landAPosition[1]
-		);
 		ctx.save();
 		if (distance >= 75 * window.devicePixelRatio) {
 			ctx.translate(midX, midY);
@@ -166,10 +162,6 @@ function renderRoads() {
 		let angle = Math.atan2(screenPosB.y - screenPosA.y, screenPosB.x - screenPosA.x);
 		if (angle >= Math.PI / 2) angle -= Math.PI;
 		if (angle <= -Math.PI / 2) angle += Math.PI;
-		const mapDistance = Math.hypot(
-			landBPosition[0] - landAPosition[0],
-			landBPosition[1] - landAPosition[1]
-		);
 		ctx.save();
 		if (distance >= 75 * window.devicePixelRatio) {
 			ctx.translate(midX, midY);
@@ -553,6 +545,72 @@ function click(event: MouseEvent) {
 	if ((road || rail || path.length === 0) && path.indexOf(land) === -1) {
 		path.push(land);
 		render();
+	} else {
+		const lastLand = path[path.length - 1];
+		const clickedLand = land;
+		const distanceFromLastToClicked = Math.hypot(
+			clickedLand.position.coordinates[0] - lastLand.position.coordinates[0],
+			clickedLand.position.coordinates[1] - lastLand.position.coordinates[1]
+		);
+		const landsBetween = lands.filter((l) => {
+			const distanceFromLast = Math.hypot(
+				l.position.coordinates[0] - lastLand.position.coordinates[0],
+				l.position.coordinates[1] - lastLand.position.coordinates[1]
+			);
+			return distanceFromLast < distanceFromLastToClicked * 2;
+		});
+		const roadsBetween = roads.filter((r) => {
+			return (
+				landsBetween.some((l) => l.id === r.land_a_id) &&
+				landsBetween.some((l) => l.id === r.land_b_id)
+			);
+		});
+		const railsBetween = rails.filter((r) => {
+			return (
+				landsBetween.some((l) => l.id === r.land_a_id) &&
+				landsBetween.some((l) => l.id === r.land_b_id)
+			);
+		});
+
+		// dijkstra's algorithm to find the shortest path between lastLand and clickedLand using roads and rails as edges
+		const graph: Record<number, { land: any; edges: { landId: number; type: 'road' | 'rail' }[] }> =
+			{};
+		lands.forEach((l) => {
+			graph[l.id] = { land: l, edges: [] };
+		});
+		roadsBetween.forEach((r) => {
+			graph[r.land_a_id].edges.push({ landId: r.land_b_id, type: 'road' });
+			graph[r.land_b_id].edges.push({ landId: r.land_a_id, type: 'road' });
+		});
+		railsBetween.forEach((r) => {
+			graph[r.land_a_id].edges.push({ landId: r.land_b_id, type: 'rail' });
+			graph[r.land_b_id].edges.push({ landId: r.land_a_id, type: 'rail' });
+		});
+
+		const queue = [{ landId: lastLand.id, path: [lastLand], cost: 0 }];
+		const visited = new Set<number>();
+
+		while (queue.length > 0) {
+			queue.sort((a, b) => a.path.length - b.path.length);
+			const current = queue.shift()!;
+			if (current.landId === clickedLand.id) {
+				path.push(...current.path.slice(1));
+				return render();
+			}
+			if (visited.has(current.landId)) continue;
+			visited.add(current.landId);
+
+			graph[current.landId].edges.forEach((edge) => {
+				if (!visited.has(edge.landId)) {
+					const newCost = current.cost + (edge.type === 'road' ? 1 : 0.5);
+					queue.push({
+						landId: edge.landId,
+						path: [...current.path, graph[edge.landId].land],
+						cost: newCost
+					});
+				}
+			});
+		}
 	}
 }
 
