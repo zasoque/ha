@@ -38,7 +38,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
  *                 success:
  *                   type: boolean
  *                   description: Indicates if the search was successful.
- *                 accounts:
+ *                 people:
  *                   type: array
  *                   items:
  *                     type: object
@@ -56,13 +56,13 @@ export const GET: RequestHandler = async ({ url }) => {
 	const limit = parseInt(url.searchParams.get('limit') || '50');
 
 	if (!q) {
-		return json({ success: true, accounts: [] });
+		return json({ success: true, people: [] });
 	}
 
-	const accounts = await query(
+	const people = await query(
 		'SELECT id, name FROM people WHERE id = ? OR name LIKE ? LIMIT ? OFFSET ?',
 		[q, `%${q}%`, limit, (page - 1) * limit]
 	);
 
-	return json({ success: true, accounts });
+	return json({ success: true, people });
 };

@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { search, value, input, ...rest } = $props();
+	let { search, value = $bindable(), input, ...rest } = $props();
 
 	if (!search) {
 		search = async (query) => {
@@ -12,7 +12,6 @@
 	let candidates = $state([]);
 	async function oninput(e: InputEvent) {
 		const target = e.target as HTMLInputElement;
-		const value = target.value;
 
 		let options = [];
 		(await search(value)).forEach((option: string) => {
@@ -56,7 +55,6 @@
 			<div
 				onclick={() => {
 					input.value = candidate.value;
-					console.log(candidate.value);
 					candidates = [];
 				}}
 				class:selected={selection === index}

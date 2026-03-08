@@ -6,6 +6,7 @@
 	import { init } from '$lib/util/map-canvas-manager';
 	import { formatCurrency } from '$lib/util/economy';
 	import AccountInput from '$lib/components/aci/AccountInput.svelte';
+	import PersonInput from '$lib/components/aci/PersonInput.svelte';
 
 	let { data } = $props();
 	let { lands, buildings, roads, rails, me } = data;
@@ -536,7 +537,7 @@
 	<div>도로 추가</div>
 	<div>도로를 만들기 위해서는 단위길이당 테인트 1개가 필요해.</div>
 	<div>건축주</div>
-	<input type="text" bind:value={addRoadOwnerId} />
+	<PersonInput bind:value={addRoadOwnerId} />
 	<div>이름</div>
 	<input type="text" bind:value={addRoadName} />
 	<div>토지 A ID</div>
@@ -549,7 +550,7 @@
 	<div>철도 추가</div>
 	<div>철도를 만들기 위해서는 단위길이당 테인트 20개가 필요해.</div>
 	<div>건축주</div>
-	<input type="text" bind:value={addRailOwnerId} />
+	<PersonInput bind:value={addRailOwnerId} />
 	<div>이름</div>
 	<input type="text" bind:value={addRailName} />
 	<div>토지 A ID</div>

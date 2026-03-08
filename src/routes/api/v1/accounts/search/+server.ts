@@ -60,9 +60,13 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 
 	const accounts = await query(
-		'SELECT a.id, a.user_id FROM accounts a JOIN people p ON a.user_id = p.id WHERE a.id = ? OR p.name LIKE ? LIMIT ? OFFSET ?',
+		'SELECT a.id, a.user_id, p.name FROM accounts a JOIN people p ON a.user_id = p.id WHERE a.id = ? OR p.name LIKE ? LIMIT ? OFFSET ?',
 		[q, `%${q}%`, limit, (page - 1) * limit]
 	);
+
+	for (const account of accounts) {
+		account.user = { id: account.user_id, name: account.name };
+	}
 
 	return json({ success: true, accounts });
 };

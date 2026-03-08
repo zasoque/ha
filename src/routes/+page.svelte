@@ -1,5 +1,7 @@
 <script lang="ts">
 	import Container from '$lib/components/Container.svelte';
+	import AccountInput from '$lib/components/aci/AccountInput.svelte';
+	import PersonInput from '$lib/components/aci/PersonInput.svelte';
 
 	const { data } = $props();
 	const { username, residence, land } = data;
@@ -22,4 +24,6 @@
 			{residence.name}(#{residence.id})에 살고 있구나.
 		</div>
 	{/if}
+	<AccountInput></AccountInput>
+	<PersonInput></PersonInput>
 </Container>

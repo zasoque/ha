@@ -3,6 +3,7 @@
 	import Title from '$lib/components/Title.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
+	import PersonInput from '$lib/components/aci/PersonInput.svelte';
 
 	let { data } = $props();
 	let corporationmembers = $derived(() => data.corporationmembers);
@@ -14,6 +15,7 @@
 	let addMemberUserId = $state('');
 
 	async function addMember() {
+		alert(`법인 ID: ${addMemberCorporationId}, 회원 ID: ${addMemberUserId}`);
 		await fetch(`/api/v1/admin/corporations/${addMemberCorporationId}/members`, {
 			method: 'POST',
 			headers: {
@@ -93,9 +95,9 @@
 	<PromptFloat bind:this={addMemberPrompt}>
 		<div>법인에 사람 추가</div>
 		<div>법인 본명</div>
-		<input type="text" bind:value={addMemberCorporationId} />
+		<PersonInput bind:value={addMemberCorporationId} />
 		<div>회원 본명</div>
-		<input type="text" bind:value={addMemberUserId} />
+		<PersonInput bind:value={addMemberUserId} />
 		<button onclick={addMember}>추가</button>
 	</PromptFloat>
 </Container>

@@ -2,6 +2,7 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
+	import PersonInput from '$lib/components/aci/PersonInput.svelte';
 
 	const { data } = $props();
 	const users = $derived(() => data.users);
@@ -49,7 +50,7 @@
 </Container>
 <PromptFloat bind:this={addAdminPrompt}>
 	<div>관리자 ID</div>
-	<input id="admin-id" type="text" bind:value={addAdminId} />
+	<PersonInput bind:value={addAdminId} />
 	<button class="button" onclick={addAdmin}>추가</button>
 </PromptFloat>
 
