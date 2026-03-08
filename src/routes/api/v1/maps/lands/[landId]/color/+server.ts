@@ -6,83 +6,83 @@ import { json, type RequestHandler } from '@sveltejs/kit';
  * @swagger
  * /api/v1/maps/lands/{landId]/color:
  *  put:
- *  summary: Update the color of a Land
- *  description: Update the color of a Land. Only the owner of the Land can update its color.
- *  tags:
- *    - Lands
- *  parameters:
- *    - in: path
- *      name: landId
- *      required: true
- *      schema:
- *        type: integer
- *      description: The ID of the Land to update
- *  requestBody:
- *    required: true
- *    content:
- *      application/json:
+ *    summary: Update the color of a Land
+ *    description: Update the color of a Land. Only the owner of the Land can update its color.
+ *    tags:
+ *      - Lands
+ *    parameters:
+ *      - in: path
+ *        name: landId
+ *        required: true
  *        schema:
- *          type: object
- *          properties:
- *            color:
- *              type: string
- *              description: The new color for the Land (hex code)
- *  responses:
- *    200:
- *      description: Land color updated successfully
+ *          type: integer
+ *        description: The ID of the Land to update
+ *    requestBody:
+ *      required: true
  *      content:
  *        application/json:
  *          schema:
  *            type: object
  *            properties:
- *              success:
- *                type: boolean
- *              message:
+ *              color:
  *                type: string
- *    400:
- *      description: Missing landId or color
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              success:
- *                type: boolean
- *              message:
- *                type: string
- *    401:
- *      description: Unauthorized
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              success:
- *                type: boolean
- *              message:
- *                type: string
- *    403:
- *      description: Forbidden
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              success:
- *                type: boolean
- *              message:
- *                type: string
- *    404:
- *      description: Land not found
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              success:
- *                type: boolean
- *              message:
- *                type: string
+ *                description: The new color for the Land (hex code)
+ *    responses:
+ *      200:
+ *        description: Land color updated successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
+ *      400:
+ *        description: Missing landId or color
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
+ *      401:
+ *        description: Unauthorized
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
+ *      403:
+ *        description: Forbidden
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
+ *      404:
+ *        description: Land not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
  */
 export const PUT: RequestHandler = async ({ params, cookies, request }) => {
 	const { landId } = params;

@@ -6,61 +6,61 @@ import { json, type RequestHandler } from '@sveltejs/kit';
  * @swagger
  * /api/v1/maps/lands/{landId]/name:
  *  put:
- *  summary: Update the name of a Land
- *  description: Update the name of a Land. Only the owner of the Land can update its name.
- *  tags:
- *    - Lands
- *  parameters:
- *    - in: path
- *      name: landId
- *      required: true
- *      schema:
- *        type: integer
- *      description: The ID of the Land to update
- *  requestBody:
- *    required: true
- *    content:
- *      application/json:
+ *    summary: Update the name of a Land
+ *    description: Update the name of a Land. Only the owner of the Land can update its name.
+ *    tags:
+ *      - Lands
+ *    parameters:
+ *      - in: path
+ *        name: landId
+ *        required: true
  *        schema:
- *          type: object
- *          properties:
- *            name:
- *              type: string
- *              description: The new name for the Land
- *  responses:
- *    200:
- *      description: Land name updated successfully
+ *          type: integer
+ *        description: The ID of the Land to update
+ *    requestBody:
+ *      required: true
  *      content:
  *        application/json:
  *          schema:
  *            type: object
  *            properties:
- *              success:
- *                type: boolean
- *              message:
+ *              name:
  *                type: string
- *    400:
- *      description: Missing landId or name
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              success:
- *                type: boolean
- *              message:
- *                type: string
- *    401:
- *      description: Unauthorized
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              success:
- *                type: boolean
- *              message:
- *                type: string
+ *                description: The new name for the Land
+ *    responses:
+ *      200:
+ *        description: Land name updated successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
+ *      400:
+ *        description: Missing landId or name
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
+ *      401:
+ *        description: Unauthorized
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                success:
+ *                  type: boolean
+ *                message:
+ *                  type: string
  */
 export const PUT: RequestHandler = async ({ params, cookies, request }) => {
 	const { landId } = params;
