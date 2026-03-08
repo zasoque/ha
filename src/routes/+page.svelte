@@ -9,7 +9,11 @@
 	<div>하은행에 온 것을 환영해.</div>
 	{#if username}
 		<div>
-			너의 이름은 {username}(이)야.
+			{#if username === 'Unknown'}
+				너의 정보는 아직 하은행에 등록되지 않았어.
+			{:else}
+				너의 이름은 {username}(이)야.
+			{/if}
 		</div>
 	{/if}
 	{#if land?.name && residence?.id}
