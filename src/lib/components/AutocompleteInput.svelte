@@ -28,6 +28,7 @@
 			selection = (selection - 1 + candidates.length) % candidates.length;
 		} else if (e.key === 'Enter' && candidates[selection]) {
 			input.value = candidates[selection].value;
+			value = candidates[selection].value;
 			candidates = [];
 		}
 

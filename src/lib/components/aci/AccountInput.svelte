@@ -4,8 +4,6 @@
 	let { value = $bindable(), ...rest } = $props();
 
 	async function search(query: string) {
-		console.log(value);
-
 		const { accounts } = await fetch(`/api/v1/accounts/search?q=${encodeURIComponent(query)}`).then(
 			(res) => res.json()
 		);
