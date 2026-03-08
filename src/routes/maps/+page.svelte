@@ -17,6 +17,7 @@
 	let landPrompt;
 	let landPromptLand;
 	let landPromptChangeColor = $state('#000000');
+	let landPromptChangeName = $state('');
 
 	function changeColor() {
 		fetch(`/api/v1/maps/lands/${landPromptLand.id}/color`, {
@@ -38,7 +39,31 @@
 				}
 			})
 			.catch((err) => {
-				console.error('색상 변경 실패:', err);
+				alert('색상 변경 실패:', err);
+			});
+	}
+
+	function changeName() {
+		fetch(`/api/v1/maps/lands/${landPromptLand.id}/name`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: landPromptChangeName,
+				account_id: me.id
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('이름 변경에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				alert('이름 변경 실패:', err);
 			});
 	}
 
@@ -312,6 +337,7 @@
 			(land) => {
 				landPromptLand = land;
 				landPromptChangeColor = `#${land.color}`;
+				landPromptChangeName = land.name;
 				landPrompt.open();
 			},
 			(road) => {
@@ -372,7 +398,16 @@
 	<div>토지 정보</div>
 	<div class="info-row">
 		<div class="info-key">이름</div>
-		<div class="info-value">{landPromptLand.name}</div>
+		<div class="info-value">
+			<input
+				bind:value={landPromptChangeName}
+				class="input-text"
+				disabled={landPromptLand.owner_id !== me.id}
+			/>
+			{#if landPromptLand.owner_id === me.id}
+				<button onclick={changeName}>이름 변경</button>
+			{/if}
+		</div>
 	</div>
 	<div class="info-row">
 		<div class="info-key">ID</div>
@@ -592,5 +627,23 @@
 		width: 20px;
 		height: 20px;
 		margin-bottom: 0;
+	}
+
+	.input-text {
+		padding: 0;
+		border: none;
+		margin-bottom: 0;
+		border-radius: 0;
+		border-bottom: 1px solid transparent;
+		transition: border 0.3s;
+	}
+
+	.input-text:hover {
+		border-bottom: 1px solid #aaa;
+	}
+
+	.input-text:focus {
+		outline: none;
+		border-bottom: 2px solid #007bff;
 	}
 </style>

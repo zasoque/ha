@@ -66,6 +66,7 @@
 			margin-bottom: 1rem;
 			box-sizing: border-box;
 			background-color: white;
+			font-family: inherit;
 		}
 
 		input[type='color'] {
