@@ -55,7 +55,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Land not found in path: [land_id]
+ *                   example: Land not found in path [land]
  */
 export const GET: RequestHandler = async ({ params }) => {
 	const pathStr = params.path || '';
