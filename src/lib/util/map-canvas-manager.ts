@@ -508,11 +508,21 @@ function openPopup(cursorPosition: { x: number; y: number }): boolean {
 	return false;
 }
 
-function doubleClick(event: MouseEvent) {
+async function copyToClipboard(text: string) {
+	try {
+		await navigator.clipboard.writeText(text);
+	} catch (err) {}
+}
+
+async function doubleClick(event: MouseEvent) {
 	const currentMousePos = getMousePosition(event);
 	openPopup(currentMousePos);
 
-	path.length = 0;
+	if (path.length > 0) {
+		const content = path.map((l) => `${l.id}`).join('_');
+		await copyToClipboard(content);
+		path.length = 0;
+	}
 	render();
 }
 
