@@ -16,6 +16,31 @@
 
 	let landPrompt;
 	let landPromptLand;
+	let landPromptChangeColor = $state('#000000');
+
+	function changeColor() {
+		fetch(`/api/v1/maps/lands/${landPromptLand.id}/color`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				color: landPromptChangeColor.replace('#', ''),
+				account_id: me.id
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('색상 변경에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('색상 변경 실패:', err);
+			});
+	}
 
 	let roadPrompt;
 	let roadPromptRoad;
@@ -286,6 +311,7 @@
 			rails,
 			(land) => {
 				landPromptLand = land;
+				landPromptChangeColor = `#${land.color}`;
 				landPrompt.open();
 			},
 			(road) => {
@@ -361,8 +387,16 @@
 	<div class="info-row">
 		<div class="info-key">색상</div>
 		<div class="info-value">
-			<span class="color-preview" style="background-color: #{landPromptLand.color};"></span>
 			#{landPromptLand.color.toUpperCase()}
+			<input
+				type="color"
+				bind:value={landPromptChangeColor}
+				class="color-preview"
+				disabled={landPromptLand.owner_id !== me.id}
+			/>
+			{#if landPromptLand.owner_id === me.id}
+				<button onclick={changeColor}>색상 변경</button>
+			{/if}
 		</div>
 	</div>
 	<div class="info-row">
@@ -375,7 +409,7 @@
 		<div class="info-key">건물</div>
 		<div class="info-value">
 			{#if landPromptLand.buildings.length === 0}
-				(건물이 없어.)
+				(건물이 없어)
 			{:else}
 				{#each landPromptLand.buildings as building}
 					<div>{building.name} (ID: {building.id}, 종류: {building.type})</div>
@@ -552,12 +586,11 @@
 	}
 
 	.color-preview {
+		border: none;
+		padding: 0;
 		display: inline-block;
-		width: 16px;
-		height: 16px;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-		vertical-align: middle;
-		transform: translateY(-2px);
+		width: 20px;
+		height: 20px;
+		margin-bottom: 0;
 	}
 </style>
