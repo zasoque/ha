@@ -552,7 +552,7 @@ function click(event: MouseEvent) {
 			(r.land_b_id === lastLand?.id && r.land_a_id === land.id)
 	);
 
-	if ((road || rail || path.length === 0) && path.indexOf(land) === -1) {
+	if (road || rail || path.length === 0) {
 		path.push(land);
 		render();
 	} else {
