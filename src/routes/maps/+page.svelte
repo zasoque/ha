@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { init } from '$lib/util/map-canvas-manager';
 	import { formatCurrency } from '$lib/util/economy';
+	import AccountInput from '$lib/components/aci/AccountInput.svelte';
 
 	let { data } = $props();
 	let { lands, buildings, roads, rails, me } = data;
@@ -509,7 +510,7 @@
 	<div>색상</div>
 	<input type="color" bind:value={addLandColor} />
 	<div>계좌번호 (토지를 만들기 위해서는 2냥이 필요해.)</div>
-	<input type="number" bind:value={addLandAccountId} placeholder="계좌번호" />
+	<AccountInput bind:value={addLandAccountId} />
 	<button onclick={addLand}>추가</button>
 </PromptFloat>
 <PromptFloat bind:this={addBuildingPrompt}>
@@ -528,7 +529,7 @@
 		<option>시장</option>
 	</select>
 	<div>계좌번호 (거주지를 등록할 때에는 층의 제곱 &times; 30푼만큼 내야 해)</div>
-	<input type="number" bind:value={addBuildingAccountId} placeholder="계좌번호" />
+	<AccountInput bind:value={addBuildingAccountId} />
 	<button onclick={addBuilding}>추가</button>
 </PromptFloat>
 <PromptFloat bind:this={addRoadPrompt}>
@@ -570,7 +571,7 @@
 	<div>조사 레벨</div>
 	<input type="number" bind:value={investFertilityLevel} placeholder="조사 레벨" />
 	<div>계좌번호</div>
-	<input type="number" bind:value={investFertilityAccountId} placeholder="계좌번호" />
+	<AccountInput bind:value={investFertilityAccountId} />
 	<button onclick={investFertility}>조사</button>
 </PromptFloat>
 <PromptFloat bind:this={investSolidityPrompt}>
@@ -580,7 +581,7 @@
 	<div>조사 레벨</div>
 	<input type="number" bind:value={investSolidityLevel} placeholder="조사 레벨" />
 	<div>계좌번호</div>
-	<input type="number" bind:value={investSolidityAccountId} placeholder="계좌번호" />
+	<AccountInput bind:value={investSolidityAccountId} />
 	<button onclick={investSolidity}>조사</button>
 </PromptFloat>
 
