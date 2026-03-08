@@ -81,6 +81,7 @@
 
 	.autocomplete-list .candidate {
 		padding: 8px;
+		margin: 0;
 		cursor: pointer;
 	}
 
