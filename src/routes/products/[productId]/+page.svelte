@@ -3,6 +3,7 @@
 	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
+	import AccountInput from '$lib/components/aci/AccountInput.svelte';
 
 	const { data } = $props();
 	const product = $derived(() => data.product);
@@ -56,7 +57,7 @@
 	<div>구매 수량</div>
 	<input type="number" min="1" bind:value={buyPromptQuantity} />
 	<div>지불 계좌</div>
-	<input type="number" placeholder="계좌 번호 입력" bind:value={buyPromptAccount} />
+	<AccountInput bind:value={buyPromptAccount} />
 	<div>이동 경로</div>
 	<input type="text" placeholder="이동 경로" bind:value={buyPromptPath} />
 	<button onclick={buy}>구매</button>
