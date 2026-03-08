@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { search, input, value, id } = $props();
+	let { search, value, input, ...rest } = $props();
 
 	if (!search) {
 		search = async (query) => {
@@ -47,7 +47,7 @@
 	{oninput}
 	{onkeydown}
 	bind:value
-	{id}
+	{...rest}
 	onblur={() => setTimeout(() => (candidates = []), 100)}
 />
 {#if candidates.length > 0}

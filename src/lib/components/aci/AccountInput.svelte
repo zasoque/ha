@@ -1,6 +1,8 @@
 <script lang="ts">
 	import AutocompleteInput from '../AutocompleteInput.svelte';
 
+	const { ...rest } = $props();
+
 	async function search(query: string) {
 		const { accounts } = await fetch(`/api/v1/accounts/search?q=${encodeURIComponent(query)}`).then(
 			(res) => res.json()
@@ -23,4 +25,4 @@
 	}
 </script>
 
-<AutocompleteInput {search} />
+<AutocompleteInput {search} {...rest} />

@@ -2,6 +2,7 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
+	import AccountInput from '$lib/components/aci/AccountInput.svelte';
 
 	let accountNumber = $state('');
 	let amountStr = $state('');
@@ -81,13 +82,13 @@
 	<div>발행할 냥푼 양</div>
 	<input type="number" placeholder="발행할 냥푼 양" min="0" step="0.01" bind:value={amountStr} />
 	<div>입금 계좌번호</div>
-	<input type="text" placeholder="계좌번호" bind:value={accountNumber} />
+	<AccountInput bind:value={accountNumber} placeholder="계좌번호" />
 	<button class="new-product" onclick={printCurrency}>발행하기</button>
 </PromptFloat>
 <PromptFloat bind:this={burnPrompt}>
 	<div>소각할 냥푼 양</div>
 	<input type="number" placeholder="소각할 냥푼 양" min="0" step="0.01" bind:value={amountStr} />
 	<div>출금 계좌번호</div>
-	<input type="text" placeholder="계좌번호" bind:value={accountNumber} />
+	<AccountInput bind:value={accountNumber} placeholder="계좌번호" />
 	<button class="new-product" onclick={burnCurrency}>소각하기</button>
 </PromptFloat>
