@@ -167,7 +167,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		return json({ success: false, message: 'Product not found' }, { status: 404 });
 	}
 
-	const pathIds = path.split('_').map((id: string) => parseInt(id));
+	const pathIds = path.split('-').map((id: string) => parseInt(id));
 	const [startLand] = await query(`SELECT * FROM lands WHERE id = ?`, [pathIds[0]]);
 	const [endLand] = await query(`SELECT * FROM lands WHERE id = ?`, [pathIds[pathIds.length - 1]]);
 

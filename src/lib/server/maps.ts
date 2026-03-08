@@ -3,7 +3,7 @@ import { query } from './db';
 
 export async function getFee(pathString: string): Promise<number | Response> {
 	const path = [];
-	for (let pathPart of pathString.split('_')) {
+	for (let pathPart of pathString.split('-')) {
 		const land = await query('SELECT * FROM lands WHERE id = ?', [pathPart]);
 		if (land.length === 0) {
 			return json(

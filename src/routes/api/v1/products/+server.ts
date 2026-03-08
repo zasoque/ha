@@ -255,7 +255,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 
 	// path 검증
-	const pathIds = path.split('_').map((id: string) => {
+	const pathIds = path.split('-').map((id: string) => {
 		return { id: parseInt(id) };
 	});
 

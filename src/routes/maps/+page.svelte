@@ -270,7 +270,7 @@
 	}
 
 	function getPathCode(path) {
-		return path.map((land) => `${land.id}`).join('_');
+		return path.map((land) => `${land.id}`).join('-');
 	}
 
 	let investFertilityPrompt;

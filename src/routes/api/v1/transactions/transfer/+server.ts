@@ -161,7 +161,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 	}
 
 	// path 검증
-	const landIds = path.split('_').map((id: string) => parseInt(id));
+	const landIds = path.split('-').map((id: string) => parseInt(id));
 	const startLandId = landIds[0];
 	const endLandId = landIds[landIds.length - 1];
 

@@ -229,8 +229,8 @@ function renderLands() {
 function renderPath() {
 	if (path.length === 0) return;
 
-	ctx.strokeStyle = '#007bff';
-	ctx.lineWidth = 4 * window.devicePixelRatio;
+	ctx.strokeStyle = 'white';
+	ctx.lineWidth = 8 * window.devicePixelRatio;
 	ctx.lineCap = 'round';
 	ctx.lineJoin = 'round';
 	ctx.beginPath();
@@ -252,6 +252,28 @@ function renderPath() {
 		lastLand.position.coordinates[0],
 		lastLand.position.coordinates[1]
 	);
+	ctx.beginPath();
+	ctx.arc(lastScreenPos.x, lastScreenPos.y, 12 * window.devicePixelRatio, 0, 2 * Math.PI);
+	ctx.stroke();
+
+	ctx.strokeStyle = '#007bff';
+	ctx.lineWidth = 4 * window.devicePixelRatio;
+	ctx.lineCap = 'round';
+	ctx.lineJoin = 'round';
+	ctx.beginPath();
+	path.forEach((land, index) => {
+		const screenPos = camera.convertWorldToScreen(
+			land.position.coordinates[0],
+			land.position.coordinates[1]
+		);
+		if (index === 0) {
+			ctx.moveTo(screenPos.x, screenPos.y);
+		} else {
+			ctx.lineTo(screenPos.x, screenPos.y);
+		}
+	});
+	ctx.stroke();
+
 	ctx.beginPath();
 	ctx.arc(lastScreenPos.x, lastScreenPos.y, 12 * window.devicePixelRatio, 0, 2 * Math.PI);
 	ctx.stroke();
@@ -519,7 +541,7 @@ async function doubleClick(event: MouseEvent) {
 	openPopup(currentMousePos);
 
 	if (path.length > 0) {
-		const content = path.map((l) => `${l.id}`).join('_');
+		const content = path.map((l) => `${l.id}`).join('-');
 		await copyToClipboard(content);
 		path.length = 0;
 	}
@@ -538,6 +560,11 @@ function click(event: MouseEvent) {
 
 	if (land.id === lastLand?.id) {
 		path.splice(path.length - 1, 1);
+		return render();
+	}
+
+	if (path.length === 0) {
+		path.push(land);
 		return render();
 	}
 
