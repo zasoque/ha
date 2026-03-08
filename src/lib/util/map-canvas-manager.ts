@@ -210,8 +210,17 @@ function renderLands() {
 		ctx.arc(screenPos.x, screenPos.y, renderRadius, 0, 2 * Math.PI);
 		ctx.fill();
 		ctx.stroke();
+	});
 
-		if (camera.zoom >= 50) {
+	lands.forEach((land) => {
+		const buildingsOnIt = buildings.filter((b) => b.land_id === land.id);
+		const renderRadius = 10 * Math.sqrt(buildingsOnIt.length + 1) * window.devicePixelRatio;
+		if (camera.zoom >= 2000 / renderRadius) {
+			const screenPos = camera.convertWorldToScreen(
+				land.position.coordinates[0],
+				land.position.coordinates[1]
+			);
+
 			ctx.font = `${12 * window.devicePixelRatio}px Arial`;
 			ctx.fillStyle = 'black';
 			ctx.textAlign = 'left';
@@ -219,7 +228,7 @@ function renderLands() {
 			ctx.save();
 			ctx.translate(screenPos.x, screenPos.y);
 			ctx.rotate((-15 * Math.PI) / 180);
-			ctx.fillText(`${land.name} #${land.id}`, (renderRadius + 4) * window.devicePixelRatio, 0);
+			ctx.fillText(`${land.name} #${land.id}`, renderRadius + 4 * window.devicePixelRatio, 0);
 			ctx.restore();
 		}
 	});
