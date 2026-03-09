@@ -14,7 +14,7 @@
 	let canvas: HTMLCanvasElement;
 
 	let pathPrompt: PromptFloat = $state()!;
-	let pathPromptPath: any[] = $state([]);
+	let pathPromptPath: any[] = [];
 
 	let landPrompt: PromptFloat = $state()!;
 	let landPromptLand: any = $state();
