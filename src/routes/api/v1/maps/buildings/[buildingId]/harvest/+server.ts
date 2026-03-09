@@ -122,7 +122,7 @@ export const POST: RequestHandler = async ({ params, cookies }) => {
 	const waitDuration = now - lastHarvest[0]?.created_at.getTime() || 0;
 
 	const quantity = Math.round(
-		((land.fertility * Math.random() * waitDuration) / (1000 * 60 * 60 * 24 * 7)) * 12
+		((land[0].fertility * Math.random() * waitDuration) / (1000 * 60 * 60 * 24 * 7)) * 12
 	);
 
 	await query('INSERT INTO harvests (building_id, quantity) VALUES (?, ?)', [buildingId, quantity]);
