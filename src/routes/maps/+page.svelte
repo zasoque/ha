@@ -576,7 +576,7 @@
 <PromptFloat bind:this={harvestPrompt}>
 	<div>수확</div>
 	<div>건물 ID</div>
-	<input type="number" bind:value={harvestPromptBuilding} placeholder="건물 ID" />
+	<BuildingInput bind:value={harvestPromptBuilding} />
 	<button onclick={harvest}>수확</button>
 </PromptFloat>
 <PromptFloat bind:this={investFertilityPrompt}>
