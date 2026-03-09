@@ -12,7 +12,7 @@ function getDateExpiry(type: string, dateIssued: string): string {
 	switch (type) {
 		case '단기':
 			expiryDate = new Date(issuedDate);
-			expiryDate.setMonth(expiryDate.getMonth() + 6);
+			expiryDate.setDate(expiryDate.getDate() + 6);
 			break;
 		default:
 			expiryDate = new Date(issuedDate);
