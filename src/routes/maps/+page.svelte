@@ -7,6 +7,8 @@
 	import { formatCurrency } from '$lib/util/economy';
 	import AccountInput from '$lib/components/aci/AccountInput.svelte';
 	import PersonInput from '$lib/components/aci/PersonInput.svelte';
+	import BuildingInput from '$lib/components/aci/BuildingInput.svelte';
+	import LandInput from '$lib/components/aci/LandInput.svelte';
 
 	let { data } = $props();
 	let { lands, buildings, roads, rails, me } = $derived(data);
@@ -531,7 +533,7 @@
 	<div>이름</div>
 	<input type="text" bind:value={addBuildingName} />
 	<div>토지 ID</div>
-	<input type="number" bind:value={addBuildingLandId} placeholder="토지 ID" />
+	<LandInput bind:value={addBuildingLandId} />
 	<div>건물 종류</div>
 	<div>농장은 5, 주거는 8, 사무는 10, 시장은 20개 테인트가 필요해.</div>
 	<select bind:value={addBuildingType}>
@@ -541,7 +543,7 @@
 		<option>사무</option>
 		<option>시장</option>
 	</select>
-	<div>계좌번호 (거주지를 등록할 때에는 층의 제곱 &times; 30푼만큼 내야 해)</div>
+	<div>계좌번호</div>
 	<AccountInput bind:value={addBuildingAccountId} />
 	<button onclick={addBuilding}>추가</button>
 </PromptFloat>
@@ -553,9 +555,9 @@
 	<div>이름</div>
 	<input type="text" bind:value={addRoadName} />
 	<div>토지 A ID</div>
-	<input type="number" bind:value={addRoadLandAId} placeholder="토지 A ID" />
+	<LandInput bind:value={addRoadLandAId} />
 	<div>토지 B ID</div>
-	<input type="number" bind:value={addRoadLandBId} placeholder="토지 B ID" />
+	<LandInput bind:value={addRoadLandBId} />
 	<button onclick={addRoad}>추가</button>
 </PromptFloat>
 <PromptFloat bind:this={addRailPrompt}>
@@ -566,9 +568,9 @@
 	<div>이름</div>
 	<input type="text" bind:value={addRailName} />
 	<div>토지 A ID</div>
-	<input type="number" bind:value={addRailLandAId} placeholder="토지 A ID" />
+	<LandInput bind:value={addRailLandAId} />
 	<div>토지 B ID</div>
-	<input type="number" bind:value={addRailLandBId} placeholder="토지 B ID" />
+	<LandInput bind:value={addRailLandBId} />
 	<button onclick={addRail}>추가</button>
 </PromptFloat>
 <PromptFloat bind:this={harvestPrompt}>
@@ -580,7 +582,7 @@
 <PromptFloat bind:this={investFertilityPrompt}>
 	<div>비옥도 조사</div>
 	<div>토지 ID</div>
-	<input type="number" bind:value={investFertilityLandId} placeholder="토지 ID" />
+	<LandInput bind:value={investFertilityLandId} />
 	<div>조사 레벨</div>
 	<input type="number" bind:value={investFertilityLevel} placeholder="조사 레벨" />
 	<div>계좌번호</div>
@@ -590,7 +592,7 @@
 <PromptFloat bind:this={investSolidityPrompt}>
 	<div>강도 조사</div>
 	<div>토지 ID</div>
-	<input type="number" bind:value={investSolidityLandId} placeholder="토지 ID" />
+	<LandInput bind:value={investSolidityLandId} />
 	<div>조사 레벨</div>
 	<input type="number" bind:value={investSolidityLevel} placeholder="조사 레벨" />
 	<div>계좌번호</div>
