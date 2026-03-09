@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+	let { children } = $props();
 	let show = $state(false);
 
 	export function open() {
@@ -9,21 +10,38 @@
 		show = false;
 	}
 
-	function onkeydown(event) {
+	function onkeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			close();
 		}
 	}
 
-	function stopPropagation(event) {
+	function stopPropagation(event: Event) {
 		event.stopPropagation();
 	}
 </script>
 
+<svelte:window onkeydown={onkeydown} />
+
 {#if show}
-	<div class="dim" onclick={close}>
-		<div class="prompt" onclick={stopPropagation}>
-			<slot />
+	<div
+		class="dim"
+		onclick={close}
+		role="button"
+		tabindex="-1"
+		onkeydown={(e) => {
+			if (e.key === 'Enter') close();
+		}}
+	>
+		<div
+			class="prompt"
+			onclick={stopPropagation}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			onkeydown={stopPropagation}
+		>
+			{@render children()}
 		</div>
 	</div>
 {/if}

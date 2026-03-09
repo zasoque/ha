@@ -643,7 +643,7 @@ export function init(
 	onLandClick: (land: any) => void,
 	onRoadClick: (road: any) => void,
 	onRailClick: (rail: any) => void
-) {
+): { clear: () => void; path: any[] } {
 	canvas = c;
 	ctx = c.getContext('2d')!;
 

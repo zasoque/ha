@@ -7,7 +7,7 @@
 	const { data } = $props();
 	const users = $derived(() => data.users);
 
-	let addAdminPrompt;
+	let addAdminPrompt = $state()! as PromptFloat;
 	let addAdminId = $state('');
 
 	async function addAdmin() {

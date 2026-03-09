@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
@@ -9,15 +9,15 @@
 	import PersonInput from '$lib/components/aci/PersonInput.svelte';
 
 	let { data } = $props();
-	let { lands, buildings, roads, rails, me } = data;
+	let { lands, buildings, roads, rails, me } = $derived(data);
 
-	let canvas;
+	let canvas: HTMLCanvasElement;
 
-	let pathPrompt;
-	let pathPromptPath;
+	let pathPrompt: PromptFloat = $state()!;
+	let pathPromptPath: any[] = $state([]);
 
-	let landPrompt;
-	let landPromptLand;
+	let landPrompt: PromptFloat = $state()!;
+	let landPromptLand: any = $state();
 	let landPromptChangeColor = $state('#000000');
 	let landPromptChangeName = $state('');
 
@@ -41,7 +41,7 @@
 				}
 			})
 			.catch((err) => {
-				alert('색상 변경 실패:', err);
+				alert('색상 변경 실패: ' + err);
 			});
 	}
 
@@ -65,21 +65,22 @@
 				}
 			})
 			.catch((err) => {
-				alert('이름 변경 실패:', err);
+				alert('이름 변경 실패: ' + err);
 			});
 	}
 
-	let roadPrompt;
-	let roadPromptRoad;
+	let roadPrompt: PromptFloat = $state()!;
+	let roadPromptRoad: any = $state();
 
-	let railPrompt;
-	let railPromptRail;
+	let railPrompt: PromptFloat = $state()!;
+	let railPromptRail: any = $state();
 
-	let addLandPrompt;
+	let addLandPrompt: PromptFloat = $state()!;
 	let addLandName = $state('');
 	let addLandPosition = $state({ x: 0, y: 0 });
 	let addLandColor = $state('#000000');
 	let addLandAccountId = $state(0);
+	let addLandOwnerId = $state(0);
 
 	async function addLand() {
 		await fetch('/api/v1/maps/lands', {
@@ -89,7 +90,7 @@
 			},
 			body: JSON.stringify({
 				name: addLandName,
-				owner_id: me.id,
+				owner_id: addLandOwnerId || me.id,
 				x: addLandPosition.x,
 				y: addLandPosition.y,
 				color: addLandColor.replace('#', ''),
@@ -109,8 +110,8 @@
 			});
 	}
 
-	let addRoadPrompt;
-	let addRoadOwnerId = $state(data.me?.id);
+	let addRoadPrompt: PromptFloat = $state()!;
+	let addRoadOwnerId = $state(0);
 	let addRoadName = $state('');
 	let addRoadLandAId = $state(0);
 	let addRoadLandBId = $state(0);
@@ -141,11 +142,12 @@
 			});
 	}
 
-	let addBuildingPrompt;
+	let addBuildingPrompt: PromptFloat = $state()!;
 	let addBuildingName = $state('');
 	let addBuildingLandId = $state(0);
 	let addBuildingType = $state('');
 	let addBuildingAccountId = $state(0);
+	let addBuildingOwnerId = $state(0);
 
 	async function addBuilding() {
 		await fetch(`/api/v1/maps/lands/${addBuildingLandId}/buildings`, {
@@ -156,7 +158,8 @@
 			body: JSON.stringify({
 				name: addBuildingName,
 				type: addBuildingType,
-				account_id: addBuildingAccountId
+				account_id: addBuildingAccountId,
+				owner_id: addBuildingOwnerId
 			})
 		})
 			.then((res) => res.json())
@@ -172,11 +175,20 @@
 			});
 	}
 
-	let addRailPrompt;
-	let addRailOwnerId = $state(data.me?.id);
+	let addRailPrompt: PromptFloat = $state()!;
+	let addRailOwnerId = $state(0);
 	let addRailName = $state('');
 	let addRailLandAId = $state(0);
 	let addRailLandBId = $state(0);
+
+	$effect(() => {
+		if (me?.id) {
+			addRoadOwnerId = me.id;
+			addLandOwnerId = me.id;
+			addBuildingOwnerId = me.id;
+			addRailOwnerId = me.id;
+		}
+	});
 
 	async function addRail() {
 		await fetch('/api/v1/maps/rails', {
@@ -204,7 +216,7 @@
 			});
 	}
 
-	let harvestPrompt;
+	let harvestPrompt: PromptFloat = $state()!;
 	let harvestPromptBuilding = $state(0);
 
 	async function harvest() {
@@ -227,21 +239,21 @@
 			});
 	}
 
-	function calculateDistanceOfRoad(road) {
+	function calculateDistanceOfRoad(road: any) {
 		const dx = road.land_a.position.coordinates[0] - road.land_b.position.coordinates[0];
 		const dy = road.land_a.position.coordinates[1] - road.land_b.position.coordinates[1];
 		return Math.hypot(dx, dy).toFixed(2);
 	}
 
-	function calculateDistanceOfRail(rail) {
-		const landA = lands.find((land) => land.id === rail.land_a_id).position.coordinates;
-		const landB = lands.find((land) => land.id === rail.land_b_id).position.coordinates;
+	function calculateDistanceOfRail(rail: any) {
+		const landA = lands.find((land: any) => land.id === rail.land_a_id).position.coordinates;
+		const landB = lands.find((land: any) => land.id === rail.land_b_id).position.coordinates;
 		const dx = landA[0] - landB[0];
 		const dy = landA[1] - landB[1];
 		return Math.hypot(dx, dy).toFixed(2);
 	}
 
-	function getPathDistance(path) {
+	function getPathDistance(path: any) {
 		let distance = 0;
 		for (let i = 0; i < path.length - 1; i++) {
 			const landA = path[i];
@@ -253,7 +265,7 @@
 		return distance.toFixed(2);
 	}
 
-	async function getPathFee(path) {
+	async function getPathFee(path: any) {
 		return await fetch(`/api/v1/maps/path/${getPathCode(path)}`)
 			.then((res) => res.json())
 			.then((data) => {
@@ -269,11 +281,11 @@
 			});
 	}
 
-	function getPathCode(path) {
+	function getPathCode(path: any[]) {
 		return path.map((land) => `${land.id}`).join('-');
 	}
 
-	let investFertilityPrompt;
+	let investFertilityPrompt: PromptFloat = $state()!;
 	let investFertilityLandId = $state(0);
 	let investFertilityLevel = $state(0);
 	let investFertilityAccountId = $state(0);
@@ -301,7 +313,7 @@
 			});
 	}
 
-	let investSolidityPrompt;
+	let investSolidityPrompt: PromptFloat = $state()!;
 	let investSolidityLandId = $state(0);
 	let investSolidityLevel = $state(0);
 	let investSolidityAccountId = $state(0);
@@ -330,7 +342,7 @@
 	}
 
 	onMount(() => {
-		data = init(
+		const data = init(
 			canvas,
 			lands,
 			buildings,

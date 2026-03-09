@@ -7,7 +7,7 @@
 	let accountNumber = $state('');
 	let amountStr = $state('');
 
-	let printPrompt;
+	let printPrompt: PromptFloat = $state()!;
 	async function printCurrency() {
 		const amount = parseFloat(amountStr);
 		if (isNaN(amount) || amount <= 0) {
@@ -38,7 +38,7 @@
 			});
 	}
 
-	let burnPrompt;
+	let burnPrompt: PromptFloat = $state()!;
 
 	async function burnCurrency() {
 		const amount = parseFloat(amountStr);

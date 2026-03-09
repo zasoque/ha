@@ -11,7 +11,7 @@
 	let inventory = $derived(() => data.inventory);
 	let accounts = $derived(() => data.accounts);
 
-	let addMemberPrompt: PromptFloat;
+	let addMemberPrompt = $state()! as PromptFloat;
 	let addMemberUserId = $state('');
 
 	async function addMember() {
@@ -55,7 +55,7 @@
 	<div>인벤토리</div>
 	<div class="inventory">
 		{#each inventory() as stock}
-			<Stock {stock} />
+			<Stock {stock} ongive={() => {}} />
 		{/each}
 	</div>
 	<div>계좌</div>

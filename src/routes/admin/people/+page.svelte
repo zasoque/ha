@@ -13,7 +13,7 @@
 	let newName = $state('');
 	let newResidence = $state('');
 	let newType = $state('person');
-	let addPersonPrompt;
+	let addPersonPrompt = $state()! as PromptFloat;
 
 	function addPerson() {
 		fetch('/api/v1/admin/people', {
@@ -36,7 +36,7 @@
 			});
 	}
 
-	let editPersonPrompt;
+	let editPersonPrompt = $state()! as PromptFloat;
 	let editId = $state('');
 	let editName = $state('');
 	let editResidence = $state('');

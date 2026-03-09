@@ -7,7 +7,7 @@
 	const notifications = $derived(() => data.notifications);
 
 	function getNotifCount() {
-		return notifications().filter((n) => !n.is_read).length;
+		return notifications().filter((n: any) => !n.is_read).length;
 	}
 </script>
 

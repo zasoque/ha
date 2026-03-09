@@ -10,7 +10,7 @@
 	let page = $derived(() => data.page);
 	let limit = $derived(() => data.limit);
 
-	let addMemberPrompt: PromptFloat;
+	let addMemberPrompt = $state()! as PromptFloat;
 	let addMemberCorporationId = $state('');
 	let addMemberUserId = $state('');
 

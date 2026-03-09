@@ -3,13 +3,13 @@
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import AccountInput from '$lib/components/aci/AccountInput.svelte';
 
-	const { data } = $props();
-	const account = $derived(() => data.account);
-	const transactions = $derived(() => data.transactions);
-	const person = $derived(() => data.person);
+	let { data } = $props();
+	let account = $derived(data.account);
+	let transactions = $derived(data.transactions);
+	let person = $derived(data.person);
 
 	function deleteAccount() {
-		fetch(`/api/v1/accounts/${account().id}`, {
+		fetch(`/api/v1/accounts/${account.id}`, {
 			method: 'DELETE'
 		}).then((response) => {
 			if (response.ok) {
@@ -20,15 +20,14 @@
 		});
 	}
 
-	let transferPrompt;
+	let transferPrompt: PromptFloat = $state()!;
+	let toAccountId = $state<number | null>(null);
+	let amount = $state<number | null>(null);
+	let description = $state('');
+	let path = $state('');
 
 	async function transferButton() {
-		const toAccountId = parseInt(document.getElementById('toAccountId').value);
-		const amount = parseFloat(document.getElementById('amount').value);
-		const description = document.getElementById('description').value;
-		const path = document.getElementById('path').value;
-
-		if (isNaN(toAccountId) || isNaN(amount)) {
+		if (toAccountId === null || amount === null) {
 			alert('모든 필드를 올바르게 입력해줘.');
 			return;
 		}
@@ -37,6 +36,11 @@
 			.then((response) => response.json())
 			.then((data) => data.owner)
 			.catch(() => null);
+
+		if (!owner) {
+			alert('존재하지 않는 계좌야.');
+			return;
+		}
 
 		if (!confirm(`${owner.name}에게 ${formatCurrency(amount)}을 송금할게`)) {
 			return;
@@ -57,7 +61,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				fromAccountId: account().id,
+				fromAccountId: account.id,
 				toAccountId,
 				amount,
 				description,
@@ -86,29 +90,29 @@
 	<div class="title">계좌 상세</div>
 	<div class="account-id">
 		<div class="row-key">주인</div>
-		<div class="row-value">{person().name} ({account().user_id})</div>
+		<div class="row-value">{person.name} ({account.user_id})</div>
 	</div>
 	<div class="account-id">
 		<div class="row-key">계좌번호</div>
-		<div class="row-value">{account().id}</div>
+		<div class="row-value">{account.id}</div>
 	</div>
 	<div class="balance">
 		<div class="row-key">잔액</div>
-		<div class="row-value">{formatCurrency(account().balance)}</div>
+		<div class="row-value">{formatCurrency(account.balance)}</div>
 	</div>
 	<div class="created-at">
 		<div class="row-key">개설일자</div>
-		<div class="row-value">{new Date(account().created_at).toLocaleString()}</div>
+		<div class="row-value">{new Date(account.created_at).toLocaleString()}</div>
 	</div>
 	<div class="updated-at">
 		<div class="row-key">갱신일자</div>
-		<div class="row-value">{new Date(account().updated_at).toLocaleString()}</div>
+		<div class="row-value">{new Date(account.updated_at).toLocaleString()}</div>
 	</div>
 	<div class="transfer">
 		<button onclick={transferPrompt.open}>송금</button>
 	</div>
 	<div class="transactions">
-		{#each transactions() as transaction}
+		{#each transactions as transaction}
 			<div class="transaction">
 				<div class="row-key">거래 ID</div>
 				<div class="row-value">{transaction.id}</div>
@@ -129,13 +133,13 @@
 </div>
 <PromptFloat bind:this={transferPrompt}>
 	<div>계좌번호</div>
-	<AccountInput id="toAccountId" />
+	<AccountInput bind:value={toAccountId} />
 	<div>금액 (수수료가 발생한다면 여기에 입력한 것보다 더 많은 금액이 빠져나갈 수 있어)</div>
-	<input type="number" id="amount" min="0" step="0.01" />
+	<input type="number" bind:value={amount} min="0" step="0.01" />
 	<div>설명</div>
-	<input type="text" id="description" />
+	<input type="text" bind:value={description} />
 	<div>이동 경로</div>
-	<input type="text" id="path" placeholder="1_2" />
+	<input type="text" bind:value={path} placeholder="1_2" />
 	<button onclick={transferButton}>송금하기</button>
 </PromptFloat>
 

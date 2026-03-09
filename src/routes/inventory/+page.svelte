@@ -10,9 +10,9 @@
 	let giveItemId = $state(0);
 	let giveUserId = $state('');
 	let giveQuantity = $state('');
-	let givePrompt = $state({});
+	let givePrompt = $state()! as PromptFloat;
 
-	function give(): () => void {
+	function give() {
 		const quantity = parseInt(giveQuantity || '0', 10);
 
 		if (!giveUserId || isNaN(quantity) || quantity <= 0) {
@@ -44,11 +44,9 @@
 			});
 	}
 
-	function openGive(itemId: number): () => void {
-		return () => {
-			giveItemId = itemId;
-			givePrompt.open();
-		};
+	function openGive(itemId: number) {
+		giveItemId = itemId;
+		givePrompt.open();
 	}
 </script>
 
@@ -56,7 +54,7 @@
 	<Title>인벤토리</Title>
 	<div class="inventory">
 		{#each inventory() as stock}
-			<Stock {stock} ongive={openGive(stock.item.id)} />
+			<Stock {stock} ongive={() => openGive(stock.item.id)} />
 		{/each}
 	</div>
 </Container>

@@ -7,7 +7,7 @@
 	let itemId = $state('');
 	let quantity = $state(1);
 
-	let giveItemPrompt;
+	let giveItemPrompt: PromptFloat = $state()!;
 
 	async function giveItem() {
 		if (!userId || !itemId || quantity <= 0) {

@@ -9,7 +9,7 @@
 	const limit = $derived(() => data.limit);
 	const page = $derived(() => data.page);
 
-	let addVisaPrompt;
+	let addVisaPrompt = $state()! as PromptFloat;
 	let addVisaUserId = $state('');
 	let addVisaType = $state('');
 	let addVisaDateIssued = $state('');
@@ -30,8 +30,8 @@
 		});
 	}
 
-	function sortByType(event) {
-		const value = event.target.value;
+	function sortByType(event: Event & { currentTarget: EventTarget & HTMLSelectElement }) {
+		const value = (event.target as HTMLSelectElement).value;
 		let sortedVisas = [...visas()];
 		if (value === '발급 날짜 내림차순') {
 			sortedVisas.sort(

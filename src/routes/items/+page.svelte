@@ -10,7 +10,7 @@
 	let page = $derived(() => data.page!);
 	let limit = $derived(() => data.limit!);
 
-	let createItemPrompt;
+	let createItemPrompt = $state()! as PromptFloat;
 	let newItemName = $state('');
 	let newItemDescription = $state('');
 
@@ -32,7 +32,7 @@
 		});
 	}
 
-	let makeItemPrompt;
+	let makeItemPrompt = $state()! as PromptFloat;
 	let makeItemId = $state('');
 	let makeItemQuantity = $state(1);
 
@@ -74,6 +74,7 @@
 					item_id: item.id
 				}}
 				showaction={false}
+				ongive={() => {}}
 			/>
 		{/each}
 	</div>

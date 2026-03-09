@@ -10,4 +10,7 @@ declare global {
 	}
 }
 
+declare module 'swagger-jsdoc';
+declare module 'swagger-ui-dist/swagger-ui-bundle.js';
+
 export {};

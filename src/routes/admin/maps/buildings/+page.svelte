@@ -3,7 +3,7 @@
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
-	let addBuidlingPrompt: PromptFloat;
+	let addBuidlingPrompt = $state()! as PromptFloat;
 	let addBuildingName = $state('새 건물');
 	let addBuildingLandId = $state(0);
 	let addBuildingType = $state('');

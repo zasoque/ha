@@ -1,38 +1,59 @@
 <script lang="ts">
-	let { search, value = $bindable(), input, ...rest } = $props();
+	interface Candidate {
+		value: any;
+		label: string;
+	}
 
-	if (!search) {
-		search = async (query) => {
-			// Mock search function
+	interface Props {
+		search?: (query: string) => Promise<Candidate[]>;
+		value: any;
+		input?: HTMLInputElement;
+		[key: string]: any;
+	}
+
+	let {
+		search = async (query: string) => {
 			const options = ['apple', 'banana', 'cherry', 'date', 'fig', 'grape'];
-			return options.filter((option) => option.includes(query));
-		};
-	}
+			return options
+				.filter((option) => option.includes(query))
+				.map((option) => ({ value: option, label: option }));
+		},
+		value = $bindable(),
+		input = $bindable(),
+		...rest
+	}: Props = $props();
 
-	let candidates = $state([]);
-	async function oninput(e: InputEvent) {
-		const target = e.target as HTMLInputElement;
-
-		let options = [];
-		(await search(value)).forEach((option: string) => {
-			options.push(option);
-		});
-		candidates = options;
-	}
-
+	let candidates = $state<Candidate[]>([]);
 	let selection = $state(0);
+
+	async function oninput(e: Event) {
+		const target = e.target as HTMLInputElement;
+		const query = target.value;
+
+		if (!query) {
+			candidates = [];
+			return;
+		}
+
+		candidates = await search(query);
+		selection = 0;
+	}
+
 	function onkeydown(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') {
 			selection = (selection + 1) % candidates.length;
+			e.preventDefault();
 		} else if (e.key === 'ArrowUp') {
 			selection = (selection - 1 + candidates.length) % candidates.length;
+			e.preventDefault();
 		} else if (e.key === 'Enter' && candidates[selection]) {
-			input.value = candidates[selection].value;
-			value = candidates[selection].value;
+			const selected = candidates[selection];
+			value = selected.value;
+			if (input) input.value = selected.value;
 			candidates = [];
+			e.preventDefault();
 		}
 
-		// scroll into view
 		if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
 			const candidateElements = document.querySelectorAll('.autocomplete-list .candidate');
 			if (candidateElements[selection]) {
@@ -40,43 +61,63 @@
 			}
 		}
 	}
+
+	function selectCandidate(candidate: Candidate) {
+		value = candidate.value;
+		if (input) input.value = candidate.value;
+		candidates = [];
+	}
 </script>
 
-<input
-	bind:this={input}
-	{oninput}
-	{onkeydown}
-	bind:value
-	{...rest}
-	onblur={() => setTimeout(() => (candidates = []), 100)}
-/>
-{#if candidates.length > 0}
-	<div class="autocomplete-list">
-		{#each candidates as candidate, index}
-			<div
-				onclick={() => {
-					input.value = candidate.value;
-					candidates = [];
-				}}
-				class:selected={selection === index}
-				class="candidate"
-				onmouseover={() => (selection = index)}
-			>
-				{candidate.label}
-			</div>
-		{/each}
-	</div>
-{/if}
+<div class="autocomplete-container">
+	<input
+		bind:this={input}
+		{oninput}
+		{onkeydown}
+		bind:value
+		{...rest}
+		onblur={() => setTimeout(() => (candidates = []), 200)}
+		autocomplete="off"
+	/>
+	{#if candidates.length > 0}
+		<div class="autocomplete-list" role="listbox">
+			{#each candidates as candidate, index}
+				<div
+					role="option"
+					aria-selected={selection === index}
+					tabindex="-1"
+					onclick={() => selectCandidate(candidate)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter') selectCandidate(candidate);
+					}}
+					class:selected={selection === index}
+					class="candidate"
+					onmouseover={() => (selection = index)}
+					onfocus={() => (selection = index)}
+				>
+					{candidate.label}
+				</div>
+			{/each}
+		</div>
+	{/if}
+</div>
 
 <style>
+	.autocomplete-container {
+		position: relative;
+		display: inline-block;
+		width: 100%;
+	}
+
 	.autocomplete-list {
 		position: absolute;
 		background: white;
 		border: 1px solid #ccc;
-		width: max-content;
+		width: 100%;
 		max-height: 150px;
 		overflow-y: auto;
 		z-index: 1000;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	}
 
 	.autocomplete-list .candidate {

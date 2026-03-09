@@ -1,8 +1,8 @@
 import { getMe } from '$lib/discord/users';
 import { getUserName } from '$lib/server/people';
-import type { Load } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
-export const load: Load = async ({ fetch, cookies }) => {
+export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	const token = cookies.get('token');
 	let username;
 	let residence;

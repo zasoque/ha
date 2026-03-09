@@ -9,7 +9,7 @@
 	const product = $derived(() => data.product);
 	const me = $derived(() => data.me);
 
-	let buyPrompt: PromptFloat;
+	let buyPrompt = $state()! as PromptFloat;
 	let buyPromptQuantity = $state(1);
 	let buyPromptAccount = $state(0);
 	let buyPromptPath = $state('');

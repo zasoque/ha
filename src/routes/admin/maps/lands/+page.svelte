@@ -3,7 +3,7 @@
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
-	let addPrompt;
+	let addPrompt = $state()! as PromptFloat;
 	let addLandName = $state('');
 	let addLandOwnerId = $state('');
 	let addLandX = $state(0);

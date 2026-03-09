@@ -7,7 +7,7 @@
 	const { data } = $props();
 	const products = $derived(() => data.products);
 
-	let newProductPrompt;
+	let newProductPrompt = $state()! as PromptFloat;
 	let newItemId = $state(0);
 	let newCount = $state(0);
 	let newPrice = $state(0);

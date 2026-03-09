@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AutocompleteInput from '../AutocompleteInput.svelte';
 
-	let { value, ...rest } = $props();
+	let { value = $bindable(), ...rest } = $props();
 
 	async function search(query: string) {
 		const { people } = await fetch(`/api/v1/people/search?q=${encodeURIComponent(query)}`).then(
