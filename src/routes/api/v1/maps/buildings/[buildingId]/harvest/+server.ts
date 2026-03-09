@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ params, cookies }) => {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
 
-	if (building.type !== TYPE_FARM) {
+	if (building[0].type !== TYPE_FARM) {
 		return json({ success: false, message: 'Building is not a farm' }, { status: 400 });
 	}
 
