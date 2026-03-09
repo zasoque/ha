@@ -20,7 +20,7 @@
 		});
 	}
 
-	let transferPrompt: PromptFloat = $state()!;
+	let transferPrompt: PromptFloat = $state<PromptFloat>(null);
 	let toAccountId = $state<number | null>(null);
 	let amount = $state<number | null>(null);
 	let description = $state('');
