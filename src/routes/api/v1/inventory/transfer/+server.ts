@@ -1,6 +1,7 @@
 import { getMe } from '$lib/discord/users';
 import { query } from '$lib/server/db';
 import { sendNotification } from '$lib/server/notification';
+import { TAINT_ITEM_ID } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 /**
@@ -103,7 +104,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 		return json({ success: false, message: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { to_user_id, item_id, quantity } = await request.json();
+	const { to_user_id, item_id, quantity, account_id } = await request.json();
 
 	if (!to_user_id || !item_id || !quantity) {
 		return json(
@@ -125,6 +126,31 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 
 	if (existingStock.length === 0 || existingStock[0].quantity < quantity) {
 		return json({ success: false, message: 'Not enough stock' }, { status: 400 });
+	}
+
+	if (item_id === TAINT_ITEM_ID) {
+		const costPerItem = (await query("SELECT * FROM number_values WHERE `key` = 'taintfee'"))[0]
+			.value;
+		const totalCost = costPerItem * quantity;
+
+		if (!account_id) {
+			return json(
+				{ success: false, message: 'Account ID is required to transfer taint' },
+				{ status: 400 }
+			);
+		}
+
+		const balance = (
+			await query('SELECT * FROM accounts WHERE id = ? AND user_id = ?', [account_id, me.id])
+		)[0].balance;
+		if (balance < totalCost) {
+			return json(
+				{ success: false, message: 'Not enough balance to transfer taint' },
+				{ status: 400 }
+			);
+		}
+
+		await query('UPDATE accounts SET balance = balance - ? WHERE id = ?', [totalCost, account_id]);
 	}
 
 	if (existingStock[0].quantity === quantity) {
