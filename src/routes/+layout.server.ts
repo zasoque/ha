@@ -10,7 +10,13 @@ export const load: LayoutServerLoad = async ({ fetch, cookies }) => {
 		me = await getMe(token);
 	}
 
-	const notifications = await fetch('/api/v1/notifications').then((res) => res.json());
+	const { notifications } = await fetch('/api/v1/notifications').then((res) => res.json());
 
-	return { me, isAdmin: await isAdmin(me?.id || ''), notifications: notifications.notifications };
+	const { certificates } = await fetch(`/api/v1/certificates/person/${me?.id}`).then((res) =>
+		res.json()
+	);
+
+	console.log(certificates);
+
+	return { me, isAdmin: await isAdmin(me?.id || ''), notifications, certificates };
 };
