@@ -105,9 +105,9 @@ function taintCost(type: string): number {
 	if (type === TYPE_RESIDENTIAL) {
 		return 8;
 	} else if (type === TYPE_OFFICE) {
-		return 20;
-	} else if (type === TYPE_MARKET) {
 		return 10;
+	} else if (type === TYPE_MARKET) {
+		return 20;
 	} else if (type === TYPE_FARM) {
 		return 5;
 	}
