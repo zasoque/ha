@@ -3,6 +3,7 @@ import { getAccount } from '$lib/server/account';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
 import {
+	CERTIFICATION_BUILD,
 	TAINT_ITEM_ID,
 	TYPE_FARM,
 	TYPE_MARKET,
@@ -242,6 +243,15 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 
 	if (!name || !land_id || !type || !account_id) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
+	}
+
+	const certificate = await query('SELECT * FROM certificates WHERE user_id = ? AND type = ?', [
+		owner_id,
+		CERTIFICATION_BUILD
+	]);
+
+	if (certificate.length === 0) {
+		return json({ success: false, message: 'Certificate not found' }, { status: 404 });
 	}
 
 	const account = await getAccount(account_id);

@@ -2,6 +2,7 @@ import { getMe } from '$lib/discord/users';
 import { getAccount } from '$lib/server/account';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
+import { CERTIFICATION_LAND } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 /**
@@ -179,6 +180,15 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	if (!name || !owner_id || x === undefined || y === undefined || !color) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
+	}
+
+	const certificate = await query('SELECT * FROM certificates WHERE user_id = ? AND type = ?', [
+		owner_id,
+		CERTIFICATION_LAND
+	]);
+
+	if (certificate.length === 0) {
+		return json({ success: false, message: 'Certificate not found' }, { status: 400 });
 	}
 
 	const closestLand = await query(

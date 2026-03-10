@@ -9,9 +9,14 @@
 	import PersonInput from '$lib/components/aci/PersonInput.svelte';
 	import BuildingInput from '$lib/components/aci/BuildingInput.svelte';
 	import LandInput from '$lib/components/aci/LandInput.svelte';
+	import {
+		CERTIFICATION_LAND,
+		CERTIFICATION_BUILD,
+		CERTIFICATION_MEASUREMENT
+	} from '$lib/util/const';
 
 	let { data } = $props();
-	let { lands, buildings, roads, rails, me } = $derived(data);
+	let { lands, buildings, roads, rails, me, certificates } = $derived(data);
 
 	let canvas: HTMLCanvasElement;
 
@@ -603,14 +608,20 @@
 <Container>
 	<Title>하 지도</Title>
 	<canvas class="canvas" bind:this={canvas}></canvas>
-	<button onclick={addLandPrompt.open}>토지 추가</button>
-	<button onclick={addBuildingPrompt.open}>건물 추가</button>
+	{#if certificates.find((cert) => cert.type === CERTIFICATION_LAND)}
+		<button onclick={addLandPrompt.open}>토지 추가</button>
+	{/if}
+	{#if certificates.find((cert) => cert.type === CERTIFICATION_BUILD)}
+		<button onclick={addBuildingPrompt.open}>건물 추가</button>
+	{/if}
 	<button onclick={addRoadPrompt.open}>도로 추가</button>
 	<button onclick={addRailPrompt.open}>철도 추가</button>
 	<button onclick={harvestPrompt.open}>수확</button>
 	<button onclick={pathPrompt.open}>경로</button>
-	<button onclick={investFertilityPrompt.open}>비옥도 조사</button>
-	<button onclick={investSolidityPrompt.open}>강도 조사</button>
+	{#if certificates.find((cert) => cert.type === CERTIFICATION_MEASUREMENT)}
+		<button onclick={investFertilityPrompt.open}>비옥도 조사</button>
+		<button onclick={investSolidityPrompt.open}>강도 조사</button>
+	{/if}
 </Container>
 
 <style>

@@ -1,6 +1,7 @@
 import { getMe } from '$lib/discord/users';
 import { getAccount } from '$lib/server/account';
 import { query } from '$lib/server/db';
+import { CERTIFICATION_MEASUREMENT } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 /**
@@ -119,6 +120,15 @@ export const GET: RequestHandler = async ({ params, cookies, url }) => {
 
 	if (land.length === 0) {
 		return json({ success: false, message: 'Land not found' }, { status: 404 });
+	}
+
+	const certificate = await query('SELECT * FROM certificates WHERE AND user_id = ? AND type = ?', [
+		me.id,
+		CERTIFICATION_MEASUREMENT
+	]);
+
+	if (certificate.length === 0) {
+		return json({ success: false, message: 'Certificate not found' }, { status: 404 });
 	}
 
 	const level = Number(url.searchParams.get('level'));
