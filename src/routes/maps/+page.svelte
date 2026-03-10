@@ -86,7 +86,6 @@
 	let addLandName = $state('');
 	let addLandPosition = $state({ x: 0, y: 0 });
 	let addLandColor = $state('#000000');
-	let addLandAccountId = $state(0);
 	let addLandOwnerId = $state(0);
 
 	async function addLand() {
@@ -100,8 +99,7 @@
 				owner_id: addLandOwnerId || me.id,
 				x: addLandPosition.x,
 				y: addLandPosition.y,
-				color: addLandColor.replace('#', ''),
-				account_id: addLandAccountId
+				color: addLandColor.replace('#', '')
 			})
 		})
 			.then((res) => res.json())
@@ -529,8 +527,6 @@
 	<input type="number" bind:value={addLandPosition.y} step="0.01" placeholder="Y 좌표" />
 	<div>색상</div>
 	<input type="color" bind:value={addLandColor} />
-	<div>계좌번호 (토지를 만들기 위해서는 2냥이 필요해.)</div>
-	<AccountInput bind:value={addLandAccountId} />
 	<button onclick={addLand}>추가</button>
 </PromptFloat>
 <PromptFloat bind:this={addBuildingPrompt}>

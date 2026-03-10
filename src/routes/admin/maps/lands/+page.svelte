@@ -21,8 +21,7 @@
 				owner_id: addLandOwnerId,
 				x: addLandX,
 				y: addLandY,
-				color: addLandColor.substring(1),
-				free: true
+				color: addLandColor.substring(1)
 			})
 		})
 			.then((res) => res.json())

@@ -1,5 +1,4 @@
 import { getMe } from '$lib/discord/users';
-import { getAccount } from '$lib/server/account';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
 import { CERTIFICATION_LAND } from '$lib/util/const';
@@ -81,7 +80,6 @@ export const GET: RequestHandler = async () => {
  *               - x
  *               - y
  *               - color
- *               - account_id
  *             properties:
  *               name:
  *                 type: string
@@ -95,12 +93,6 @@ export const GET: RequestHandler = async () => {
  *               color:
  *                 type: string
  *                 description: The color of the new land (e.g., '#RRGGBB').
- *               account_id:
- *                 type: integer
- *                 description: The account ID (starts from 1) from which the land creation cost will be deducted.
- *               free:
- *                 type: boolean
- *                 description: Optional. If true, land creation is free (admin only).
  *     responses:
  *       200:
  *         description: Land created successfully.
@@ -135,7 +127,7 @@ export const GET: RequestHandler = async () => {
  *                     insufficientFunds:
  *                       value: "Insufficient funds"
  *       401:
- *         description: Unauthorized, no token found, invalid token, or not authorized for free creation.
+ *         description: Unauthorized, no token found, or invalid token
  *         content:
  *           application/json:
  *             schema:
@@ -176,7 +168,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	let owner_id = me.id;
 
-	const { name, x, y, color, account_id, free } = await request.json();
+	const { name, x, y, color } = await request.json();
 
 	if (!name || !owner_id || x === undefined || y === undefined || !color) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
@@ -187,7 +179,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		CERTIFICATION_LAND
 	]);
 
-	if (certificate.length === 0) {
+	if (certificate.length === 0 && !(await isAdmin(owner_id))) {
 		return json({ success: false, message: 'Certificate not found' }, { status: 400 });
 	}
 
@@ -200,39 +192,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		return json(
 			{ success: false, message: 'Land is too close to an existing land' },
 			{ status: 400 }
-		);
-	}
-
-	if (free) {
-		if (!(await isAdmin(owner_id))) {
-			return json({ success: false, message: 'Unauthorized' }, { status: 401 });
-		}
-	} else {
-		const account = await getAccount(account_id);
-
-		if (account.user_id !== owner_id) {
-			// assert that the account owner is corporation
-
-			const corporationMemberRelation = await query(
-				'SELECT cm.* FROM corporation_members cm JOIN accounts a ON cm.corporation_id = a.user_id WHERE a.id = ? AND cm.user_id = ?',
-				[account_id, owner_id]
-			);
-
-			if (corporationMemberRelation.length === 0) {
-				return json({ success: false, message: 'Unauthorized' }, { status: 401 });
-			}
-
-			owner_id = corporationMemberRelation[0].corporation_id;
-		}
-
-		if (account.balance < 2.0) {
-			return json({ success: false, message: 'Insufficient funds' }, { status: 400 });
-		}
-
-		await query('UPDATE accounts SET balance = balance - 2.0 WHERE id = ?', [account_id]);
-		await query(
-			'INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)',
-			[account_id, -2.0, 'withdrawal', '토지 개발']
 		);
 	}
 

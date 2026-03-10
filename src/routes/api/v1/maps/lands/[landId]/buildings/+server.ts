@@ -4,6 +4,7 @@ import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
 import {
 	CERTIFICATION_BUILD,
+	GOVERNMENT_ACCOUNT_ID,
 	TAINT_ITEM_ID,
 	TYPE_FARM,
 	TYPE_MARKET,
@@ -342,6 +343,10 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 				residentialBuildingCost,
 				account_id
 			]);
+			await query('UPDATE accounts SET balance = balance + ? WHERE id = ?', [
+				residentialBuildingCost,
+				GOVERNMENT_ACCOUNT_ID
+			]);
 			await query(
 				"INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, 'withdrawal', ?)",
 				[
@@ -351,23 +356,6 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 				]
 			);
 		}
-	} else {
-		const buildingCost = 0.25 / (land[0].solidity * Math.random());
-		if (account.balance < buildingCost) {
-			return json(
-				{ success: false, message: 'Not enough balance to build building' },
-				{ status: 400 }
-			);
-		}
-
-		await query('UPDATE accounts SET balance = balance - ? WHERE id = ?', [
-			buildingCost,
-			account_id
-		]);
-		await query(
-			"INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, 'withdrawal', ?)",
-			[account_id, buildingCost, `땅#${land_id} ${type} 건축 비용`]
-		);
 	}
 
 	if (free) {
