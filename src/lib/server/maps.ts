@@ -74,9 +74,9 @@ export async function getFee(pathString: string): Promise<number | Response> {
 
 	if (buffer > 0) {
 		if (previousWasRoad) {
-			fee += Math.ceil(Math.pow(buffer, 2) / 200) / 100;
+			fee += Math.ceil(Math.pow(buffer, 2) / 40) / 100;
 		} else {
-			fee += Math.ceil(buffer / 3) / 100;
+			fee += Math.ceil(buffer / 2) / 100;
 		}
 	}
 
