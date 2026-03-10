@@ -251,7 +251,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		CERTIFICATION_BUILD
 	]);
 
-	if (certificate.length === 0) {
+	if (certificate.length === 0 || !(await isAdmin(owner_id))) {
 		return json({ success: false, message: 'Certificate not found' }, { status: 404 });
 	}
 
