@@ -149,8 +149,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	let { owner_id, name, land_a_id, land_b_id, free } = await request.json();
 
-	console.log({ owner_id, name, land_a_id, land_b_id, free });
-
 	if (!name || !owner_id || !land_a_id || !land_b_id) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
 	}
@@ -163,7 +161,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 
 	if (!free) {
-		console.log(landA);
 		const distance = Math.hypot(
 			landA[0].position.coordinates[0] - landB[0].position.coordinates[0],
 			landA[0].position.coordinates[1] - landB[0].position.coordinates[1]

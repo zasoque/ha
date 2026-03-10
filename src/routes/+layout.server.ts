@@ -16,7 +16,5 @@ export const load: LayoutServerLoad = async ({ fetch, cookies }) => {
 		res.json()
 	);
 
-	console.log(certificates);
-
 	return { me, isAdmin: await isAdmin(me?.id || ''), notifications, certificates };
 };

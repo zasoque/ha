@@ -73,7 +73,6 @@
 				if (data.success) {
 					location.reload();
 				} else {
-					console.log(data);
 					alert('송금에 실패했습니다: ' + data.message);
 				}
 			})

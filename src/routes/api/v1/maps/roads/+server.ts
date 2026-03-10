@@ -214,8 +214,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			}
 		}
 
-		console.log(owner_id);
-
 		const stock = await query('SELECT * FROM inventory WHERE user_id = ? AND item_id = ?', [
 			owner_id,
 			TAINT_ITEM_ID
