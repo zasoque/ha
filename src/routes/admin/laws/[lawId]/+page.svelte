@@ -17,9 +17,9 @@
 		})
 			.then((res) => res.json())
 			.then((data) => {
+				console.log(data);
 				if (data.success) {
 					alert('법령이 수정되었습니다.');
-					location.reload();
 				} else {
 					alert('법령 수정에 실패했습니다. ' + data.message);
 				}

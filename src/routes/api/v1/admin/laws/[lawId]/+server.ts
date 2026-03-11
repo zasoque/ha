@@ -76,7 +76,10 @@ export const GET: RequestHandler = async ({ params }) => {
 		return json({ success: false, message: 'Law not found' }, { status: 404 });
 	}
 
-	const contents = await query('SELECT * FROM law_contents WHERE law_id = ?', [lawId]);
+	const contents = await query(
+		'SELECT * FROM law_contents WHERE law_id = ? ORDER BY created_at DESC',
+		[lawId]
+	);
 
 	law.contents = contents;
 
