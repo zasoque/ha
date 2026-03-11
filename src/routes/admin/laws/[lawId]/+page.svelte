@@ -6,14 +6,14 @@
 	const { law } = $derived(data);
 
 	function postLaw() {
-		const contents = (document.querySelector('textarea') as HTMLTextAreaElement).value;
+		const content = (document.querySelector('textarea') as HTMLTextAreaElement).value;
 
-		fetch(`/api/v1/admin/laws/${law.name}`, {
-			method: 'PUT',
+		fetch(`/api/v1/admin/laws/${law.id}`, {
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ level: law.level, contents })
+			body: JSON.stringify({ content })
 		})
 			.then((res) => res.json())
 			.then((data) => {
@@ -34,7 +34,7 @@
 	<div><a href="/admin/laws">뒤로 가기</a></div>
 	<Title>{law.name}</Title>
 	<div>법령 레벨: {law.level}</div>
-	<textarea>{law.contents}</textarea>
+	<textarea>{law.contents[0]?.content}</textarea>
 	<button onclick={postLaw}>법령 수정</button>
 </Container>
 

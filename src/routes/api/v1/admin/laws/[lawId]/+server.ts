@@ -5,20 +5,19 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 
 /**
  * @swagger
- * /api/v1/admin/laws/{lawName}:
+ * /api/v1/admin/laws/{lawId}:
  *   get:
- *     summary: Get a law by name
- *     tags: [Admin]
+ *     summary: Get a law by ID
  *     parameters:
  *       - in: path
- *         name: lawName
- *         schema:
- *           type: string
+ *         name: lawId
  *         required: true
- *         description: The name of the law to retrieve
+ *         schema:
+ *           type: integer
+ *         description: The ID of the law to retrieve
  *     responses:
  *       200:
- *         description: Success
+ *         description: Law retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -35,57 +34,24 @@ import { json, type RequestHandler } from '@sveltejs/kit';
  *                       example: 1
  *                     name:
  *                       type: string
- *                       example: "Law of Gravity"
+ *                       example: "Law Name"
+ *                     level:
+ *                       type: integer
+ *                       example: 1
  *                     contents:
- *                       type: string
- *                       example: "Objects with mass attract each other."
- */
-export const GET: RequestHandler = async ({ params }) => {
-	const { lawName } = params;
-
-	const [law] = await query('SELECT * FROM laws WHERE name = ?', [lawName]);
-
-	if (!law) {
-		return json({ success: false, message: 'Law not found' }, { status: 404 });
-	}
-
-	return json({ success: true, law });
-};
-
-/**
- * @swagger
- * /api/v1/admin/laws/{lawName}:
- *   put:
- *     summary: Update a law by name
- *     tags: [Admin]
- *     parameters:
- *       - in: path
- *         name: lawName
- *         schema:
- *           type: string
- *         required: true
- *         description: The name of the law to update
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               contents:
- *                 type: string
- *                 example: "Objects with mass attract each other."
- *     responses:
- *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           law_id:
+ *                             type: integer
+ *                             example: 1
+ *                           contents:
+ *                             type: string
+ *                             example: "Law content"
  *       404:
  *         description: Law not found
  *         content:
@@ -99,8 +65,75 @@ export const GET: RequestHandler = async ({ params }) => {
  *                 message:
  *                   type: string
  *                   example: "Law not found"
+ *
+ */
+export const GET: RequestHandler = async ({ params }) => {
+	const { lawId } = params;
+
+	const [law] = await query('SELECT * FROM laws WHERE id = ?', [lawId]);
+
+	if (!law) {
+		return json({ success: false, message: 'Law not found' }, { status: 404 });
+	}
+
+	const contents = await query('SELECT * FROM law_contents WHERE law_id = ?', [lawId]);
+
+	law.contents = contents;
+
+	return json({ success: true, law });
+};
+
+/**
+ * @swagger
+ * /api/v1/admin/laws/{lawId}:
+ *   post:
+ *     summary: Add content to a law
+ *     parameters:
+ *       - in: path
+ *         name: lawId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the law to add content to
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: "New law content"
+ *     responses:
+ *       200:
+ *         description: Content added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Content added"
+ *       400:
+ *         description: Bad request (e.g. missing content)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Contents are required"
  *       401:
- *         description: Unauthorized (missing or invalid token)
+ *         description: Unauthorized (e.g. missing or invalid token)
  *         content:
  *           application/json:
  *             schema:
@@ -113,7 +146,7 @@ export const GET: RequestHandler = async ({ params }) => {
  *                   type: string
  *                   example: "Unauthorized"
  *       403:
- *         description: Forbidden (user is not an admin)
+ *         description: Forbidden (e.g. user is not an admin)
  *         content:
  *           application/json:
  *             schema:
@@ -125,8 +158,22 @@ export const GET: RequestHandler = async ({ params }) => {
  *                 message:
  *                   type: string
  *                   example: "Forbidden"
+ *       404:
+ *         description: Law not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Law not found"
+ *
  */
-export const PUT: RequestHandler = async ({ params, cookies, request }) => {
+export const POST: RequestHandler = async ({ params, cookies, request }) => {
 	const token = cookies.get('token');
 
 	if (!token) {
@@ -143,23 +190,22 @@ export const PUT: RequestHandler = async ({ params, cookies, request }) => {
 		return json({ success: false, message: 'Forbidden' }, { status: 403 });
 	}
 
-	const { lawName } = params;
+	const { lawId } = params;
 
-	const { contents, level } = await request.json();
+	const { content } = await request.json();
 
-	if (!contents || !level) {
-		return json({ success: false, message: 'Contents and level are required' }, { status: 400 });
+	if (!content) {
+		return json({ success: false, message: 'Contents are required' }, { status: 400 });
 	}
 
-	const result = await query('UPDATE laws SET contents = ?, level = ? WHERE name = ?', [
-		contents,
-		level,
-		lawName
+	const result = await query('INSERT INTO law_contents (law_id, content) VALUES (?, ?)', [
+		lawId,
+		content
 	]);
 
 	if (result.affectedRows === 0) {
 		return json({ success: false, message: 'Law not found' }, { status: 404 });
 	}
 
-	return json({ success: true, message: 'Law updated' });
+	return json({ success: true, message: 'Content added' });
 };

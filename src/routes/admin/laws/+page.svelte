@@ -44,7 +44,7 @@
 	<Title>법령 관리</Title>
 	<ul>
 		{#each laws as law}
-			<li><a href={`/admin/laws/${law.name}`}>{law.name}</a></li>
+			<li><a href={`/admin/laws/${law.id}`}>{law.name}</a></li>
 		{/each}
 	</ul>
 	<div><button onclick={newLawPrompt.open}>새 법령 만들기</button></div>
