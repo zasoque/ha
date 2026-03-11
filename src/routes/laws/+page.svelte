@@ -5,11 +5,18 @@
 	const { data } = $props();
 	const { laws } = $derived(data);
 
-	console.log(laws);
+	function search() {
+		const query = (document.getElementById('search') as HTMLInputElement).value.trim();
+		if (query) {
+			location.href = `/laws/search?q=${encodeURIComponent(query)}`;
+		}
+	}
 </script>
 
 <Container>
 	<Title>법령정보</Title>
+	<input type="text" placeholder="법령 검색" id="search" />
+	<button onclick={search}>검색</button>
 	<div>헌법</div>
 	<ul>
 		{#each laws.filter((l) => l.level === '헌법') as law}
