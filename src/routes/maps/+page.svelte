@@ -12,7 +12,8 @@
 	import {
 		CERTIFICATION_LAND,
 		CERTIFICATION_BUILD,
-		CERTIFICATION_MEASUREMENT
+		CERTIFICATION_MEASUREMENT,
+		CERTIFICATION_RAIL
 	} from '$lib/util/const';
 
 	let { data } = $props();
@@ -611,7 +612,9 @@
 		<button onclick={addBuildingPrompt.open}>건물 추가</button>
 	{/if}
 	<button onclick={addRoadPrompt.open}>도로 추가</button>
-	<button onclick={addRailPrompt.open}>철도 추가</button>
+	{#if certificates.find((cert) => cert.type === CERTIFICATION_RAIL)}
+		<button onclick={addRailPrompt.open}>철도 추가</button>
+	{/if}
 	<button onclick={harvestPrompt.open}>수확</button>
 	<button onclick={pathPrompt.open}>경로</button>
 	{#if certificates.find((cert) => cert.type === CERTIFICATION_MEASUREMENT)}

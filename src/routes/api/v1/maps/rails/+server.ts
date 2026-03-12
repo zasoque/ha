@@ -1,7 +1,7 @@
 import { getMe } from '$lib/discord/users';
 import { isAdmin } from '$lib/server/admin';
 import { query } from '$lib/server/db';
-import { TAINT_ITEM_ID } from '$lib/util/const';
+import { CERTIFICATION_RAIL, TAINT_ITEM_ID } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 /**
@@ -151,6 +151,18 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 	if (!name || !owner_id || !land_a_id || !land_b_id) {
 		return json({ success: false, message: 'Missing required fields' }, { status: 400 });
+	}
+
+	const [certificates] = await query('SELECT * FROM certificates WHERE user_id = ? AND type = ?', [
+		owner_id,
+		CERTIFICATION_RAIL
+	]);
+
+	if (!certificates) {
+		return json(
+			{ success: false, message: 'User is not certified to build rails' },
+			{ status: 403 }
+		);
 	}
 
 	const landA = await query('SELECT * FROM lands WHERE id = ?', [land_a_id]);
