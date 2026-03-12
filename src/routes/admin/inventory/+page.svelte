@@ -2,6 +2,8 @@
 	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
+	import PersonInput from '$lib/components/aci/PersonInput.svelte';
+	import ItemInput from '$lib/components/aci/ItemInput.svelte';
 
 	let userId = $state('');
 	let itemId = $state('');
@@ -42,9 +44,9 @@
 </Container>
 <PromptFloat bind:this={giveItemPrompt}>
 	<div>아이템을 지급할 사용자 ID</div>
-	<input type="text" placeholder="사용자 ID" bind:value={userId} />
+	<PersonInput bind:value={userId} />
 	<div>지급할 아이템 ID</div>
-	<input type="text" placeholder="아이템 ID" bind:value={itemId} />
+	<ItemInput bind:value={itemId} />
 	<div>지급할 수량</div>
 	<input type="number" placeholder="수량" min="1" step="1" bind:value={quantity} />
 	<button onclick={giveItem}>지급하기</button>
