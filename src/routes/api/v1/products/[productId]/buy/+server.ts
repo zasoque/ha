@@ -1,5 +1,5 @@
 import { query } from '$lib/server/db';
-import { getFee } from '$lib/server/maps';
+import { getFee, sendFeeNotification } from '$lib/server/maps';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { formatCurrency } from '$lib/util/economy';
 import { getMe } from '$lib/discord/users';
@@ -223,6 +223,8 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	if (account.balance < totalPrice) {
 		return json({ success: false, message: 'Not enough balance' }, { status: 400 });
 	}
+
+	await sendFeeNotification(path, buyer_id);
 
 	const [productItem] = await query(`SELECT * FROM items WHERE id = ?`, [product.item_id]);
 

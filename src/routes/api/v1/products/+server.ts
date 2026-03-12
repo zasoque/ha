@@ -1,7 +1,7 @@
 import { getMe } from '$lib/discord/users';
 import { getAccount } from '$lib/server/account';
 import { query } from '$lib/server/db';
-import { getFee } from '$lib/server/maps';
+import { getFee, sendFeeNotification } from '$lib/server/maps';
 import { GOVERNMENT_ACCOUNT_ID, TYPE_MARKET } from '$lib/util/const';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
@@ -336,6 +336,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			{ status: 400 }
 		);
 	}
+
+	await sendFeeNotification(path, sellerId);
 
 	await query(
 		'INSERT INTO transactions (account_id, amount, type, description) VALUES (?, ?, ?, ?)',

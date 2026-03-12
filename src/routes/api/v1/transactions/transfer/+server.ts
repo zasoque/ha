@@ -1,6 +1,6 @@
 import { getMe } from '$lib/discord/users';
 import { query } from '$lib/server/db';
-import { getFee } from '$lib/server/maps';
+import { getFee, sendFeeNotification } from '$lib/server/maps';
 import { sendNotification } from '$lib/server/notification';
 import { GOVERNMENT_ACCOUNT_ID } from '$lib/util/const';
 import { formatCurrency } from '$lib/util/economy';
@@ -238,6 +238,8 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 			{ status: 400 }
 		);
 	}
+
+	await sendFeeNotification(path, fromAccountOwner[0].id);
 
 	description = description || `${fromAccount.id}>${toAccount.id},${formatCurrency(amount)}`;
 

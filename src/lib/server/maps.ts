@@ -82,3 +82,35 @@ export async function getFee(pathString: string): Promise<number | Response> {
 
 	return fee;
 }
+
+export async function sendFeeNotification(pathString: string, userId: string) {
+	const pathLandIds = pathString.split('-').map(Number);
+	const rails = [];
+	for (let i = 0; i < pathLandIds.length - 1; i++) {
+		const landAId = pathLandIds[i];
+		const landBId = pathLandIds[i + 1];
+		const road = await query(
+			'SELECT * FROM roads WHERE (land_a_id = ? AND land_b_id = ?) OR (land_a_id = ? AND land_b_id = ?)',
+			[landAId, landBId, landBId, landAId]
+		);
+		if (road.length > 0) {
+			continue;
+		}
+		const rail = await query(
+			'SELECT * FROM rails WHERE (land_a_id = ? AND land_b_id = ?) OR (land_a_id = ? AND land_b_id = ?)',
+			[landAId, landBId, landBId, landAId]
+		);
+		if (rail.length > 0) {
+			rails.push(rail[0]);
+		}
+	}
+
+	const [person] = await query('SELECT * FROM people WHERE id = ?', [userId]);
+
+	for (const rail of rails) {
+		await query('INSERT INTO notifications (user_id, message) VALUES (?, ?)', [
+			userId,
+			`${person.name}(${person.id})님이 ${rail.name}(#${rail.id})을(를) 이용하여 이동하셨습니다.`
+		]);
+	}
+}
