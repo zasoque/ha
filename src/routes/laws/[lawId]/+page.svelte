@@ -17,7 +17,7 @@
 		{#each law.contents as contents, i}
 			<li>
 				<a href="/laws/{law.id}/{contents.id}">
-					<span class="history-date">{contents.created_at}</span>
+					<span class="history-date">{new Date(contents.created_at).toLocaleString()}</span>
 					<span class="history-description">제{law.contents.length - i}호</span>
 				</a>
 			</li>
