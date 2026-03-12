@@ -9,6 +9,7 @@
 	import PersonInput from '$lib/components/aci/PersonInput.svelte';
 	import BuildingInput from '$lib/components/aci/BuildingInput.svelte';
 	import LandInput from '$lib/components/aci/LandInput.svelte';
+	import RailInput from '$lib/components/aci/RailInput.svelte';
 	import {
 		CERTIFICATION_LAND,
 		CERTIFICATION_BUILD,
@@ -87,7 +88,7 @@
 	let addLandName = $state('');
 	let addLandPosition = $state({ x: 0, y: 0 });
 	let addLandColor = $state('#000000');
-	let addLandOwnerId = $state(0);
+	let addLandOwnerId = $state();
 
 	async function addLand() {
 		await fetch('/api/v1/maps/lands', {
@@ -117,10 +118,10 @@
 	}
 
 	let addRoadPrompt: PromptFloat = $state()!;
-	let addRoadOwnerId = $state(0);
+	let addRoadOwnerId = $state();
 	let addRoadName = $state('');
-	let addRoadLandAId = $state(0);
-	let addRoadLandBId = $state(0);
+	let addRoadLandAId = $state();
+	let addRoadLandBId = $state();
 
 	async function addRoad() {
 		await fetch('/api/v1/maps/roads', {
@@ -150,10 +151,10 @@
 
 	let addBuildingPrompt: PromptFloat = $state()!;
 	let addBuildingName = $state('');
-	let addBuildingLandId = $state(0);
+	let addBuildingLandId = $state();
 	let addBuildingType = $state('');
-	let addBuildingAccountId = $state(0);
-	let addBuildingOwnerId = $state(0);
+	let addBuildingAccountId = $state();
+	let addBuildingOwnerId = $state();
 
 	async function addBuilding() {
 		await fetch(`/api/v1/maps/lands/${addBuildingLandId}/buildings`, {
@@ -182,10 +183,10 @@
 	}
 
 	let addRailPrompt: PromptFloat = $state()!;
-	let addRailOwnerId = $state(0);
+	let addRailOwnerId = $state();
 	let addRailName = $state('');
-	let addRailLandAId = $state(0);
-	let addRailLandBId = $state(0);
+	let addRailLandAId = $state();
+	let addRailLandBId = $state();
 
 	$effect(() => {
 		if (me?.id) {
@@ -223,7 +224,7 @@
 	}
 
 	let harvestPrompt: PromptFloat = $state()!;
-	let harvestPromptBuilding = $state(0);
+	let harvestPromptBuilding = $state();
 
 	async function harvest() {
 		await fetch(`/api/v1/maps/buildings/${harvestPromptBuilding}/harvest`, {
@@ -292,9 +293,9 @@
 	}
 
 	let investFertilityPrompt: PromptFloat = $state()!;
-	let investFertilityLandId = $state(0);
-	let investFertilityLevel = $state(0);
-	let investFertilityAccountId = $state(0);
+	let investFertilityLandId = $state();
+	let investFertilityLevel = $state();
+	let investFertilityAccountId = $state();
 
 	async function investFertility() {
 		await fetch(
@@ -320,9 +321,9 @@
 	}
 
 	let investSolidityPrompt: PromptFloat = $state()!;
-	let investSolidityLandId = $state(0);
+	let investSolidityLandId = $state();
 	let investSolidityLevel = $state(0);
-	let investSolidityAccountId = $state(0);
+	let investSolidityAccountId = $state();
 
 	async function investSolidity() {
 		await fetch(
@@ -344,6 +345,87 @@
 			})
 			.catch((err) => {
 				console.error('강도 조사 실패:', err);
+			});
+	}
+
+	let changeLandOwnerPrompt: PromptFloat = $state()!;
+	let changeLandOwnerLandId = $state();
+	let changeLandOwnerNewOwnerId = $state();
+
+	function changeLandOwner() {
+		fetch(`/api/v1/maps/lands/${changeLandOwnerLandId}/owner`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				owner_id: changeLandOwnerNewOwnerId
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('토지 소유자 변경에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('토지 소유자 변경 실패:', err);
+			});
+	}
+
+	let changeBuildingOwnerPrompt: PromptFloat = $state()!;
+	let changeBuildingOwnerBuildingId = $state();
+	let changeBuildingOwnerNewOwnerId = $state();
+
+	function changeBuildingOwner() {
+		fetch(`/api/v1/maps/buildings/${changeBuildingOwnerBuildingId}/owner`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				owner_id: changeBuildingOwnerNewOwnerId
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('건물 소유자 변경에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('건물 소유자 변경 실패:', err);
+			});
+	}
+
+	let changeRailOwnerPrompt: PromptFloat = $state()!;
+	let changeRailOwnerRailId = $state();
+	let changeRailOwnerNewOwnerId = $state();
+
+	function changeRailOwner() {
+		fetch(`/api/v1/maps/rails/${changeRailOwnerRailId}/owner`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				owner_id: changeRailOwnerNewOwnerId
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.success) {
+					location.reload();
+				} else {
+					alert('철도 소유자 변경에 실패했습니다: ' + data.message);
+				}
+			})
+			.catch((err) => {
+				console.error('철도 소유자 변경 실패:', err);
 			});
 	}
 
@@ -601,6 +683,30 @@
 	<AccountInput bind:value={investSolidityAccountId} />
 	<button onclick={investSolidity}>조사</button>
 </PromptFloat>
+<PromptFloat bind:this={changeLandOwnerPrompt}>
+	<div>토지 소유자 변경</div>
+	<div>토지 ID</div>
+	<LandInput bind:value={changeLandOwnerLandId} />
+	<div>새 소유자 ID</div>
+	<PersonInput bind:value={changeLandOwnerNewOwnerId} />
+	<button onclick={changeLandOwner}>변경</button>
+</PromptFloat>
+<PromptFloat bind:this={changeBuildingOwnerPrompt}>
+	<div>건물 소유자 변경</div>
+	<div>건물 ID</div>
+	<BuildingInput bind:value={changeBuildingOwnerBuildingId} />
+	<div>새 소유자 ID</div>
+	<PersonInput bind:value={changeBuildingOwnerNewOwnerId} />
+	<button onclick={changeBuildingOwner}>변경</button>
+</PromptFloat>
+<PromptFloat bind:this={changeRailOwnerPrompt}>
+	<div>철도 소유자 변경</div>
+	<div>철도 ID</div>
+	<RailInput bind:value={changeRailOwnerRailId} />
+	<div>새 소유자 ID</div>
+	<PersonInput bind:value={changeRailOwnerNewOwnerId} />
+	<button onclick={changeRailOwner}>변경</button>
+</PromptFloat>
 
 <Container>
 	<Title>하 지도</Title>
@@ -621,6 +727,9 @@
 		<button onclick={investFertilityPrompt.open}>비옥도 조사</button>
 		<button onclick={investSolidityPrompt.open}>강도 조사</button>
 	{/if}
+	<button onclick={changeLandOwnerPrompt.open}>토지 소유자 변경</button>
+	<button onclick={changeBuildingOwnerPrompt.open}>건물 소유자 변경</button>
+	<button onclick={changeRailOwnerPrompt.open}>철도 소유자 변경</button>
 </Container>
 
 <style>
