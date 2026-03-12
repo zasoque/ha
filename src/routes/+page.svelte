@@ -5,13 +5,13 @@
 </script>
 
 <Container>
-	<div>하은행에 온 것을 환영해.</div>
+	<div>하이파이브에 온 것을 환영해.</div>
 	{#if data.username}
 		<div>
 			{#if data.username === 'Unknown'}
-				너의 정보는 아직 하은행에 등록되지 않았어.
+				너의 정보는 아직 하이파이브에 등록되지 않았어.
 			{:else}
-				너의 이름은 {data.username}(이)야.
+				너의 이름은 {data.username}이고, 너의 ID는 {data.id}야.
 			{/if}
 		</div>
 	{/if}

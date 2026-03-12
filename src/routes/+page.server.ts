@@ -7,6 +7,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 	let username;
 	let residence;
 	let land;
+	let id;
 
 	if (token) {
 		const me = await getMe(token);
@@ -25,11 +26,13 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 					.then((res) => res.json())
 					.then((data) => data.land)
 			: null;
+		id = me.id;
 	}
 
 	return {
 		username,
 		residence,
-		land
+		land,
+		id
 	};
 };

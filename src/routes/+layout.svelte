@@ -133,12 +133,13 @@
 		}
 	</style>
 	<link rel="icon" href={favicon} />
-	<title>하은행</title>
+	<title>하이파이브</title>
 </svelte:head>
 
 <div class="header">
 	<div class="title">
-		<a href="/"><img src={favicon} alt="하은행 로고" width="32" height="32" class="title-icon" /></a
+		<a href="/"
+			><img src={favicon} alt="하이파이브 로고" width="32" height="32" class="title-icon" /></a
 		>
 	</div>
 	<div class="navigation">
@@ -168,7 +169,7 @@
 {@render children()}
 <div class="footer">
 	<a href="https://w.halv.kr/하">하 쩌모위키</a>
-	<a href="https://github.com/zasoque/ha">하은행 레포지토리</a>
+	<a href="https://github.com/zasoque/ha">하이파이브 레포지토리</a>
 	<a href="/laws">법령정보</a>
 	<a href="/diff">변경사항 추적기</a>
 	<a href="/docs">API 문서</a>

@@ -48,12 +48,6 @@
 
 <Container>
 	<Title>시장</Title>
-	<div class="description">
-		이 시장은 중개의 대상이 되고, 실제 거래는 본인과 직접 만나서 하기를 바라.
-	</div>
-	<div class="description">
-		이 거래에서 발생하는 일련의 피해에 대해서는 하은행에서 책임지지 않으니 주의해!
-	</div>
 	<div class="products">
 		{#each products() as product}
 			<a class="product" href="/products/{product.id}">
