@@ -158,6 +158,10 @@
 		margin-top: 1rem;
 	}
 
+	.article-title {
+		font-size: 0.8rem;
+	}
+
 	.clause {
 		margin-top: 0.5rem;
 	}
