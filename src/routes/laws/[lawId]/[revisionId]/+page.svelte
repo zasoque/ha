@@ -24,7 +24,7 @@
 	<Law {lawJSON} />
 	<Title>변화</Title>
 	<pre>{getDiff(
-			law.contents[law.contents.length - index + 1].content,
+			law.contents[law.contents.length - index + 1]?.content,
 			law.contents[law.contents.length - index].content
 		)}</pre>
 </Container>
