@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
@@ -98,41 +97,39 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin">뒤로 가기</a></div>
-	<Title>국민 관리</Title>
-	<table class="table">
-		<tbody>
+<div><a href="/admin">뒤로 가기</a></div>
+<Title>국민 관리</Title>
+<table class="table">
+	<tbody>
+		<tr>
+			<th>본명</th>
+			<th>예명</th>
+			<th>거주지</th>
+			<th>종류</th>
+			<th>동작</th>
+		</tr>
+		{#each people() as person}
 			<tr>
-				<th>본명</th>
-				<th>예명</th>
-				<th>거주지</th>
-				<th>종류</th>
-				<th>동작</th>
+				<td>{person.id}</td>
+				<td>{person.name}</td>
+				<td>
+					{#if person.residence}
+						{person.residence_land.name} {person.residence_building.name} #{person.residence}
+					{:else}
+						(거주지 없음)
+					{/if}
+				</td>
+				<td>{person.type}</td>
+				<td>
+					<button onclick={openEditPersonPrompt(person.id)}>변경</button>
+					<button onclick={deletePerson(person.id)}>삭제</button>
+				</td>
 			</tr>
-			{#each people() as person}
-				<tr>
-					<td>{person.id}</td>
-					<td>{person.name}</td>
-					<td>
-						{#if person.residence}
-							{person.residence_land.name} {person.residence_building.name} #{person.residence}
-						{:else}
-							(거주지 없음)
-						{/if}
-					</td>
-					<td>{person.type}</td>
-					<td>
-						<button onclick={openEditPersonPrompt(person.id)}>변경</button>
-						<button onclick={deletePerson(person.id)}>삭제</button>
-					</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-	<Pagination page={page()} limit={limit()} />
-	<button onclick={addPersonPrompt.open}>국민 추가</button>
-</Container>
+		{/each}
+	</tbody>
+</table>
+<Pagination page={page()} limit={limit()} />
+<button onclick={addPersonPrompt.open}>국민 추가</button>
 <PromptFloat bind:this={addPersonPrompt}>
 	<div>국민 본명</div>
 	<input type="text" placeholder="본명" bind:value={newId} />

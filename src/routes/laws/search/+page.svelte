@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 
 	const { data } = $props();
@@ -18,26 +17,24 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/laws">뒤로 가기</a></div>
-	<Title>검색 결과: {q}</Title>
-	{#each laws as law}
-		<div class="law">
-			<a href={`/laws/${law.id}`}>
-				<div class="law-name">
-					{law.name}
-				</div>
-				<div class="match">
-					{#each getMatch(law) as match}
-						<div class="match-item">
-							{@html match}
-						</div>
-					{/each}
-				</div>
-			</a>
-		</div>
-	{/each}
-</Container>
+<div><a href="/laws">뒤로 가기</a></div>
+<Title>검색 결과: {q}</Title>
+{#each laws as law}
+	<div class="law">
+		<a href={`/laws/${law.id}`}>
+			<div class="law-name">
+				{law.name}
+			</div>
+			<div class="match">
+				{#each getMatch(law) as match}
+					<div class="match-item">
+						{@html match}
+					</div>
+				{/each}
+			</div>
+		</a>
+	</div>
+{/each}
 
 <style>
 	.law {

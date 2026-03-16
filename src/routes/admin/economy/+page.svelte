@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import AccountInput from '$lib/components/aci/AccountInput.svelte';
@@ -103,13 +102,11 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin">뒤로 가기</a></div>
-	<Title>경제 관리</Title>
-	<button onclick={setTaintFeePrompt.open}>테인트세 설정</button>
-	<button onclick={printPrompt.open}>냥푼 발행</button>
-	<button onclick={burnPrompt.open}>냥푼 소각</button>
-</Container>
+<div><a href="/admin">뒤로 가기</a></div>
+<Title>경제 관리</Title>
+<button onclick={setTaintFeePrompt.open}>테인트세 설정</button>
+<button onclick={printPrompt.open}>냥푼 발행</button>
+<button onclick={burnPrompt.open}>냥푼 소각</button>
 
 <PromptFloat bind:this={printPrompt}>
 	<div>발행할 냥푼 양</div>

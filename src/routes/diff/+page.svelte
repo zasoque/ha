@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import { createTwoFilesPatch } from 'diff';
 
 	let one = $state('');
@@ -11,11 +10,9 @@
 	}
 </script>
 
-<Container>
-	<textarea bind:value={one} placeholder="현행"></textarea>
-	<textarea bind:value={two} placeholder="개정"></textarea>
-	<textarea readonly value={getDiff()}></textarea>
-</Container>
+<textarea bind:value={one} placeholder="현행"></textarea>
+<textarea bind:value={two} placeholder="개정"></textarea>
+<textarea readonly value={getDiff()}></textarea>
 
 <style>
 	textarea {

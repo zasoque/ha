@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
@@ -32,11 +31,9 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin/maps">뒤로 가기</a></div>
-	<Title>철도 관리</Title>
-	<button onclick={addPrompt.open}>철도 추가</button>
-</Container>
+<div><a href="/admin/maps">뒤로 가기</a></div>
+<Title>철도 관리</Title>
+<button onclick={addPrompt.open}>철도 추가</button>
 <PromptFloat bind:this={addPrompt}>
 	<div>철도 이름</div>
 	<input type="text" placeholder="철도 이름" bind:value={addRoadName} />

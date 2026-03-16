@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import PersonInput from '$lib/components/aci/PersonInput.svelte';
@@ -33,33 +32,31 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin">뒤로 가기</a></div>
-	<Title>여권 관리</Title>
-	<table>
-		<thead>
+<div><a href="/admin">뒤로 가기</a></div>
+<Title>여권 관리</Title>
+<table>
+	<thead>
+		<tr>
+			<th>여권 번호</th>
+			<th>본명</th>
+			<th>예명</th>
+			<th>발급일자</th>
+			<th>만료일자</th>
+		</tr>
+	</thead>
+	<tbody>
+		{#each passports as passport}
 			<tr>
-				<th>여권 번호</th>
-				<th>본명</th>
-				<th>예명</th>
-				<th>발급일자</th>
-				<th>만료일자</th>
+				<td>{passport.id}</td>
+				<td>{passport.person_id}</td>
+				<td>{passport.name}</td>
+				<td>{new Date(passport.issue_date).toLocaleDateString()}</td>
+				<td>{new Date(passport.expiry_date).toLocaleDateString()}</td>
 			</tr>
-		</thead>
-		<tbody>
-			{#each passports as passport}
-				<tr>
-					<td>{passport.id}</td>
-					<td>{passport.person_id}</td>
-					<td>{passport.name}</td>
-					<td>{new Date(passport.issue_date).toLocaleDateString()}</td>
-					<td>{new Date(passport.expiry_date).toLocaleDateString()}</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-	<button onclick={issuePassportPrompt.open}>여권 발급</button>
-</Container>
+		{/each}
+	</tbody>
+</table>
+<button onclick={issuePassportPrompt.open}>여권 발급</button>
 <PromptFloat bind:this={issuePassportPrompt}>
 	<div>여권 발급</div>
 	<div>본명</div>

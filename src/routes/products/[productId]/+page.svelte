@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
@@ -40,17 +39,15 @@
 	}
 </script>
 
-<Container>
-	<div class="back"><a href="/products">뒤로 가기</a></div>
-	<Title>상품 상세</Title>
-	<div class="name">{product().item.name} &times; {product().quantity}</div>
-	<div class="description">{product().description}</div>
-	<div class="price">{formatCurrency(product().price)}</div>
-	<div class="owner">판매자: {product().owner_name}</div>
-	<div class="buttons">
-		<button onclick={buyPrompt.open}>구매하기</button>
-	</div>
-</Container>
+<div class="back"><a href="/products">뒤로 가기</a></div>
+<Title>상품 상세</Title>
+<div class="name">{product().item.name} &times; {product().quantity}</div>
+<div class="description">{product().description}</div>
+<div class="price">{formatCurrency(product().price)}</div>
+<div class="owner">판매자: {product().owner_name}</div>
+<div class="buttons">
+	<button onclick={buyPrompt.open}>구매하기</button>
+</div>
 
 <PromptFloat bind:this={buyPrompt}>
 	<div>상품 구매</div>

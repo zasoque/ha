@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
@@ -34,11 +33,9 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin/maps">뒤로 가기</a></div>
-	<Title>건물 관리</Title>
-	<button onclick={addBuidlingPrompt.open}>건물 추가</button>
-</Container>
+<div><a href="/admin/maps">뒤로 가기</a></div>
+<Title>건물 관리</Title>
+<button onclick={addBuidlingPrompt.open}>건물 추가</button>
 
 <PromptFloat bind:this={addBuidlingPrompt}>
 	<div>건물 추가</div>

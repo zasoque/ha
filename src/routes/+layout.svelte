@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
 	import favicon from '$lib/assets/favicon.svg';
 
 	const { children, data } = $props();
@@ -160,13 +161,16 @@
 				<a href="/admin" class="navigation-item">관리자</a>
 			{/if}
 			<a href="/logout" class="navigation-item">로그아웃</a>
+			<a href="/keys" class="navigation-item">전자서명</a>
 			<span class="navigation-item">{me().global_name}으로 로그인됨</span>
 		{:else}
 			<a href="/login" class="navigation-item">로그인</a>
 		{/if}
 	</div>
 </div>
-{@render children()}
+<Container>
+	{@render children()}
+</Container>
 <div class="footer">
 	<a href="https://w.halv.kr/하">하 쩌모위키</a>
 	<a href="https://github.com/zasoque/ha">하이파이브 레포지토리</a>

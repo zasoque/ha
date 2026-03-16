@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
@@ -47,36 +46,34 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin">뒤로 가기</a></div>
-	<Title>사증 관리</Title>
-	<select onchange={sortByType}>
-		<option>발급 날짜 내림차순</option>
-		<option>만료 날짜 내림차순</option>
-	</select>
-	<table class="table">
-		<thead>
+<div><a href="/admin">뒤로 가기</a></div>
+<Title>사증 관리</Title>
+<select onchange={sortByType}>
+	<option>발급 날짜 내림차순</option>
+	<option>만료 날짜 내림차순</option>
+</select>
+<table class="table">
+	<thead>
+		<tr>
+			<th>인원 디스코드 ID</th>
+			<th>사증 종류</th>
+			<th>발급 날짜</th>
+			<th>만료 날짜</th>
+		</tr>
+	</thead>
+	<tbody>
+		{#each visas() as visa}
 			<tr>
-				<th>인원 디스코드 ID</th>
-				<th>사증 종류</th>
-				<th>발급 날짜</th>
-				<th>만료 날짜</th>
+				<td>{visa.user_id}</td>
+				<td>{visa.type}</td>
+				<td>{new Date(visa.date_issued).toLocaleDateString()}</td>
+				<td>{new Date(visa.date_expiry).toLocaleDateString()}</td>
 			</tr>
-		</thead>
-		<tbody>
-			{#each visas() as visa}
-				<tr>
-					<td>{visa.user_id}</td>
-					<td>{visa.type}</td>
-					<td>{new Date(visa.date_issued).toLocaleDateString()}</td>
-					<td>{new Date(visa.date_expiry).toLocaleDateString()}</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-	<Pagination page={page()} limit={limit()}></Pagination>
-	<button onclick={addVisaPrompt.open}>사증 추가</button>
-</Container>
+		{/each}
+	</tbody>
+</table>
+<Pagination page={page()} limit={limit()}></Pagination>
+<button onclick={addVisaPrompt.open}>사증 추가</button>
 <PromptFloat bind:this={addVisaPrompt}>
 	<div>인원 디스코드 ID</div>
 	<input id="visa-user-id" type="text" bind:value={addVisaUserId} />

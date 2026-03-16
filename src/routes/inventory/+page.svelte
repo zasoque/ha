@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Stock from '$lib/components/Stock.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
@@ -50,14 +49,12 @@
 	}
 </script>
 
-<Container>
-	<Title>인벤토리</Title>
-	<div class="inventory">
-		{#each inventory() as stock}
-			<Stock {stock} ongive={() => openGive(stock.item.id)} />
-		{/each}
-	</div>
-</Container>
+<Title>인벤토리</Title>
+<div class="inventory">
+	{#each inventory() as stock}
+		<Stock {stock} ongive={() => openGive(stock.item.id)} />
+	{/each}
+</div>
 <PromptFloat bind:this={givePrompt}>
 	<div>아이템 ID</div>
 	<input id="item-id" type="number" bind:value={giveItemId} disabled />

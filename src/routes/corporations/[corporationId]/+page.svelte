@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import Stock from '$lib/components/Stock.svelte';
@@ -42,29 +41,27 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/corporations">뒤로 가기</a></div>
-	<Title>법인 상세</Title>
-	<div>법인 본명: {corporation().id}</div>
-	<ul>
-		{#each members() as member}
-			<li>{member.user_id}</li>
-		{/each}
-	</ul>
-	<div><button onclick={addMemberPrompt.open}>법인 멤버 추가</button></div>
-	<div>인벤토리</div>
-	<div class="inventory">
-		{#each inventory() as stock}
-			<Stock {stock} ongive={() => {}} />
-		{/each}
-	</div>
-	<div>계좌</div>
-	<ul>
-		{#each accounts() as account}
-			<li><a href="/accounts/{account.id}">{account.id} - {formatCurrency(account.balance)}</a></li>
-		{/each}
-	</ul>
-</Container>
+<div><a href="/corporations">뒤로 가기</a></div>
+<Title>법인 상세</Title>
+<div>법인 본명: {corporation().id}</div>
+<ul>
+	{#each members() as member}
+		<li>{member.user_id}</li>
+	{/each}
+</ul>
+<div><button onclick={addMemberPrompt.open}>법인 멤버 추가</button></div>
+<div>인벤토리</div>
+<div class="inventory">
+	{#each inventory() as stock}
+		<Stock {stock} ongive={() => {}} />
+	{/each}
+</div>
+<div>계좌</div>
+<ul>
+	{#each accounts() as account}
+		<li><a href="/accounts/{account.id}">{account.id} - {formatCurrency(account.balance)}</a></li>
+	{/each}
+</ul>
 <PromptFloat bind:this={addMemberPrompt}>
 	<div>법인 멤버 추가</div>
 	<div>법인 멤버 ID</div>

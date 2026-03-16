@@ -1,5 +1,4 @@
 <script>
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
 
@@ -35,18 +34,16 @@
 	}
 </script>
 
-<Container>
-	<Title>계좌</Title>
-	<div class="accounts">
-		{#each accounts() as account}
-			<a href="/accounts/{account.id}" class="account">
-				<div class="account-id">예금 {account.id}</div>
-				<div class="account-balance">{formatCurrency(account.balance)}</div>
-			</a>
-		{/each}
-	</div>
-	<div><button onclick={createAccount} class="create-account">계좌 개설하기</button></div>
-</Container>
+<Title>계좌</Title>
+<div class="accounts">
+	{#each accounts() as account}
+		<a href="/accounts/{account.id}" class="account">
+			<div class="account-id">예금 {account.id}</div>
+			<div class="account-balance">{formatCurrency(account.balance)}</div>
+		</a>
+	{/each}
+</div>
+<div><button onclick={createAccount} class="create-account">계좌 개설하기</button></div>
 
 <style>
 	.accounts {

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import PersonInput from '$lib/components/aci/PersonInput.svelte';
@@ -60,31 +59,29 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin">뒤로 가기</a></div>
-	<Title>자격증 관리</Title>
-	<button onclick={postCertificatePrompt.open}>자격증 발급</button>
-	<table>
-		<thead>
+<div><a href="/admin">뒤로 가기</a></div>
+<Title>자격증 관리</Title>
+<button onclick={postCertificatePrompt.open}>자격증 발급</button>
+<table>
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>발급인원</th>
+			<th>종류</th>
+			<th>행동</th>
+		</tr>
+	</thead>
+	<tbody>
+		{#each certificates() as certificate}
 			<tr>
-				<th>ID</th>
-				<th>발급인원</th>
-				<th>종류</th>
-				<th>행동</th>
+				<td>{certificate.id}</td>
+				<td>{certificate.user_id}</td>
+				<td>{certificate.type}</td>
+				<td><button onclick={deleteCertificate(certificate.id)}>삭제</button></td>
 			</tr>
-		</thead>
-		<tbody>
-			{#each certificates() as certificate}
-				<tr>
-					<td>{certificate.id}</td>
-					<td>{certificate.user_id}</td>
-					<td>{certificate.type}</td>
-					<td><button onclick={deleteCertificate(certificate.id)}>삭제</button></td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
-</Container>
+		{/each}
+	</tbody>
+</table>
 <PromptFloat bind:this={postCertificatePrompt}>
 	<div>자격증 발급</div>
 	<div>발급인원 ID</div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 
@@ -39,69 +38,59 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/admin">뒤로 가기</a></div>
-	<Title>법령 관리</Title>
-	<div>헌법</div>
-	<ul>
-		{#each laws.filter((l) => l.level === '헌법') as law}
-			<li>
-				<a href={`/admin/laws/${law.id}`}>
-					{law.name}
-				</a>
-			</li>
-		{/each}
-	</ul>
-	<div>법률</div>
-	<ul>
-		{#each laws
-			.filter((l) => l.level === '법률')
-			.sort((a, b) => a.name.localeCompare(b.name)) as law}
-			<li>
-				<a href={`/admin/laws/${law.id}`}>
-					{law.name}
-				</a>
-			</li>
-		{/each}
-	</ul>
-	<div>명령</div>
-	<ul>
-		{#each laws
-			.filter((l) => l.level === '명령')
-			.sort((a, b) => a.name.localeCompare(b.name)) as law}
-			<li>
-				<a href={`/admin/laws/${law.id}`}>
-					{law.name}
-				</a>
-			</li>
-		{/each}
-	</ul>
-	<div>조례</div>
-	<ul>
-		{#each laws
-			.filter((l) => l.level === '조례')
-			.sort((a, b) => a.name.localeCompare(b.name)) as law}
-			<li>
-				<a href={`/admin/laws/${law.id}`}>
-					{law.name}
-				</a>
-			</li>
-		{/each}
-	</ul>
-	<div>규칙</div>
-	<ul>
-		{#each laws
-			.filter((l) => l.level === '규칙')
-			.sort((a, b) => a.name.localeCompare(b.name)) as law}
-			<li>
-				<a href={`/admin/laws/${law.id}`}>
-					{law.name}
-				</a>
-			</li>
-		{/each}
-	</ul>
-	<div><button onclick={newLawPrompt.open}>새 법령 만들기</button></div>
-</Container>
+<div><a href="/admin">뒤로 가기</a></div>
+<Title>법령 관리</Title>
+<div>헌법</div>
+<ul>
+	{#each laws.filter((l) => l.level === '헌법') as law}
+		<li>
+			<a href={`/admin/laws/${law.id}`}>
+				{law.name}
+			</a>
+		</li>
+	{/each}
+</ul>
+<div>법률</div>
+<ul>
+	{#each laws.filter((l) => l.level === '법률').sort((a, b) => a.name.localeCompare(b.name)) as law}
+		<li>
+			<a href={`/admin/laws/${law.id}`}>
+				{law.name}
+			</a>
+		</li>
+	{/each}
+</ul>
+<div>명령</div>
+<ul>
+	{#each laws.filter((l) => l.level === '명령').sort((a, b) => a.name.localeCompare(b.name)) as law}
+		<li>
+			<a href={`/admin/laws/${law.id}`}>
+				{law.name}
+			</a>
+		</li>
+	{/each}
+</ul>
+<div>조례</div>
+<ul>
+	{#each laws.filter((l) => l.level === '조례').sort((a, b) => a.name.localeCompare(b.name)) as law}
+		<li>
+			<a href={`/admin/laws/${law.id}`}>
+				{law.name}
+			</a>
+		</li>
+	{/each}
+</ul>
+<div>규칙</div>
+<ul>
+	{#each laws.filter((l) => l.level === '규칙').sort((a, b) => a.name.localeCompare(b.name)) as law}
+		<li>
+			<a href={`/admin/laws/${law.id}`}>
+				{law.name}
+			</a>
+		</li>
+	{/each}
+</ul>
+<div><button onclick={newLawPrompt.open}>새 법령 만들기</button></div>
 
 <PromptFloat bind:this={newLawPrompt}>
 	<div>법령 이름</div>

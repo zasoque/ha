@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
 	import { onMount } from 'svelte';
@@ -708,29 +707,27 @@
 	<button onclick={changeRailOwner}>변경</button>
 </PromptFloat>
 
-<Container>
-	<Title>하 지도</Title>
-	<canvas class="canvas" bind:this={canvas}></canvas>
-	{#if certificates.find((cert) => cert.type === CERTIFICATION_LAND)}
-		<button onclick={addLandPrompt.open}>토지 추가</button>
-	{/if}
-	{#if certificates.find((cert) => cert.type === CERTIFICATION_BUILD)}
-		<button onclick={addBuildingPrompt.open}>건물 추가</button>
-	{/if}
-	<button onclick={addRoadPrompt.open}>도로 추가</button>
-	{#if certificates.find((cert) => cert.type === CERTIFICATION_RAIL)}
-		<button onclick={addRailPrompt.open}>철도 추가</button>
-	{/if}
-	<button onclick={harvestPrompt.open}>수확</button>
-	<button onclick={pathPrompt.open}>경로</button>
-	{#if certificates.find((cert) => cert.type === CERTIFICATION_MEASUREMENT)}
-		<button onclick={investFertilityPrompt.open}>비옥도 조사</button>
-		<button onclick={investSolidityPrompt.open}>강도 조사</button>
-	{/if}
-	<button onclick={changeLandOwnerPrompt.open}>토지 소유자 변경</button>
-	<button onclick={changeBuildingOwnerPrompt.open}>건물 소유자 변경</button>
-	<button onclick={changeRailOwnerPrompt.open}>철도 소유자 변경</button>
-</Container>
+<Title>하 지도</Title>
+<canvas class="canvas" bind:this={canvas}></canvas>
+{#if certificates.find((cert) => cert.type === CERTIFICATION_LAND)}
+	<button onclick={addLandPrompt.open}>토지 추가</button>
+{/if}
+{#if certificates.find((cert) => cert.type === CERTIFICATION_BUILD)}
+	<button onclick={addBuildingPrompt.open}>건물 추가</button>
+{/if}
+<button onclick={addRoadPrompt.open}>도로 추가</button>
+{#if certificates.find((cert) => cert.type === CERTIFICATION_RAIL)}
+	<button onclick={addRailPrompt.open}>철도 추가</button>
+{/if}
+<button onclick={harvestPrompt.open}>수확</button>
+<button onclick={pathPrompt.open}>경로</button>
+{#if certificates.find((cert) => cert.type === CERTIFICATION_MEASUREMENT)}
+	<button onclick={investFertilityPrompt.open}>비옥도 조사</button>
+	<button onclick={investSolidityPrompt.open}>강도 조사</button>
+{/if}
+<button onclick={changeLandOwnerPrompt.open}>토지 소유자 변경</button>
+<button onclick={changeBuildingOwnerPrompt.open}>건물 소유자 변경</button>
+<button onclick={changeRailOwnerPrompt.open}>철도 소유자 변경</button>
 
 <style>
 	.canvas {

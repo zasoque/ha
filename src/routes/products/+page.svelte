@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import { formatCurrency } from '$lib/util/economy';
 	import PromptFloat from '$lib/components/PromptFloat.svelte';
@@ -46,20 +45,18 @@
 	}
 </script>
 
-<Container>
-	<Title>시장</Title>
-	<div class="products">
-		{#each products() as product}
-			<a class="product" href="/products/{product.id}">
-				<div class="product-name">{product.item.name} &times; {product.quantity}</div>
-				<div class="product-description">{product.description}</div>
-				<div class="product-price">{formatCurrency(product.price)}</div>
-				<div class="product-owner">{product.owner_name}, {product.market.name}</div>
-			</a>
-		{/each}
-	</div>
-	<button class="new-product" onclick={newProductPrompt.open}>새로운 상품 출품</button>
-</Container>
+<Title>시장</Title>
+<div class="products">
+	{#each products() as product}
+		<a class="product" href="/products/{product.id}">
+			<div class="product-name">{product.item.name} &times; {product.quantity}</div>
+			<div class="product-description">{product.description}</div>
+			<div class="product-price">{formatCurrency(product.price)}</div>
+			<div class="product-owner">{product.owner_name}, {product.market.name}</div>
+		</a>
+	{/each}
+</div>
+<button class="new-product" onclick={newProductPrompt.open}>새로운 상품 출품</button>
 <PromptFloat bind:this={newProductPrompt}>
 	<div>아이템 ID</div>
 	<input type="number" bind:value={newItemId} placeholder="아이템 ID를 입력해줘!" />

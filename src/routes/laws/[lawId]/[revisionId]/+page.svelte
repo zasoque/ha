@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 	import Law from '$lib/components/Law.svelte';
 	import { createTwoFilesPatch } from 'diff';
@@ -18,13 +17,11 @@
 	}
 </script>
 
-<Container>
-	<div><a href="/laws/{law.id}">뒤로 가기</a></div>
-	<Title>{law.name} 제{index}호</Title>
-	<Law {lawJSON} />
-	<Title>변화</Title>
-	<pre>{getDiff(
-			law.contents[law.contents.length - index + 1]?.content,
-			law.contents[law.contents.length - index].content
-		)}</pre>
-</Container>
+<div><a href="/laws/{law.id}">뒤로 가기</a></div>
+<Title>{law.name} 제{index}호</Title>
+<Law {lawJSON} />
+<Title>변화</Title>
+<pre>{getDiff(
+		law.contents[law.contents.length - index + 1]?.content,
+		law.contents[law.contents.length - index].content
+	)}</pre>

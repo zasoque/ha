@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import Title from '$lib/components/Title.svelte';
 
 	let { data } = $props();
@@ -16,25 +15,23 @@
 	}
 </script>
 
-<Container>
-	<Title>알림</Title>
-	<div class="notifications">
-		{#if notifications().length === 0}
-			<div>알림이 없습니다.</div>
-		{:else}
-			{#each notifications() as notification}
-				<button
-					class="notification"
-					class:read={notification.is_read}
-					onclick={readNotification(notification.id)}
-				>
-					<div class="notification-message">{notification.message}</div>
-					<div class="notification-time">{new Date(notification.created_at).toLocaleString()}</div>
-				</button>
-			{/each}
-		{/if}
-	</div>
-</Container>
+<Title>알림</Title>
+<div class="notifications">
+	{#if notifications().length === 0}
+		<div>알림이 없습니다.</div>
+	{:else}
+		{#each notifications() as notification}
+			<button
+				class="notification"
+				class:read={notification.is_read}
+				onclick={readNotification(notification.id)}
+			>
+				<div class="notification-message">{notification.message}</div>
+				<div class="notification-time">{new Date(notification.created_at).toLocaleString()}</div>
+			</button>
+		{/each}
+	{/if}
+</div>
 
 <style>
 	.notifications {
