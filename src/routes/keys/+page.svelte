@@ -18,14 +18,14 @@
 
 		const publicLink = document.createElement('a');
 		publicLink.href = publicUrl;
-		publicLink.download = 'PUBLIC.pem';
+		publicLink.download = '인감증명서.pem';
 		document.body.appendChild(publicLink);
 		publicLink.click();
 		document.body.removeChild(publicLink);
 
 		const privateLink = document.createElement('a');
 		privateLink.href = privateUrl;
-		privateLink.download = 'PRIVATE.pem';
+		privateLink.download = '도장.pem';
 		document.body.appendChild(privateLink);
 		privateLink.click();
 		document.body.removeChild(privateLink);
