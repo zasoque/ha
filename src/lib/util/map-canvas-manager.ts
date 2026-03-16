@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
 
@@ -28,6 +30,21 @@ let camera = {
 		return { x: screenX, y: screenY };
 	}
 };
+
+const cameraPositionCookie = Cookies.get('cameraposition');
+if (cameraPositionCookie) {
+	try {
+		const parsed = JSON.parse(cameraPositionCookie);
+		camera.x = parsed.x || 0;
+		camera.y = parsed.y || 0;
+		camera.targetX = camera.x;
+		camera.targetY = camera.y;
+		camera.zoom = parsed.zoom || 100;
+		camera.targetZoom = camera.zoom;
+	} catch (e) {
+		console.error('Failed to parse camera position from cookie:', e);
+	}
+}
 
 function getTouchPositions(event: TouchEvent) {
 	const rect = canvas.getBoundingClientRect();
@@ -73,6 +90,10 @@ function tick() {
 	camera.x = lerp(camera.x, camera.targetX, t);
 	camera.y = lerp(camera.y, camera.targetY, t);
 	camera.zoom *= Math.exp(lerp(0, Math.log(camera.targetZoom / camera.zoom), t));
+
+	Cookies.set('cameraposition', JSON.stringify({ x: camera.x, y: camera.y, zoom: camera.zoom }), {
+		expires: 365
+	});
 
 	render();
 }

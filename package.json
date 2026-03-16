@@ -19,6 +19,7 @@
 		"@sveltejs/kit": "^2.50.2",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@types/cookies": "^0.9.2",
+		"@types/js-cookie": "^3.0.6",
 		"@types/node": "^25.3.2",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.4.1",
@@ -29,9 +30,9 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"cookies": "^0.9.1",
 		"diff": "^8.0.3",
 		"dotenv": "^17.3.1",
+		"js-cookie": "^3.0.5",
 		"mariadb": "^3.5.1",
 		"swagger-jsdoc": "^6.2.8",
 		"swagger-ui-dist": "^5.32.0"
