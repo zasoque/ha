@@ -82,11 +82,11 @@
 
 	async function verifySignature() {
 		if (!verifyData.publicKey) {
-			alert('공개키를 업로드해주세요.');
+			alert('공개키를 업로드해줘.');
 			return;
 		}
 
-		const messageBuffer = new TextEncoder().encode(verifyData.message);
+		const messageBuffer = new TextEncoder().encode(verifyData.message.trim());
 		const signatureBuffer = base64ToArrayBuffer(verifyData.signature);
 
 		const isValid = await crypto.subtle.verify(
@@ -99,9 +99,9 @@
 		);
 
 		if (isValid) {
-			alert('서명 검증 성공! 메시지, 공개키, 서명이 일치합니다.');
+			alert('서명 검증 성공! 메시지, 공개키, 서명이 일치해.');
 		} else {
-			alert('서명 검증 실패. 메시지, 공개키, 서명을 다시 확인해주세요.');
+			alert('서명 검증 실패. 메시지, 공개키, 서명을 다시 확인해줘.');
 		}
 	}
 
@@ -141,11 +141,11 @@
 
 	async function signMessage() {
 		if (!signData.privateKey) {
-			alert('개인키를 업로드해주세요.');
+			alert('개인키를 업로드해줘.');
 			return;
 		}
 
-		const messageBuffer = new TextEncoder().encode(signData.message);
+		const messageBuffer = new TextEncoder().encode(signData.message.trim());
 
 		const signatureBuffer = await crypto.subtle.sign(
 			{ name: 'Ed25519' },
