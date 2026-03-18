@@ -146,7 +146,6 @@
 	<div class="navigation">
 		<a href="/items" class="navigation-item">아이템</a>
 		<a href="/maps" class="navigation-item">지도</a>
-		<a href="/keys" class="navigation-item">전자서명</a>
 		{#if me()}
 			<a href="/notifications" class="navigation-item">
 				알림
@@ -175,6 +174,7 @@
 	<a href="https://w.halv.kr/하">하 쩌모위키</a>
 	<a href="https://github.com/zasoque/ha">하이파이브 레포지토리</a>
 	<a href="/laws">법령정보</a>
+	<a href="/keys">전자서명</a>
 	<a href="/diff">변경사항 추적기</a>
 	<a href="/docs">API 문서</a>
 	<a href="/policy">이용약관</a>
