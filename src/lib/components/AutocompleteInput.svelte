@@ -28,7 +28,8 @@
 
 	async function oninput(e: Event) {
 		const target = e.target as HTMLInputElement;
-		const query = target.value;
+		const querySplit = target.value.split(',');
+		const query = querySplit[querySplit.length - 1].trim();
 
 		if (!query) {
 			candidates = [];
@@ -37,6 +38,14 @@
 
 		candidates = await search(query);
 		selection = 0;
+	}
+
+	function confirmValue(w) {
+		const split = value.split(',');
+		split[split.length - 1] = w;
+		value = split.join(', ');
+		if (input) input.value = value;
+		candidates = [];
 	}
 
 	function onkeydown(e: KeyboardEvent) {
@@ -48,9 +57,7 @@
 			e.preventDefault();
 		} else if (e.key === 'Enter' && candidates[selection]) {
 			const selected = candidates[selection];
-			value = selected.value;
-			if (input) input.value = selected.value;
-			candidates = [];
+			confirmValue(selected.value);
 			e.preventDefault();
 		}
 
@@ -63,9 +70,7 @@
 	}
 
 	function selectCandidate(candidate: Candidate) {
-		value = candidate.value;
-		if (input) input.value = candidate.value;
-		candidates = [];
+		confirmValue(candidate.value);
 	}
 </script>
 

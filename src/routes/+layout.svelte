@@ -153,6 +153,7 @@
 					({getNotifCount()})
 				{/if}
 			</a>
+			<a href="/mails" class="navigation-item">메일</a>
 			<a href="/corporations" class="navigation-item">법인</a>
 			<a href="/accounts" class="navigation-item">계좌</a>
 			<a href="/products" class="navigation-item">시장</a>
