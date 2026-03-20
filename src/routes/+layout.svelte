@@ -6,6 +6,7 @@
 	const me = $derived(() => data.me);
 	const isAdmin = $derived(() => data.isAdmin);
 	const notifications = $derived(() => data.notifications);
+	const { unreadcount } = $derived(data);
 
 	function getNotifCount() {
 		return notifications().filter((n: any) => !n.is_read).length;
@@ -153,7 +154,12 @@
 					({getNotifCount()})
 				{/if}
 			</a>
-			<a href="/mails" class="navigation-item">메일</a>
+			<a href="/mails" class="navigation-item">
+				메일
+				{#if unreadcount}
+					({unreadcount})
+				{/if}
+			</a>
 			<a href="/corporations" class="navigation-item">법인</a>
 			<a href="/accounts" class="navigation-item">계좌</a>
 			<a href="/products" class="navigation-item">시장</a>

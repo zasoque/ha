@@ -16,5 +16,9 @@ export const load: LayoutServerLoad = async ({ fetch, cookies }) => {
 		res.json()
 	);
 
-	return { me, isAdmin: await isAdmin(me?.id || ''), notifications, certificates };
+	const { unreadcount } = await fetch('/api/v1/mails/me/unreadcount')
+		.then((res) => res.json())
+		.then((data) => data);
+
+	return { me, isAdmin: await isAdmin(me?.id || ''), notifications, certificates, unreadcount };
 };
